@@ -1,15 +1,17 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { getCachedImage } from './imageLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const bgPath = join(__dirname, '../../assets/bg.jpg');
 
 try {
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/RobotoMono.ttf'), 'RobotoMono');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/RobotoMono-Bold.ttf'), 'RobotoMonoBold');
 } catch (err) {
-  console.warn('Failed to register Roboto fonts in clanRoster:', err.message);
+  console.warn('Failed to register RobotoMono fonts in clanRoster:', err.message);
 }
 
 export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
@@ -20,8 +22,22 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // 1. Medium-dark grey background matching the uploaded screenshot (#2c2d30)
-  ctx.fillStyle = '#2c2d30';
+  // 1. Draw premium background (car headlights bg, matching profile card!)
+  try {
+    const bgImg = await getCachedImage(bgPath);
+    if (bgImg) {
+      ctx.drawImage(bgImg, 0, 0, width, height);
+    } else {
+      ctx.fillStyle = '#2c2d30';
+      ctx.fillRect(0, 0, width, height);
+    }
+  } catch (err) {
+    ctx.fillStyle = '#2c2d30';
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  // Semi-transparent dark overlay for high contrast text readability (matching profile!)
+  ctx.fillStyle = 'rgba(10, 11, 15, 0.7)';
   ctx.fillRect(0, 0, width, height);
 
   // Outer border frame (light grey #808080)
@@ -82,7 +98,7 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   // Draw "Clan Page" Box on Page 1 (Discord dark grey theme with 2x2 grid layout)
   if (pageIdx === 0) {
     const boxY = 15 * scale;
-    const boxH = 112 * scale; // Slight increase for perfect spacing
+    const boxH = 112 * scale; // Perfect spacing
     
     ctx.fillStyle = '#1e1f22'; // Dark container background
     ctx.beginPath();
@@ -93,8 +109,8 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     ctx.lineWidth = 1.5 * scale;
     ctx.stroke();
 
-    // Box Header: Centered Clan Name
-    ctx.font = 'bold 24px RobotoBold';
+    // Box Header: Centered Clan Name (Cooler RobotoMono font)
+    ctx.font = 'bold 24px RobotoMonoBold';
     ctx.fillStyle = '#5865f2'; // Discord Blurple
     ctx.textAlign = 'center';
     ctx.fillText(clan.name || 'Clan Profile', leftX + colW / 2, boxY + 24 * scale);
@@ -118,16 +134,16 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     ctx.lineTo(leftX + colW - 20 * scale, gridCenterY);
     ctx.stroke();
 
-    // Box detail helper
+    // Box detail helper (Using cool RobotoMono fonts)
     const drawCell = (label, val, x, y) => {
       ctx.textAlign = 'center';
-      // Label (grey, size 14px)
-      ctx.font = 'bold 14px RobotoBold';
+      // Label (grey, size 13px)
+      ctx.font = 'bold 13px RobotoMonoBold';
       ctx.fillStyle = '#8e9297'; 
       ctx.fillText(label, x, y);
       
-      // Value (white, size 16px)
-      ctx.font = 'bold 16px Roboto';
+      // Value (white, size 15px)
+      ctx.font = 'bold 15px RobotoMono';
       ctx.fillStyle = '#ffffff'; 
       ctx.fillText(val, x, y + 18 * scale);
     };
@@ -145,10 +161,10 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     drawCell('SINCE', sinceDate, leftX + (colW / 4) * 3, boxY + 86 * scale);
   }
 
-  // Helper to draw item (perfectly aligned matching Image 9)
+  // Helper to draw item (perfectly aligned matching Image 9, using monospaced fonts!)
   const drawRow = (item, x, y) => {
     if (item.type === 'header') {
-      ctx.font = 'bold 26px RobotoBold';
+      ctx.font = 'bold 24px RobotoMonoBold';
       ctx.fillStyle = item.color;
       ctx.textAlign = 'left';
       ctx.fillText(item.text, x, y + 16 * scale);
@@ -156,7 +172,7 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
       const u = item.data.user || {};
       const scoreVal = (item.data.allScores || 0).toLocaleString();
 
-      ctx.font = 'bold 24px Roboto';
+      ctx.font = '22px RobotoMono';
 
       // Level (white)
       ctx.fillStyle = '#ffffff';
@@ -192,8 +208,8 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     currentY += rowH;
   });
 
-  // Footer: Page indicator in grey
-  ctx.font = 'bold 22px Roboto';
+  // Footer: Page indicator in grey (Using RobotoMono)
+  ctx.font = '20px RobotoMono';
   ctx.fillStyle = '#8e9297';
   ctx.textAlign = 'left';
   ctx.fillText(`Page #${pageIdx + 1}/${totalPages}`, leftX, height - 16 * scale);

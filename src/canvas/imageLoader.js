@@ -3,8 +3,8 @@ import { loadImage } from '@napi-rs/canvas';
 const imageCache = new Map();
 
 /**
-  * Fetch and cache loaded image objects in memory to prevent slow duplicate network requests.
-  * Remote requests include a 3.5-second timeout to prevent hangs.
+  * Fetch and cache loaded image objects in memory.
+  * Direct downloads without proxy to bypass weserv.nl blocks/rate-limits on hosting environments.
   */
 export async function getCachedImage(url) {
   if (!url) return null;
@@ -14,7 +14,7 @@ export async function getCachedImage(url) {
     return imageCache.get(cleanUrl);
   }
 
-  // Handle local files directly
+  // Handle local files or data URIs directly
   const isLocal = cleanUrl.startsWith('.') || 
                   cleanUrl.startsWith('/') || 
                   cleanUrl.startsWith('data:') || 
@@ -32,17 +32,16 @@ export async function getCachedImage(url) {
     }
   }
 
-  // Remote image loading with strict 3.5s timeout
+  // Remote image loading: Fetch direct image buffer with browser User-Agent
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-  const targetUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
+  const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
 
   try {
-    const res = await fetch(targetUrl, {
+    const res = await fetch(cleanUrl, {
       signal: controller.signal,
       headers: {
-        'user-agent': 'Mozilla/5.0'
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
       }
     });
     
@@ -60,7 +59,7 @@ export async function getCachedImage(url) {
     return img;
   } catch (err) {
     clearTimeout(timeoutId);
-    console.warn(`[ImageLoader] Failed to download or parse remote image: ${cleanUrl} (${err.message})`);
+    console.warn(`[ImageLoader] Failed to fetch remote image direct: ${cleanUrl} (${err.message})`);
     imageCache.set(cleanUrl, null);
     return null;
   }
