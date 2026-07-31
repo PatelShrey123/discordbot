@@ -79,48 +79,70 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     itemsRight = listItems.slice(startIndex + 16, startIndex + 32);
   }
 
-  // Draw "Clan Page" Box on Page 1 (Discord dark grey theme)
+  // Draw "Clan Page" Box on Page 1 (Discord dark grey theme with 2x2 grid layout)
   if (pageIdx === 0) {
+    const boxY = 15 * scale;
+    const boxH = 112 * scale; // Slight increase for perfect spacing
+    
     ctx.fillStyle = '#1e1f22'; // Dark container background
     ctx.beginPath();
-    ctx.roundRect(leftX, 15 * scale, colW, 110 * scale, 6 * scale);
+    ctx.roundRect(leftX, boxY, colW, boxH, 6 * scale);
     ctx.fill();
     
     ctx.strokeStyle = '#3f4248';
     ctx.lineWidth = 1.5 * scale;
     ctx.stroke();
 
-    // Box Header "Clan Page"
-    ctx.font = 'bold 30px RobotoBold';
+    // Box Header: Centered Clan Name
+    ctx.font = 'bold 24px RobotoBold';
     ctx.fillStyle = '#5865f2'; // Discord Blurple
     ctx.textAlign = 'center';
-    ctx.fillText('Clan Page', leftX + colW / 2, 36 * scale);
+    ctx.fillText(clan.name || 'Clan Profile', leftX + colW / 2, boxY + 24 * scale);
 
-    // Box details (2 column layout inside box)
-    ctx.font = 'bold 22px RobotoBold';
-    
-    // Column 1
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#5865f2';
-    ctx.fillText('Name:', leftX + 15 * scale, 58 * scale);
-    ctx.fillText('Score:', leftX + 15 * scale, 80 * scale);
-    ctx.fillText('Since:', leftX + 15 * scale, 102 * scale);
+    // Subtle divider under name
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1 * scale;
+    ctx.beginPath();
+    ctx.moveTo(leftX + 20 * scale, boxY + 32 * scale);
+    ctx.lineTo(leftX + colW - 20 * scale, boxY + 32 * scale);
+    ctx.stroke();
 
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(clan.name || 'Unknown', leftX + 65 * scale, 58 * scale);
-    ctx.fillText((clan.allScores || 0).toLocaleString(), leftX + 65 * scale, 80 * scale);
-    
+    // Draw inner 2x2 grid dividers
+    const gridCenterY = boxY + 72 * scale;
+    ctx.beginPath();
+    // Vertical partition
+    ctx.moveTo(leftX + colW / 2, boxY + 38 * scale);
+    ctx.lineTo(leftX + colW / 2, boxY + boxH - 8 * scale);
+    // Horizontal partition
+    ctx.moveTo(leftX + 20 * scale, gridCenterY);
+    ctx.lineTo(leftX + colW - 20 * scale, gridCenterY);
+    ctx.stroke();
+
+    // Box detail helper
+    const drawCell = (label, val, x, y) => {
+      ctx.textAlign = 'center';
+      // Label (grey, size 14px)
+      ctx.font = 'bold 14px RobotoBold';
+      ctx.fillStyle = '#8e9297'; 
+      ctx.fillText(label, x, y);
+      
+      // Value (white, size 16px)
+      ctx.font = 'bold 16px Roboto';
+      ctx.fillStyle = '#ffffff'; 
+      ctx.fillText(val, x, y + 18 * scale);
+    };
+
     const sinceDate = clan.createdAt ? new Date(clan.createdAt).toLocaleDateString('en-GB') : 'Unknown';
-    ctx.fillText(sinceDate, leftX + 65 * scale, 102 * scale);
+    const rankVal = rank > 0 ? `#${rank}` : 'Unranked';
 
-    // Column 2
-    ctx.fillStyle = '#5865f2';
-    ctx.fillText('Members:', leftX + 155 * scale, 58 * scale);
-    ctx.fillText('Leaderboard:', leftX + 155 * scale, 80 * scale);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(`${members.length}`, leftX + 225 * scale, 58 * scale);
-    ctx.fillText(rank > 0 ? `#${rank}` : 'Unranked', leftX + 248 * scale, 80 * scale);
+    // Quadrant 1 (Top Left)
+    drawCell('SCORE', (clan.allScores || 0).toLocaleString(), leftX + colW / 4, boxY + 48 * scale);
+    // Quadrant 2 (Top Right)
+    drawCell('LEADERBOARD', rankVal, leftX + (colW / 4) * 3, boxY + 48 * scale);
+    // Quadrant 3 (Bottom Left)
+    drawCell('MEMBERS', `${members.length}`, leftX + colW / 4, boxY + 86 * scale);
+    // Quadrant 4 (Bottom Right)
+    drawCell('SINCE', sinceDate, leftX + (colW / 4) * 3, boxY + 86 * scale);
   }
 
   // Helper to draw item (perfectly aligned matching Image 9)

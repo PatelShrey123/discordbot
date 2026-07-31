@@ -1,7 +1,6 @@
 import { 
   SlashCommandBuilder, 
   AttachmentBuilder, 
-  EmbedBuilder, 
   ActionRowBuilder, 
   ButtonBuilder, 
   ButtonStyle,
@@ -70,46 +69,38 @@ export async function execute(interaction) {
     const cardBuffer = await renderClanRosterPage(clan, rank, pageIdx, totalPages);
     const attachment = new AttachmentBuilder(cardBuffer, { name: 'clan-roster.png' });
 
-    const embed = new EmbedBuilder()
-      .setColor('#8b5cf6')
-      .setTitle(`🛡️ Clan: ${clan.name}`)
-      .setDescription(clan.description || '*No clan description set.*')
-      .addFields(
-        { name: 'Clan Name', value: `\`${clan.name}\``, inline: true },
-        { name: 'Score', value: `\`${(clan.allScores || 0).toLocaleString()}\``, inline: true },
-        { name: 'Members', value: `\`${members.length}\``, inline: true },
-        { name: 'Leader', value: `\`${leaderName}\``, inline: true }
-      );
-
-    if (clan.discordLink) {
-      embed.addFields({ name: 'Clan Discord', value: `[Clan Discord](${clan.discordLink})`, inline: true });
-    }
-
-    embed.setImage('attachment://clan-roster.png');
-
     // Create Action Buttons Row
     const row = new ActionRowBuilder();
 
-    const prevButton = new ButtonBuilder()
-      .setCustomId('clan_prev')
-      .setLabel('Prev Page')
-      .setStyle(ButtonStyle.Success)
-      .setDisabled(pageIdx === 0);
+    if (totalPages > 1) {
+      const prevButton = new ButtonBuilder()
+        .setCustomId('clan_prev')
+        .setLabel('Prev Page')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(pageIdx === 0);
 
-    const nextButton = new ButtonBuilder()
-      .setCustomId('clan_next')
-      .setLabel('Next Page')
-      .setStyle(ButtonStyle.Success)
-      .setDisabled(pageIdx === totalPages - 1);
+      const nextButton = new ButtonBuilder()
+        .setCustomId('clan_next')
+        .setLabel('Next Page')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(pageIdx === totalPages - 1);
 
-    const trackerButton = new ButtonBuilder()
-      .setLabel('Clan Tracker')
-      .setStyle(ButtonStyle.Link)
-      .setURL(`https://kirka.io/clan/${encodeURIComponent(clan.name)}`);
+      const trackerButton = new ButtonBuilder()
+        .setLabel('Clan Tracker')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`https://kirkahub.vercel.app/clan/${encodeURIComponent(clan.name)}`);
 
-    row.addComponents(prevButton, nextButton, trackerButton);
+      row.addComponents(prevButton, nextButton, trackerButton);
+    } else {
+      const trackerButton = new ButtonBuilder()
+        .setLabel('Clan Tracker')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`https://kirkahub.vercel.app/clan/${encodeURIComponent(clan.name)}`);
 
-    return { embeds: [embed], files: [attachment], components: totalPages > 1 ? [row] : [] };
+      row.addComponents(trackerButton);
+    }
+
+    return { files: [attachment], components: [row] };
   };
 
   const initialPayload = await createPageMessage(currentPage);
