@@ -19,7 +19,7 @@ function formatNumber(num) {
   return Number(num).toLocaleString('en-US');
 }
 
-export async function renderProfileCard(profile) {
+export async function renderProfileCard(profile, customBgUrl = null) {
   const width = 760;
   const height = 425; // Adjusted height since footer is removed
   const canvas = createCanvas(width, height);
@@ -48,11 +48,27 @@ export async function renderProfileCard(profile) {
   const clanStr = typeof profile?.clan === 'string' ? profile.clan : profile?.clan?.name || '';
   const clanTag = clanStr ? ` [${clanStr}]` : '';
 
-  // 1. Draw Custom Black Car with Headlights Background
-  try {
-    const bgImg = await getCachedImage(bgPath);
+  // 1. Draw Custom Background (Custom or default black car with headlights bg)
+  let bgImg = null;
+  if (customBgUrl) {
+    try {
+      bgImg = await getCachedImage(customBgUrl);
+    } catch (err) {
+      console.warn('[ProfileCard] Failed to load custom background, falling back to default:', err.message);
+    }
+  }
+
+  if (!bgImg) {
+    try {
+      bgImg = await getCachedImage(bgPath);
+    } catch (err) {
+      console.warn('[ProfileCard] Failed to load default background:', err.message);
+    }
+  }
+
+  if (bgImg) {
     ctx.drawImage(bgImg, 0, 0, width, height);
-  } catch (err) {
+  } else {
     const gradBg = ctx.createLinearGradient(0, 0, width, height);
     gradBg.addColorStop(0, '#090a0f');
     gradBg.addColorStop(1, '#020205');

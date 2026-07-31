@@ -5,11 +5,13 @@ import dotenv from 'dotenv';
 import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard } from './api/kirka.js';
 import { getBoltPriceMap } from './api/boltPrices.js';
+import { initDb } from './api/db.js';
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
 import * as skinCmd from './commands/skin.js';
 import * as leaderboardCmd from './commands/leaderboard.js';
+import * as hCmd from './commands/h.js';
 
 dotenv.config();
 
@@ -29,10 +31,14 @@ client.commands.set(inventoryCmd.data.name, inventoryCmd);
 client.commands.set(clanCmd.data.name, clanCmd);
 client.commands.set(skinCmd.data.name, skinCmd);
 client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
+client.commands.set(hCmd.data.name, hCmd);
 
 client.once('ready', async () => {
   console.log(`🤖 Logged in as ${client.user.tag}!`);
   console.log(`🌐 Bot active in ${client.guilds.cache.size} server(s).`);
+
+  // Initialize Supabase Database Connection
+  await initDb();
 
   // Warm up all API caches in background concurrently
   console.log('🔥 Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard)...');
