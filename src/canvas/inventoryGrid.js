@@ -14,23 +14,23 @@ try {
   console.warn('Failed to register Roboto fonts in inventoryGrid:', err.message);
 }
 
-// Rarity color codes matching the website screenshot
+// Exact colors matching the user screenshot
 const RARITY_COLORS = {
-  contraband: '#ef4444', // Red
-  exotic:     '#ef4444', // Red
-  mythical:   '#ef4444', // Red
-  mythic:     '#ef4444', // Red
+  contraband: '#ef4444', // Bright Red
+  exotic:     '#ef4444', // Bright Red
+  mythical:   '#ef4444', // Bright Red
+  mythic:     '#ef4444', // Bright Red
   legendary:  '#f97316', // Orange
   epic:       '#a855f7', // Purple
   rare:       '#3b82f6', // Blue
   uncommon:   '#22c55e', // Green
-  common:     '#94a3b8'  // Grey
+  common:     '#2a2b2d'  // Dark Grey/Slate (matching Blackhole cell border)
 };
 
 function getRarityColor(rarity) {
-  if (!rarity) return '#94a3b8';
+  if (!rarity) return '#2a2b2d';
   const clean = rarity.toLowerCase().trim();
-  return RARITY_COLORS[clean] || '#3b82f6';
+  return RARITY_COLORS[clean] || '#2a2b2d';
 }
 
 export async function renderInventoryGridPage({ items, pageItems, priceMap, pageIndex, totalPages, username }) {
@@ -41,14 +41,9 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // 1. Medium-dark grey background matching the layout screenshot (#2c2d30)
-  ctx.fillStyle = '#2c2d30';
+  // 1. Dark grey background matching the layout screenshot exactly (#1e1e1e)
+  ctx.fillStyle = '#1e1e1e';
   ctx.fillRect(0, 0, width, height);
-
-  // Outer border frame (light grey #808080)
-  ctx.strokeStyle = '#808080';
-  ctx.lineWidth = 2 * scale;
-  ctx.strokeRect(0, 0, width, height);
 
   const cols = 5;
   const cellW = 172 * scale; 
@@ -95,13 +90,13 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     const formattedPrice = price > 0 ? formatValueShort(price) : '—';
     const borderColor = getRarityColor(item.rarity);
 
-    // Cell Background - Dark container background matching (#1e1f22)
-    ctx.fillStyle = '#1e1f22';
+    // Cell Background - Pitch black-charcoal cell container (#111111)
+    ctx.fillStyle = '#111111';
     ctx.beginPath();
-    ctx.roundRect(x, y, cellW, cellH, 6 * scale); // 6px rounded corner
+    ctx.roundRect(x, y, cellW, cellH, 8 * scale); // Rounded corner radius matches screenshot
     ctx.fill();
 
-    // Rarity Colored Border (2px thick)
+    // Rarity Colored Border (approx 2px thick scaled)
     ctx.strokeStyle = borderColor;
     ctx.lineWidth = 2 * scale;
     ctx.stroke();
@@ -116,7 +111,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     if (displayName.length > 20) {
       displayName = displayName.substring(0, 18) + '..';
     }
-    ctx.fillText(displayName, x + cellW / 2, y + 18 * scale);
+    ctx.fillText(displayName, x + cellW / 2, y + 20 * scale);
 
     // Item Render Image (Middle Center - scaled and centered)
     if (itemImg) {
