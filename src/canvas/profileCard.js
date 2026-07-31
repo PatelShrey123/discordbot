@@ -22,7 +22,7 @@ export async function renderProfileCard(profile) {
   const lost = Math.max(0, played - won);
 
   const kdr = deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2);
-  const winRate = played > 0 ? (won / played).toFixed(2) : '0.00';
+  const wl = lost > 0 ? (won / lost).toFixed(2) : won.toFixed(2);
   const kpg = played > 0 ? (kills / played).toFixed(2) : '0.00';
 
   const level = profile?.level || 1;
@@ -146,7 +146,7 @@ export async function renderProfileCard(profile) {
       { label: 'KDR', val: kdr }
     ],
     [
-      { label: 'W/L', val: winRate },
+      { label: 'W/L', val: wl },
       { label: 'Coins', val: formatNumber(profile?.coins || 0) },
       { label: 'Diamonds', val: formatNumber(profile?.diamonds || profile?.gems || 0) },
       { label: 'Total XP', val: formatNumber(totalXp) },

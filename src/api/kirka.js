@@ -52,7 +52,7 @@ export async function getPublicItemMap() {
  */
 export async function fetchUserProfile(query) {
   if (!query) return null;
-  const cleanQuery = query.trim();
+  const cleanQuery = query.trim().replace(/^#/, '');
 
   // 1. Try as direct UUID / Name via POST getProfile
   try {
