@@ -1,9 +1,10 @@
 import fs from 'fs';
-import { fetchUserProfile, fetchUserInventory, getPublicCatalog } from './api/kirka.js';
+import { fetchUserProfile, fetchUserInventory, getPublicCatalog, fetchClan } from './api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong } from './api/boltPrices.js';
 import { renderProfileCard } from './canvas/profileCard.js';
 import { renderInventoryGridPage } from './canvas/inventoryGrid.js';
 import { renderSkinCard } from './canvas/skinCard.js';
+import { renderClanRosterPage } from './canvas/clanRoster.js';
 
 async function runTest() {
   console.log('🧪 Starting diagnostic test for Kirka Discord Bot...');
@@ -66,6 +67,17 @@ async function runTest() {
     console.log('✅ Generated test-skin.png successfully!');
   } else {
     console.warn('⚠️ Grayscale item not found in catalog for test!');
+  }
+
+  // 6. Test Canvas Clan Roster Page
+  console.log('6️⃣ Fetching clan and rendering Clan Roster Page...');
+  const clan = await fetchClan(profile.clan || 'Dement!a');
+  if (clan) {
+    const clanBuf = await renderClanRosterPage(clan, 3, 0, 4);
+    fs.writeFileSync('test-clan.png', clanBuf);
+    console.log('✅ Generated test-clan.png successfully!');
+  } else {
+    console.error('❌ Clan fetch failed!');
   }
 
   console.log('🎉 ALL DIAGNOSTIC TESTS PASSED CLEANLY!');
