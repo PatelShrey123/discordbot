@@ -8,9 +8,14 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // 1. Sleek deep space black background matching website theme
-  ctx.fillStyle = '#08090a';
+  // 1. Medium-dark grey background matching the uploaded screenshot (#2c2d30)
+  ctx.fillStyle = '#2c2d30';
   ctx.fillRect(0, 0, width, height);
+
+  // Outer border frame (light grey #808080)
+  ctx.strokeStyle = '#808080';
+  ctx.lineWidth = 2 * scale;
+  ctx.strokeRect(0, 0, width, height);
 
   // Group members by role and sort by contribution score
   const members = clan.members || [];
@@ -20,19 +25,19 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
 
   const listItems = [];
 
-  // Theme gold color palette for roles
+  // Cyan/teal headers for roles
   if (leaders.length > 0) {
-    listItems.push({ type: 'header', text: `Leader [${leaders.length}]`, color: '#f59e0b' }); // Bright gold
+    listItems.push({ type: 'header', text: `Leader [${leaders.length}]`, color: '#00ffff' });
     leaders.forEach(m => listItems.push({ type: 'member', data: m }));
   }
 
   if (officers.length > 0) {
-    listItems.push({ type: 'header', text: `Officers [${officers.length}]`, color: '#fbbf24' }); // Warm gold
+    listItems.push({ type: 'header', text: `Officers [${officers.length}]`, color: '#00ffff' });
     officers.forEach(m => listItems.push({ type: 'member', data: m }));
   }
 
   if (newbies.length > 0) {
-    listItems.push({ type: 'header', text: `Newbies [${newbies.length}]`, color: '#d97706' }); // Bronze gold
+    listItems.push({ type: 'header', text: `Newbies [${newbies.length}]`, color: '#00ffff' });
     newbies.forEach(m => listItems.push({ type: 'member', data: m }));
   }
 
@@ -41,6 +46,14 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   const rightX = 335 * scale;
   const colW = 285 * scale;
   const rowH = 24 * scale;
+
+  // Draw central partition line in light grey
+  ctx.strokeStyle = '#808080';
+  ctx.lineWidth = 1 * scale;
+  ctx.beginPath();
+  ctx.moveTo(320 * scale, 0);
+  ctx.lineTo(320 * scale, height);
+  ctx.stroke();
 
   let itemsLeft = [];
   let itemsRight = [];
@@ -54,52 +67,51 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     itemsRight = listItems.slice(startIndex + 16, startIndex + 32);
   }
 
-  // Draw "Clan Page" Box on Page 1 (Golden & Black Theme)
+  // Draw "Clan Page" Box on Page 1 (Discord dark grey theme)
   if (pageIdx === 0) {
-    ctx.fillStyle = '#111215'; // Dark grey-black container
+    ctx.fillStyle = '#1e1f22'; // Dark container background
     ctx.beginPath();
     ctx.roundRect(leftX, 15 * scale, colW, 110 * scale, 6 * scale);
     ctx.fill();
     
-    // Gold highlighted border
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.2)';
+    ctx.strokeStyle = '#3f4248';
     ctx.lineWidth = 1.5 * scale;
     ctx.stroke();
 
     // Box Header "Clan Page"
     ctx.font = 'bold 30px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = '#fbbf24'; // Warm Gold
+    ctx.fillStyle = '#5865f2'; // Discord Blurple
     ctx.textAlign = 'center';
     ctx.fillText('Clan Page', leftX + colW / 2, 36 * scale);
 
     // Box details (2 column layout inside box)
-    ctx.font = '22px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 22px system-ui, -apple-system, sans-serif';
     
     // Column 1
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#f59e0b';
+    ctx.fillStyle = '#5865f2';
     ctx.fillText('Name:', leftX + 15 * scale, 58 * scale);
     ctx.fillText('Score:', leftX + 15 * scale, 80 * scale);
     ctx.fillText('Since:', leftX + 15 * scale, 102 * scale);
 
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(clan.name || 'Unknown', leftX + 60 * scale, 58 * scale);
-    ctx.fillText((clan.allScores || 0).toLocaleString(), leftX + 60 * scale, 80 * scale);
+    ctx.fillText(clan.name || 'Unknown', leftX + 65 * scale, 58 * scale);
+    ctx.fillText((clan.allScores || 0).toLocaleString(), leftX + 65 * scale, 80 * scale);
     
     const sinceDate = clan.createdAt ? new Date(clan.createdAt).toLocaleDateString('en-GB') : 'Unknown';
-    ctx.fillText(sinceDate, leftX + 60 * scale, 102 * scale);
+    ctx.fillText(sinceDate, leftX + 65 * scale, 102 * scale);
 
     // Column 2
-    ctx.fillStyle = '#f59e0b';
+    ctx.fillStyle = '#5865f2';
     ctx.fillText('Members:', leftX + 155 * scale, 58 * scale);
     ctx.fillText('Leaderboard:', leftX + 155 * scale, 80 * scale);
 
     ctx.fillStyle = '#ffffff';
     ctx.fillText(`${members.length}`, leftX + 225 * scale, 58 * scale);
-    ctx.fillText(rank > 0 ? `#${rank}` : 'Unranked', leftX + 242 * scale, 80 * scale);
+    ctx.fillText(rank > 0 ? `#${rank}` : 'Unranked', leftX + 248 * scale, 80 * scale);
   }
 
-  // Helper to draw item (perfectly aligned using precise X coordinates instead of monospace)
+  // Helper to draw item (perfectly aligned matching Image 9)
   const drawRow = (item, x, y) => {
     if (item.type === 'header') {
       ctx.font = 'bold 26px system-ui, -apple-system, sans-serif';
@@ -110,23 +122,23 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
       const u = item.data.user || {};
       const scoreVal = (item.data.allScores || 0).toLocaleString();
 
-      ctx.font = '24px system-ui, -apple-system, sans-serif';
+      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
 
-      // Level
-      ctx.fillStyle = '#94a3b8';
+      // Level (white)
+      ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'left';
       ctx.fillText(`${u.level || 0}`, x, y + 16 * scale);
 
-      // Pipe separator
-      ctx.fillStyle = '#475569';
-      ctx.fillText('|', x + 25 * scale, y + 16 * scale);
-
-      // Name (Standard readable sans-serif font)
+      // Pipe separator (white)
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(u.name || 'Unknown', x + 38 * scale, y + 16 * scale);
+      ctx.fillText('|', x + 35 * scale, y + 16 * scale);
 
-      // Score (Pop out in matching warm Gold)
-      ctx.fillStyle = '#fbbf24';
+      // Name (white)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(u.name || 'Unknown', x + 48 * scale, y + 16 * scale);
+
+      // Score (white)
+      ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'right';
       ctx.fillText(scoreVal, x + colW, y + 16 * scale);
     }
@@ -146,9 +158,9 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     currentY += rowH;
   });
 
-  // Footer: Page indicator
-  ctx.font = '22px system-ui, -apple-system, sans-serif';
-  ctx.fillStyle = '#475569';
+  // Footer: Page indicator in grey
+  ctx.font = 'bold 22px system-ui, -apple-system, sans-serif';
+  ctx.fillStyle = '#8e9297';
   ctx.textAlign = 'left';
   ctx.fillText(`Page #${pageIdx + 1}/${totalPages}`, leftX, height - 16 * scale);
 
