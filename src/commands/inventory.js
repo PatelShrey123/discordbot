@@ -57,11 +57,28 @@ export async function execute(interaction) {
 
   const uniqueSkinsCount = inventory.length;
 
-  // 3. Sort items by Bolt valuation (highest price first)
+  const getSortWeight = (invItem) => {
+    const item = invItem.item || invItem;
+    const price = getItemPrice(priceMap, item);
+    if (price > 0) return price;
+
+    const rarity = (item.rarity || '').toLowerCase().trim();
+    switch (rarity) {
+      case 'contraband': return 50000000;
+      case 'exotic':      return 35000000;
+      case 'mythical':
+      case 'mythic':     return 20000000;
+      case 'legendary':  return 4000000;
+      case 'epic':       return 500000;
+      case 'rare':       return 50000;
+      case 'uncommon':   return 5000;
+      default:           return 1;
+    }
+  };
+
+  // 3. Sort items by Bolt valuation (highest price first, with unpriced items sorted by rarity fallback)
   const sortedInventory = [...inventory].sort((a, b) => {
-    const pA = getItemPrice(priceMap, a.item || a);
-    const pB = getItemPrice(priceMap, b.item || b);
-    return pB - pA;
+    return getSortWeight(b) - getSortWeight(a);
   });
 
   const itemsPerPage = 25; // 5x5 grid
