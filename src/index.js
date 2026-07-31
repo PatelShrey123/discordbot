@@ -11,7 +11,6 @@ import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
 import * as skinCmd from './commands/skin.js';
 import * as leaderboardCmd from './commands/leaderboard.js';
-import * as hCmd from './commands/h.js';
 
 dotenv.config();
 
@@ -31,7 +30,6 @@ client.commands.set(inventoryCmd.data.name, inventoryCmd);
 client.commands.set(clanCmd.data.name, clanCmd);
 client.commands.set(skinCmd.data.name, skinCmd);
 client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
-client.commands.set(hCmd.data.name, hCmd);
 
 client.once('ready', async () => {
   console.log(`🤖 Logged in as ${client.user.tag}!`);
