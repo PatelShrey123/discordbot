@@ -1,13 +1,14 @@
 import fs from 'fs';
-import { fetchUserProfile, fetchUserInventory } from './api/kirka.js';
+import { fetchUserProfile, fetchUserInventory, getPublicCatalog } from './api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong } from './api/boltPrices.js';
 import { renderProfileCard } from './canvas/profileCard.js';
 import { renderInventoryGridPage } from './canvas/inventoryGrid.js';
+import { renderSkinCard } from './canvas/skinCard.js';
 
 async function runTest() {
   console.log('🧪 Starting diagnostic test for Kirka Discord Bot...');
 
-  // 1. Test profile fetch using shortId FUYR7K (CrackedYOU)
+  // 1. Test profile fetch
   console.log('1️⃣ Fetching profile for CrackedYOU (ID: FUYR7K)...');
   const profile = await fetchUserProfile('FUYR7K');
   if (!profile) {
@@ -18,12 +19,13 @@ async function runTest() {
 
   // 2. Test inventory fetch & Bolt prices
   console.log('2️⃣ Fetching inventory & Bolt price sheet...');
-  const [inventory, priceMap] = await Promise.all([
+  const [inventory, priceMap, catalog] = await Promise.all([
     fetchUserInventory(profile.id),
-    getBoltPriceMap()
+    getBoltPriceMap(),
+    getPublicCatalog()
   ]);
 
-  console.log(`✅ Inventory items: ${inventory.length}, Bolt price items: ${priceMap.size}`);
+  console.log(`✅ Inventory items: ${inventory.length}, Bolt price items: ${priceMap.size}, Catalog items: ${catalog.length}`);
 
   let totalVal = 0;
   inventory.forEach(invItem => {
@@ -50,6 +52,21 @@ async function runTest() {
   });
   fs.writeFileSync('test-inventory.png', invBuf);
   console.log('✅ Generated test-inventory.png successfully!');
+
+  // 5. Test Canvas Skin Card
+  console.log('5️⃣ Rendering Skin Card canvas (Grayscale)...');
+  const grayscaleItem = catalog.find(i => i.name && i.name.toLowerCase().includes('grayscale'));
+  if (grayscaleItem) {
+    // Inject mock renderUrl if missing for test
+    if (!grayscaleItem.renderUrl) {
+      grayscaleItem.renderUrl = '/assets/img/render-mini.67fdc7ae.webp';
+    }
+    const skinBuf = await renderSkinCard(grayscaleItem, priceMap);
+    fs.writeFileSync('test-skin.png', skinBuf);
+    console.log('✅ Generated test-skin.png successfully!');
+  } else {
+    console.warn('⚠️ Grayscale item not found in catalog for test!');
+  }
 
   console.log('🎉 ALL DIAGNOSTIC TESTS PASSED CLEANLY!');
 }

@@ -13,7 +13,7 @@ function formatNumber(num) {
 
 export async function renderProfileCard(profile) {
   const width = 760;
-  const height = 460;
+  const height = 425; // Adjusted height since footer is removed
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
@@ -45,7 +45,6 @@ export async function renderProfileCard(profile) {
     const bgImg = await loadImage(bgPath);
     ctx.drawImage(bgImg, 0, 0, width, height);
   } catch (err) {
-    // Fallback gradient if background fails to load
     const gradBg = ctx.createLinearGradient(0, 0, width, height);
     gradBg.addColorStop(0, '#090a0f');
     gradBg.addColorStop(1, '#020205');
@@ -57,7 +56,7 @@ export async function renderProfileCard(profile) {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
   ctx.fillRect(0, 0, width, height);
 
-  // 2. Avatar Box (Top Left)
+  // 2. Avatar Box (Top Left) - Render pixel-art face of equipped skin
   const avatarX = 35;
   const avatarY = 30;
   const avatarSize = 90;
@@ -68,43 +67,67 @@ export async function renderProfileCard(profile) {
   ctx.lineWidth = 3;
   ctx.strokeRect(avatarX, avatarY, avatarSize, avatarSize);
 
-  // Try loading active body skin image if available
-  const avatarUrl = profile?.activeBodySkin?.renderUrl || profile?.activeBodySkin?.textureUrl;
-  if (avatarUrl) {
+  // Load and render character face crop from texture sheet
+  let textureUrl = profile?.activeBodySkin?.textureUrl || profile?.activeBodySkin?.renderUrl;
+  if (textureUrl) {
     try {
-      const fullAvatarUrl = avatarUrl.startsWith('/') ? `https://kirka.io${avatarUrl}` : avatarUrl;
-      const avatarImg = await loadImage(`https://images.weserv.nl/?url=${encodeURIComponent(fullAvatarUrl)}`);
-      ctx.drawImage(avatarImg, avatarX + 5, avatarY + 5, avatarSize - 10, avatarSize - 10);
+      let cleanUrl = textureUrl.trim();
+      if (cleanUrl.includes('data:image/')) {
+        cleanUrl = cleanUrl.substring(cleanUrl.indexOf('data:image/'));
+      }
+      
+      let finalUrl = cleanUrl;
+      if (!cleanUrl.startsWith('data:')) {
+        const fullTextureUrl = cleanUrl.startsWith('/') ? `https://kirka.io${cleanUrl}` : cleanUrl;
+        finalUrl = `https://images.weserv.nl/?url=${encodeURIComponent(fullTextureUrl)}`;
+      }
+      const textureImg = await loadImage(finalUrl);
+      
+      // Check if texture image is loaded successfully and has expected dimensions
+      if (textureImg.width > 0 && textureImg.height > 0) {
+        ctx.save();
+        ctx.imageSmoothingEnabled = false; // Keep sharp pixel-art style!
+
+        const scale = textureImg.width / 64;
+
+        // 1. Draw base head front face: source rect (8, 8, 8, 8)
+        ctx.drawImage(
+          textureImg,
+          8 * scale, 8 * scale, 8 * scale, 8 * scale, // source
+          avatarX + 4, avatarY + 4, avatarSize - 8, avatarSize - 8 // dest
+        );
+
+        // 2. Draw overlay head front face (hair/hat): source rect (40, 8, 8, 8)
+        ctx.drawImage(
+          textureImg,
+          40 * scale, 8 * scale, 8 * scale, 8 * scale, // source
+          avatarX + 4, avatarY + 4, avatarSize - 8, avatarSize - 8 // dest
+        );
+
+        ctx.restore();
+      }
     } catch (e) {
-      // Fallback
+      console.warn('Failed to render pixel-art avatar face, using fallback render:', e.message);
+      // Fallback: draw full skin render scaled down
+      try {
+        const renderUrl = profile?.activeBodySkin?.renderUrl;
+        if (renderUrl) {
+          const fullRenderUrl = renderUrl.startsWith('/') ? `https://kirka.io${renderUrl}` : renderUrl;
+          const avatarImg = await loadImage(`https://images.weserv.nl/?url=${encodeURIComponent(fullRenderUrl)}`);
+          ctx.drawImage(avatarImg, avatarX + 8, avatarY + 5, avatarSize - 16, avatarSize - 10);
+        }
+      } catch (err) {}
     }
   }
 
   // 3. Username & Clan Tag
   const nameX = 145;
-  const nameY = 70;
+  const nameY = 80; // slightly lower center
 
   ctx.font = 'bold 34px sans-serif';
-  ctx.fillStyle = '#ffffff'; // White name text to pop against black backdrop
+  ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
   ctx.fillText(`${profile?.name || 'Unknown'}${clanTag}`, nameX, nameY);
-
-  // Kirka Logo Badge (Top Right)
-  ctx.save();
-  ctx.translate(width - 135, 35);
-  ctx.fillStyle = '#f59e0b';
-  ctx.beginPath();
-  ctx.roundRect(0, 0, 100, 36, 6);
-  ctx.fill();
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.font = 'black 20px sans-serif';
-  ctx.fillStyle = '#05060b';
-  ctx.textAlign = 'center';
-  ctx.fillText('KIRKA', 50, 25);
-  ctx.restore();
 
   // 4. XP Progress Bar
   const barX = 35;
@@ -139,7 +162,6 @@ export async function renderProfileCard(profile) {
   ctx.fillText(`${pct}%`, barX + barW - 15, barY + 22);
 
   // 5. Stats Table (3 Rows - NO Kirka ID)
-  // Row 1 & 2 have 5 columns, Row 3 has 4 columns (centered)
   const row1 = [
     { label: 'Level', val: level },
     { label: 'Score', val: formatNumber(scores) },
@@ -208,15 +230,6 @@ export async function renderProfileCard(profile) {
     ctx.fillStyle = '#ffffff';
     ctx.fillText(String(cell.val), x, y + 28);
   });
-
-  // 6. Footer (No UUID string on the right)
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-  ctx.fillRect(0, height - 35, width, 35);
-
-  ctx.font = 'bold 14px monospace';
-  ctx.fillStyle = '#e2e8f0';
-  ctx.textAlign = 'left';
-  ctx.fillText('💬 Kirka Tracker Bot', 25, height - 12);
 
   return canvas.toBuffer('image/png');
 }

@@ -26,16 +26,7 @@ export async function execute(interaction) {
     const cardBuffer = await renderProfileCard(profile);
     const attachment = new AttachmentBuilder(cardBuffer, { name: 'profile-card.png' });
 
-    const embed = new EmbedBuilder()
-      .setColor('#f59e0b')
-      .setTitle(`⚔️ Kirka Profile: ${profile.name}`)
-      .setURL(`https://kirka.io/user/${profile.id}`)
-      .setImage('attachment://profile-card.png')
-      .setFooter({ text: 'Kirka Tracker Bot • Powered by Bolt Pricing' })
-      .setTimestamp();
-
     await interaction.editReply({
-      embeds: [embed],
       files: [attachment]
     });
   } catch (err) {

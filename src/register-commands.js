@@ -4,6 +4,8 @@ import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
 import * as compareCmd from './commands/compare.js';
+import * as skinCmd from './commands/skin.js';
+import * as leaderboardCmd from './commands/leaderboard.js';
 
 dotenv.config();
 
@@ -11,7 +13,9 @@ const commands = [
   profileCmd.data.toJSON(),
   inventoryCmd.data.toJSON(),
   clanCmd.data.toJSON(),
-  compareCmd.data.toJSON()
+  compareCmd.data.toJSON(),
+  skinCmd.data.toJSON(),
+  leaderboardCmd.data.toJSON()
 ];
 
 export async function registerCommands() {

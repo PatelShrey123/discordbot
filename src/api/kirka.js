@@ -47,12 +47,54 @@ export async function getPublicItemMap() {
   return map;
 }
 
+let publicCatalog = null;
+
+export async function getPublicCatalog() {
+  if (publicCatalog) return publicCatalog;
+  try {
+    const res = await fetch(`${BASE_URL}/inventory/items`, { headers: getHeaders() });
+    if (res.ok) {
+      const items = await res.json();
+      if (Array.isArray(items)) {
+        publicCatalog = items;
+        return items;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch public catalog:', err.message);
+  }
+  return [];
+}
+
 /**
  * Fetch player profile by username, shortId, or UUID
  */
 export async function fetchUserProfile(query) {
   if (!query) return null;
   const cleanQuery = query.trim().replace(/^#/, '');
+
+  // Helper to enrich profile skins with catalog textures/renders
+  const enrichProfile = async (profileData) => {
+    if (!profileData) return null;
+    const cat = await getPublicCatalog();
+    if (profileData.activeBodySkin && profileData.activeBodySkin.name) {
+      const cleanName = profileData.activeBodySkin.name.replace(/^_+/, '').trim().toLowerCase();
+      const matched = cat.find(i => i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanName);
+      if (matched) {
+        profileData.activeBodySkin.textureUrl = matched.textureUrl;
+        profileData.activeBodySkin.renderUrl = matched.renderUrl;
+      }
+    }
+    if (profileData.activeWeapon1Skin && profileData.activeWeapon1Skin.name) {
+      const cleanName = profileData.activeWeapon1Skin.name.replace(/^_+/, '').trim().toLowerCase();
+      const matched = cat.find(i => i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanName);
+      if (matched) {
+        profileData.activeWeapon1Skin.textureUrl = matched.textureUrl;
+        profileData.activeWeapon1Skin.renderUrl = matched.renderUrl;
+      }
+    }
+    return profileData;
+  };
 
   // 1. Try as direct UUID / Name via POST getProfile
   try {
@@ -63,7 +105,7 @@ export async function fetchUserProfile(query) {
     });
     if (res.ok) {
       const data = await res.json();
-      if (data && (data.id || data.name)) return data;
+      if (data && (data.id || data.name)) return await enrichProfile(data);
     }
   } catch (err) {
     console.error('getProfile ID error:', err.message);
@@ -79,7 +121,7 @@ export async function fetchUserProfile(query) {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data && (data.id || data.name)) return data;
+        if (data && (data.id || data.name)) return await enrichProfile(data);
       }
     } catch (err) {
       console.error('getProfile shortId error:', err.message);
@@ -94,7 +136,8 @@ export async function fetchUserProfile(query) {
       const results = json.results || json || [];
       const matched = results.find(u => u.name && u.name.toLowerCase() === cleanQuery.toLowerCase());
       if (matched && matched.userId) {
-        return await fetchUserProfile(matched.userId);
+        const pData = await fetchUserProfile(matched.userId);
+        return await enrichProfile(pData);
       }
     }
   } catch (err) {
