@@ -32,8 +32,8 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // Dark background matching Image 1
-  ctx.fillStyle = '#171922';
+  // Dark obsidian background matching premium dashboard style
+  ctx.fillStyle = '#0f111a';
   ctx.fillRect(0, 0, width, height);
 
   const cols = 5;
@@ -46,7 +46,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
 
   const displayItems = pageItems.slice(0, 25);
 
-  // Pre-load all 25 skin images in parallel for ultra-fast performance
+  // Pre-load all 25 skin images in parallel
   const loadedImages = await Promise.all(
     displayItems.map(async (invItem) => {
       const item = invItem.item || invItem;
@@ -80,10 +80,10 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     const formattedPrice = price > 0 ? formatValueShort(price) : '—';
     const borderColor = getRarityColor(item.rarity);
 
-    // Cell Background
-    ctx.fillStyle = '#0a0b10';
+    // Cell Background - Dark Card
+    ctx.fillStyle = '#05060b';
     ctx.beginPath();
-    ctx.roundRect(x, y, cellW, cellH, 6);
+    ctx.roundRect(x, y, cellW, cellH, 8);
     ctx.fill();
 
     // Rarity Colored Border (Image 1 style)
@@ -93,24 +93,54 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
 
     // Item Name Header (Top Center)
     const rawName = (item.name || 'Item').replace(/^_+/, '').trim();
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillStyle = '#cbd5e1';
     ctx.textAlign = 'center';
 
     let displayName = rawName;
     if (displayName.length > 18) {
       displayName = displayName.substring(0, 16) + '..';
     }
-    ctx.fillText(displayName, x + cellW / 2, y + 16);
+    ctx.fillText(displayName, x + cellW / 2, y + 15);
 
-    // Item Render Image (Middle Center)
+    // Item Render Image (Middle Center - much larger to occupy the full cell body)
     if (itemImg) {
-      ctx.drawImage(itemImg, x + cellW / 2 - 20, y + 20, 40, 36);
+      // Determine correct aspect-ratio scaling so weapons are wide and characters are tall
+      const isCharacter = item.type === 'BODY_SKIN' || rawName.toLowerCase().includes('character') || rawName.toLowerCase().includes('skin');
+      
+      let imgW, imgH;
+      if (isCharacter) {
+        // Character models are tall
+        imgH = 46;
+        imgW = (itemImg.width / itemImg.height) * imgH;
+        // Keep inside bounds
+        if (imgW > 60) {
+          imgW = 60;
+          imgH = (itemImg.height / itemImg.width) * imgW;
+        }
+      } else {
+        // Weapon models are wide
+        imgW = 85;
+        imgH = (itemImg.height / itemImg.width) * imgW;
+        // Keep inside bounds
+        if (imgH > 40) {
+          imgH = 40;
+          imgW = (itemImg.width / itemImg.height) * imgH;
+        }
+      }
+
+      ctx.drawImage(
+        itemImg, 
+        x + (cellW - imgW) / 2, 
+        y + 16 + (cellH - 22 - imgH) / 2, 
+        imgW, 
+        imgH
+      );
     }
 
     // Price Text (Bottom Left)
     ctx.font = 'bold 11px monospace';
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#fbbf24'; // Warm Gold
     ctx.textAlign = 'left';
     ctx.fillText(formattedPrice, x + 8, y + cellH - 8);
 
@@ -118,7 +148,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     ctx.font = 'bold 11px monospace';
     ctx.fillStyle = '#94a3b8';
     ctx.textAlign = 'right';
-    ctx.fillText(String(qty), x + cellW - 8, y + cellH - 8);
+    ctx.fillText(`x${qty}`, x + cellW - 8, y + cellH - 8);
   }
 
   return canvas.toBuffer('image/png');
