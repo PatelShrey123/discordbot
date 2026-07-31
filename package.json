@@ -1,0 +1,20 @@
+{
+  "name": "kirkatracker-discordbot",
+  "version": "1.0.0",
+  "description": "Kirka.io Discord Bot with Canvas Profiles, Inventory Valuations, and Clan Analytics",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "register": "node src/register-commands.js",
+    "test": "node src/test.js"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.65",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

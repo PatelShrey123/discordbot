@@ -1,0 +1,13 @@
+services:
+  - type: worker
+    name: kirka-discord-bot
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: KIRKA_API_KEY
+        sync: false
