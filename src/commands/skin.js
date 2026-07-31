@@ -6,6 +6,8 @@ import { renderSkinCard } from '../canvas/skinCard.js';
 export const data = new SlashCommandBuilder()
   .setName('skin')
   .setDescription('View pricing and render details for a Kirka skin or item')
+  .setIntegrationTypes(0, 1)
+  .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('name')
       .setDescription('Name of the skin (e.g. Grayscale, Gazer, Imperial)')

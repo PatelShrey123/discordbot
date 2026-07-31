@@ -11,6 +11,8 @@ const getHeaders = () => ({
 export const data = new SlashCommandBuilder()
   .setName('leaderboard')
   .setDescription('View the top players or clans leaderboard')
+  .setIntegrationTypes(0, 1)
+  .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('category')
       .setDescription('Leaderboard category to view')

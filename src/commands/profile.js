@@ -5,6 +5,8 @@ import { renderProfileCard } from '../canvas/profileCard.js';
 export const data = new SlashCommandBuilder()
   .setName('profile')
   .setDescription('Display Kirka player profile card and stats')
+  .setIntegrationTypes(0, 1)
+  .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('user')
       .setDescription('Kirka username or player ID')

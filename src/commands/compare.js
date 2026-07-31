@@ -5,6 +5,8 @@ import { getBoltPriceMap, getItemPrice, formatValueLong } from '../api/boltPrice
 export const data = new SlashCommandBuilder()
   .setName('compare')
   .setDescription('Compare stats and inventory values of two Kirka players')
+  .setIntegrationTypes(0, 1)
+  .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('user1')
       .setDescription('First Kirka player username or ID')

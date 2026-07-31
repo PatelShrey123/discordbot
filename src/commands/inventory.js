@@ -14,6 +14,8 @@ import { renderInventoryGridPage } from '../canvas/inventoryGrid.js';
 export const data = new SlashCommandBuilder()
   .setName('inventory')
   .setDescription('View a Kirka player inventory with Bolt market valuations')
+  .setIntegrationTypes(0, 1)
+  .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('user')
       .setDescription('Kirka username or player ID')

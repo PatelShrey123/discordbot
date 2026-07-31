@@ -4,6 +4,8 @@ import { fetchClan } from '../api/kirka.js';
 export const data = new SlashCommandBuilder()
   .setName('clan')
   .setDescription('View Kirka clan statistics and top members')
+  .setIntegrationTypes(0, 1)
+  .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('name')
       .setDescription('Kirka clan name')
