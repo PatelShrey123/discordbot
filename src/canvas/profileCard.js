@@ -1,10 +1,18 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { getCachedImage } from './imageLoader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const bgPath = join(__dirname, '../../assets/bg.jpg');
+
+try {
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+} catch (err) {
+  console.warn('Failed to register Roboto fonts in profileCard:', err.message);
+}
 
 function formatNumber(num) {
   if (num === null || num === undefined || isNaN(num)) return '0';
@@ -42,7 +50,7 @@ export async function renderProfileCard(profile) {
 
   // 1. Draw Custom Black Car with Headlights Background
   try {
-    const bgImg = await loadImage(bgPath);
+    const bgImg = await getCachedImage(bgPath);
     ctx.drawImage(bgImg, 0, 0, width, height);
   } catch (err) {
     const gradBg = ctx.createLinearGradient(0, 0, width, height);
@@ -78,13 +86,12 @@ export async function renderProfileCard(profile) {
       
       let finalUrl = cleanUrl;
       if (!cleanUrl.startsWith('data:')) {
-        const fullTextureUrl = cleanUrl.startsWith('/') ? `https://kirka.io${cleanUrl}` : cleanUrl;
-        finalUrl = `https://images.weserv.nl/?url=${encodeURIComponent(fullTextureUrl)}`;
+        finalUrl = cleanUrl.startsWith('/') ? `https://kirka.io${cleanUrl}` : cleanUrl;
       }
-      const textureImg = await loadImage(finalUrl);
+      const textureImg = await getCachedImage(finalUrl);
       
       // Check if texture image is loaded successfully and has expected dimensions
-      if (textureImg.width > 0 && textureImg.height > 0) {
+      if (textureImg && textureImg.width > 0 && textureImg.height > 0) {
         ctx.save();
         ctx.imageSmoothingEnabled = false; // Keep sharp pixel-art style!
 
@@ -113,8 +120,10 @@ export async function renderProfileCard(profile) {
         const renderUrl = profile?.activeBodySkin?.renderUrl;
         if (renderUrl) {
           const fullRenderUrl = renderUrl.startsWith('/') ? `https://kirka.io${renderUrl}` : renderUrl;
-          const avatarImg = await loadImage(`https://images.weserv.nl/?url=${encodeURIComponent(fullRenderUrl)}`);
-          ctx.drawImage(avatarImg, avatarX + 8, avatarY + 5, avatarSize - 16, avatarSize - 10);
+          const avatarImg = await getCachedImage(fullRenderUrl);
+          if (avatarImg) {
+            ctx.drawImage(avatarImg, avatarX + 8, avatarY + 5, avatarSize - 16, avatarSize - 10);
+          }
         }
       } catch (err) {}
     }
@@ -124,7 +133,7 @@ export async function renderProfileCard(profile) {
   const nameX = 145;
   const nameY = 80; // slightly lower center
 
-  ctx.font = 'bold 34px sans-serif';
+  ctx.font = 'bold 34px RobotoBold';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
   ctx.fillText(`${profile?.name || 'Unknown'}${clanTag}`, nameX, nameY);
@@ -153,7 +162,7 @@ export async function renderProfileCard(profile) {
   }
 
   // XP Text
-  ctx.font = 'bold 16px monospace';
+  ctx.font = 'bold 16px RobotoBold';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.fillText(`${formatNumber(currentXp)} / ${formatNumber(xpUntilNext)}`, width / 2 - 20, barY + 22);
@@ -192,12 +201,12 @@ export async function renderProfileCard(profile) {
   const colWidth5 = (width - 70) / 5;
   row1.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
-    ctx.font = 'bold 16px sans-serif';
+    ctx.font = 'bold 16px RobotoBold';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
     ctx.fillText(cell.label, x, gridStartY);
 
-    ctx.font = 'bold 20px sans-serif';
+    ctx.font = '22px Roboto';
     ctx.fillStyle = '#ffffff';
     ctx.fillText(String(cell.val), x, gridStartY + 28);
   });
@@ -206,12 +215,12 @@ export async function renderProfileCard(profile) {
   row2.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
     const y = gridStartY + rowHeight;
-    ctx.font = 'bold 16px sans-serif';
+    ctx.font = 'bold 16px RobotoBold';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
     ctx.fillText(cell.label, x, y);
 
-    ctx.font = 'bold 20px sans-serif';
+    ctx.font = '22px Roboto';
     ctx.fillStyle = '#ffffff';
     ctx.fillText(String(cell.val), x, y + 28);
   });
@@ -221,12 +230,12 @@ export async function renderProfileCard(profile) {
   row3.forEach((cell, idx) => {
     const x = barX + idx * colWidth4 + colWidth4 / 2;
     const y = gridStartY + 2 * rowHeight;
-    ctx.font = 'bold 16px sans-serif';
+    ctx.font = 'bold 16px RobotoBold';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
     ctx.fillText(cell.label, x, y);
 
-    ctx.font = 'bold 20px sans-serif';
+    ctx.font = '22px Roboto';
     ctx.fillStyle = '#ffffff';
     ctx.fillText(String(cell.val), x, y + 28);
   });

@@ -1,5 +1,18 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { getBoltPriceMap, getItemPrice } from '../api/boltPrices.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { getCachedImage } from './imageLoader.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+try {
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+} catch (err) {
+  console.warn('Failed to register Roboto fonts in skinCard:', err.message);
+}
 
 const RARITY_COLORS = {
   contraband: '#ef4444',
@@ -71,7 +84,7 @@ export async function renderSkinCard(item, priceMap) {
     ctx.stroke();
 
     // Badge text
-    ctx.font = 'bold 15px sans-serif';
+    ctx.font = 'bold 15px RobotoBold';
     ctx.fillStyle = badge.color;
     ctx.textAlign = 'center';
     ctx.fillText(badge.text, leftPanelW / 2, currentY + 23);
@@ -88,7 +101,7 @@ export async function renderSkinCard(item, priceMap) {
   ctx.stroke();
 
   // Header "Skin Value"
-  ctx.font = 'bold 16px sans-serif';
+  ctx.font = 'bold 16px RobotoBold';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.fillText('Skin Value', leftPanelW / 2, 215);
@@ -102,7 +115,7 @@ export async function renderSkinCard(item, priceMap) {
   ctx.stroke();
 
   // Label tag
-  ctx.font = 'bold 12px sans-serif';
+  ctx.font = 'bold 12px RobotoBold';
   ctx.fillStyle = '#fbbf24'; // Golden Bolt text
   ctx.textAlign = 'left';
   ctx.fillText('BOLT', 28, 250);
@@ -114,7 +127,7 @@ export async function renderSkinCard(item, priceMap) {
   ctx.strokeRect(28, 258, leftPanelW - 56, 42);
 
   // Value text
-  ctx.font = 'bold 16px monospace';
+  ctx.font = 'bold 16px RobotoBold';
   ctx.fillStyle = '#fbbf24'; // Warm Gold
   ctx.textAlign = 'center';
   ctx.fillText(formattedPrice, leftPanelW / 2, 285);
@@ -124,7 +137,7 @@ export async function renderSkinCard(item, priceMap) {
   if (imgUrl) {
     try {
       const fullUrl = imgUrl.startsWith('/') ? `https://kirka.io${imgUrl}` : imgUrl;
-      const itemImg = await loadImage(`https://images.weserv.nl/?url=${encodeURIComponent(fullUrl)}`);
+      const itemImg = await getCachedImage(fullUrl);
 
       const padding = 35;
       const maxW = width - leftPanelW - 2 * padding;

@@ -1,5 +1,18 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { getItemPrice, formatValueShort } from '../api/boltPrices.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { getCachedImage } from './imageLoader.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+try {
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+} catch (err) {
+  console.warn('Failed to register Roboto fonts in inventoryGrid:', err.message);
+}
 
 const RARITY_COLORS = {
   contraband: '#ef4444',
@@ -17,13 +30,6 @@ function getRarityColor(rarity) {
   if (!rarity) return '#64748b';
   const clean = rarity.toLowerCase().trim();
   return RARITY_COLORS[clean] || '#f97316';
-}
-
-function getProxiedImageUrl(url) {
-  if (!url) return null;
-  if (url.startsWith('data:')) return url;
-  const cleanUrl = url.startsWith('/') ? `https://kirka.io${url}` : url;
-  return `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
 }
 
 export async function renderInventoryGridPage({ items, pageItems, priceMap, pageIndex, totalPages, username }) {
@@ -47,15 +53,16 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
 
   const displayItems = pageItems.slice(0, 25);
 
-  // Pre-load all 25 skin images in parallel
+  // Pre-load all 25 skin images in parallel (using cache utility)
   const loadedImages = await Promise.all(
     displayItems.map(async (invItem) => {
       const item = invItem.item || invItem;
       const imgUrl = item.renderUrl || item.textureUrl;
       if (imgUrl) {
         try {
-          const proxied = getProxiedImageUrl(imgUrl);
-          return await loadImage(proxied);
+          const cleanUrl = imgUrl.trim();
+          const targetUrl = cleanUrl.startsWith('/') ? `https://kirka.io${cleanUrl}` : cleanUrl;
+          return await getCachedImage(targetUrl);
         } catch (err) {
           return null;
         }
@@ -94,7 +101,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
 
     // Item Name Header (Top Center)
     const rawName = (item.name || 'Item').replace(/^_+/, '').trim();
-    ctx.font = 'bold 12px sans-serif';
+    ctx.font = 'bold 12px RobotoBold';
     ctx.fillStyle = '#e2e8f0';
     ctx.textAlign = 'center';
 
@@ -137,13 +144,13 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     }
 
     // Price Text (Bottom Left)
-    ctx.font = 'bold 12px monospace';
+    ctx.font = 'bold 12px Roboto';
     ctx.fillStyle = '#fbbf24'; // Warm Gold
     ctx.textAlign = 'left';
     ctx.fillText(formattedPrice, x + 10, y + cellH - 10);
 
     // Quantity (Bottom Right)
-    ctx.font = 'bold 12px monospace';
+    ctx.font = 'bold 12px Roboto';
     ctx.fillStyle = '#94a3b8';
     ctx.textAlign = 'right';
     ctx.fillText(`x${qty}`, x + cellW - 10, y + cellH - 10);

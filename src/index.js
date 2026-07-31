@@ -3,6 +3,8 @@ import http from 'http';
 import dotenv from 'dotenv';
 
 import { registerCommands } from './register-commands.js';
+import { getPublicCatalog, fetchClanLeaderboard } from './api/kirka.js';
+import { getBoltPriceMap } from './api/boltPrices.js';
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
@@ -31,6 +33,18 @@ client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
 client.once('ready', async () => {
   console.log(`🤖 Logged in as ${client.user.tag}!`);
   console.log(`🌐 Bot active in ${client.guilds.cache.size} server(s).`);
+
+  // Warm up all API caches in background concurrently
+  console.log('🔥 Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard)...');
+  Promise.all([
+    getPublicCatalog(),
+    getBoltPriceMap(),
+    fetchClanLeaderboard()
+  ]).then(() => {
+    console.log('✅ API cache warmup complete! Bot is fully primed and ready for instant replies.');
+  }).catch(err => {
+    console.warn('⚠️ Warning: Cache warmup encountered an error:', err.message);
+  });
 
   // Auto-register slash commands on startup
   await registerCommands();

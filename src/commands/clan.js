@@ -7,16 +7,8 @@ import {
   ButtonStyle,
   ComponentType
 } from 'discord.js';
-import { fetchClan } from '../api/kirka.js';
+import { fetchClan, fetchClanLeaderboard } from '../api/kirka.js';
 import { renderClanRosterPage } from '../canvas/clanRoster.js';
-
-const KIRKA_API_KEY = process.env.KIRKA_API_KEY || '01d50491829d6991b64f116b1f34b70924889a2f99a7ea81820fe8a3323da060';
-
-const getHeaders = () => ({
-  'accept': 'application/json, text/plain, */*',
-  'ApiKey': KIRKA_API_KEY,
-  'user-agent': 'Mozilla/5.0'
-});
 
 export const data = new SlashCommandBuilder()
   .setName('clan')
@@ -41,17 +33,13 @@ export async function execute(interaction) {
     });
   }
 
-  // 2. Fetch Leaderboard Rank
+  // 2. Fetch Leaderboard Rank (using cache)
   let rank = 0;
   try {
-    const lbRes = await fetch('https://api.kirka.io/api/leaderboard/clan', { headers: getHeaders() });
-    if (lbRes.ok) {
-      const lbData = await lbRes.json();
-      const results = lbData.results || lbData || [];
-      const idx = results.findIndex(c => c.name && c.name.toLowerCase() === clan.name.toLowerCase());
-      if (idx !== -1) {
-        rank = idx + 1;
-      }
+    const results = await fetchClanLeaderboard();
+    const idx = results.findIndex(c => c.name && c.name.toLowerCase() === clan.name.toLowerCase());
+    if (idx !== -1) {
+      rank = idx + 1;
     }
   } catch (err) {
     console.warn('Failed to fetch clan rank:', err.message);

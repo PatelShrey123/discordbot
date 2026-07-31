@@ -203,3 +203,25 @@ export async function fetchClan(clanName) {
   }
   return null;
 }
+
+let clanLeaderboardCache = null;
+let clanLeaderboardTime = 0;
+
+export async function fetchClanLeaderboard() {
+  const now = Date.now();
+  if (clanLeaderboardCache && (now - clanLeaderboardTime < 600000)) { // 10 minutes cache
+    return clanLeaderboardCache;
+  }
+  try {
+    const res = await fetch(`${BASE_URL}/leaderboard/clan`, { headers: getHeaders() });
+    if (res.ok) {
+      const data = await res.json();
+      clanLeaderboardCache = data.results || data || [];
+      clanLeaderboardTime = now;
+      return clanLeaderboardCache;
+    }
+  } catch (err) {
+    console.error('Failed to fetch clan leaderboard:', err.message);
+  }
+  return clanLeaderboardCache || [];
+}

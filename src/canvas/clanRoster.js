@@ -1,4 +1,16 @@
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+try {
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+} catch (err) {
+  console.warn('Failed to register Roboto fonts in clanRoster:', err.message);
+}
 
 export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   // Render at 2x resolution for ultra-sharp high-definition image quality
@@ -79,13 +91,13 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     ctx.stroke();
 
     // Box Header "Clan Page"
-    ctx.font = 'bold 30px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 30px RobotoBold';
     ctx.fillStyle = '#5865f2'; // Discord Blurple
     ctx.textAlign = 'center';
     ctx.fillText('Clan Page', leftX + colW / 2, 36 * scale);
 
     // Box details (2 column layout inside box)
-    ctx.font = 'bold 22px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 22px RobotoBold';
     
     // Column 1
     ctx.textAlign = 'left';
@@ -114,7 +126,7 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   // Helper to draw item (perfectly aligned matching Image 9)
   const drawRow = (item, x, y) => {
     if (item.type === 'header') {
-      ctx.font = 'bold 26px system-ui, -apple-system, sans-serif';
+      ctx.font = 'bold 26px RobotoBold';
       ctx.fillStyle = item.color;
       ctx.textAlign = 'left';
       ctx.fillText(item.text, x, y + 16 * scale);
@@ -122,7 +134,7 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
       const u = item.data.user || {};
       const scoreVal = (item.data.allScores || 0).toLocaleString();
 
-      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
+      ctx.font = 'bold 24px Roboto';
 
       // Level (white)
       ctx.fillStyle = '#ffffff';
@@ -159,7 +171,7 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   });
 
   // Footer: Page indicator in grey
-  ctx.font = 'bold 22px system-ui, -apple-system, sans-serif';
+  ctx.font = 'bold 22px Roboto';
   ctx.fillStyle = '#8e9297';
   ctx.textAlign = 'left';
   ctx.fillText(`Page #${pageIdx + 1}/${totalPages}`, leftX, height - 16 * scale);
