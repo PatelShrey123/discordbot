@@ -79,10 +79,10 @@ export async function renderSkinCard(item, priceMap) {
     currentY += 46;
   });
 
-  // LEFT PANEL: Skin Value Box Section
+  // LEFT PANEL: Skin Value Box Section (Simplified to only display Bolt Price)
   ctx.fillStyle = '#17191e';
   ctx.beginPath();
-  ctx.roundRect(20, 165, leftPanelW - 40, 190, 6);
+  ctx.roundRect(20, 185, leftPanelW - 40, 150, 6);
   ctx.fill();
   ctx.strokeStyle = 'rgba(255,255,255,0.06)';
   ctx.stroke();
@@ -91,47 +91,35 @@ export async function renderSkinCard(item, priceMap) {
   ctx.font = 'bold 16px sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
-  ctx.fillText('Skin Value', leftPanelW / 2, 190);
-  
+  ctx.fillText('Skin Value', leftPanelW / 2, 215);
+
   // Underline
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(40, 196);
-  ctx.lineTo(leftPanelW - 40, 196);
+  ctx.moveTo(40, 222);
+  ctx.lineTo(leftPanelW - 40, 222);
   ctx.stroke();
 
-  // Value Items
-  const values = [
-    { label: 'FATE', val: 'Unknown', isRed: false },
-    { label: 'BOLT', val: formattedPrice, isRed: false },
-    { label: 'AVG.', val: formattedPrice, isRed: true }
-  ];
+  // Label tag
+  ctx.font = 'bold 12px sans-serif';
+  ctx.fillStyle = '#fbbf24'; // Golden Bolt text
+  ctx.textAlign = 'left';
+  ctx.fillText('BOLT', 28, 250);
 
-  let valY = 220;
-  values.forEach((v) => {
-    // Label tag
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillStyle = v.isRed ? '#ef4444' : '#94a3b8';
-    ctx.textAlign = 'left';
-    ctx.fillText(v.label, 28, valY - 5);
+  // Value box
+  ctx.fillStyle = '#0a0b0e';
+  ctx.fillRect(28, 258, leftPanelW - 56, 42);
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeRect(28, 258, leftPanelW - 56, 42);
 
-    // Value box
-    ctx.fillStyle = '#0a0b0e';
-    ctx.fillRect(28, valY, leftPanelW - 56, 28);
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.strokeRect(28, valY, leftPanelW - 56, 28);
+  // Value text
+  ctx.font = 'bold 16px monospace';
+  ctx.fillStyle = '#fbbf24'; // Warm Gold
+  ctx.textAlign = 'center';
+  ctx.fillText(formattedPrice, leftPanelW / 2, 285);
 
-    // Value text
-    ctx.font = 'bold 13px sans-serif';
-    ctx.fillStyle = v.isRed ? '#ef4444' : '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.fillText(v.val, leftPanelW / 2, valY + 19);
-
-    valY += 45;
-  });
-
-  // RIGHT PANEL: Large Item Render
+  // RIGHT PANEL: Large Item Render (NO GLOW / BLUR)
   const imgUrl = item.renderUrl || item.textureUrl;
   if (imgUrl) {
     try {
@@ -151,9 +139,7 @@ export async function renderSkinCard(item, priceMap) {
       }
 
       ctx.save();
-      // Add subtle glow under the item image
-      ctx.shadowColor = rarityColor;
-      ctx.shadowBlur = 20;
+      // Render clean, non-glowing raw image
       ctx.drawImage(
         itemImg,
         leftPanelW + padding + (maxW - drawW) / 2,

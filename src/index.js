@@ -6,7 +6,6 @@ import { registerCommands } from './register-commands.js';
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
-import * as compareCmd from './commands/compare.js';
 import * as skinCmd from './commands/skin.js';
 import * as leaderboardCmd from './commands/leaderboard.js';
 
@@ -26,7 +25,6 @@ client.commands = new Collection();
 client.commands.set(profileCmd.data.name, profileCmd);
 client.commands.set(inventoryCmd.data.name, inventoryCmd);
 client.commands.set(clanCmd.data.name, clanCmd);
-client.commands.set(compareCmd.data.name, compareCmd);
 client.commands.set(skinCmd.data.name, skinCmd);
 client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
 
