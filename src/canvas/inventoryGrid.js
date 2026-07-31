@@ -14,46 +14,53 @@ try {
   console.warn('Failed to register Roboto fonts in inventoryGrid:', err.message);
 }
 
+// Rarity color codes matching the website screenshot
 const RARITY_COLORS = {
-  contraband: '#ef4444',
-  exotic:     '#ef4444',
-  mythical:   '#ef4444',
-  mythic:     '#ef4444',
-  legendary:  '#f97316',
-  epic:       '#3b82f6',
-  rare:       '#3b82f6',
-  uncommon:   '#22c55e',
-  common:     '#64748b'
+  contraband: '#ef4444', // Red
+  exotic:     '#ef4444', // Red
+  mythical:   '#ef4444', // Red
+  mythic:     '#ef4444', // Red
+  legendary:  '#f97316', // Orange
+  epic:       '#a855f7', // Purple
+  rare:       '#3b82f6', // Blue
+  uncommon:   '#22c55e', // Green
+  common:     '#94a3b8'  // Grey
 };
 
 function getRarityColor(rarity) {
-  if (!rarity) return '#64748b';
+  if (!rarity) return '#94a3b8';
   const clean = rarity.toLowerCase().trim();
-  return RARITY_COLORS[clean] || '#f97316';
+  return RARITY_COLORS[clean] || '#3b82f6';
 }
 
 export async function renderInventoryGridPage({ items, pageItems, priceMap, pageIndex, totalPages, username }) {
-  // Canvas enlarged to 930x530 for massive high-definition grid blocks!
-  const width = 930;
-  const height = 530;
+  // Render at 2x resolution for ultra-sharp high-definition image quality
+  const scale = 2;
+  const width = 930 * scale;
+  const height = 530 * scale;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // Dark premium card background matching dashboard
-  ctx.fillStyle = '#0f111a';
+  // 1. Medium-dark grey background matching the layout screenshot (#2c2d30)
+  ctx.fillStyle = '#2c2d30';
   ctx.fillRect(0, 0, width, height);
 
+  // Outer border frame (light grey #808080)
+  ctx.strokeStyle = '#808080';
+  ctx.lineWidth = 2 * scale;
+  ctx.strokeRect(0, 0, width, height);
+
   const cols = 5;
-  const cellW = 172; // enlarged from 152
-  const cellH = 92;  // enlarged from 76
-  const gapX = 12;
-  const gapY = 12;
-  const startX = 20;
-  const startY = 20;
+  const cellW = 172 * scale; 
+  const cellH = 92 * scale;  
+  const gapX = 12 * scale;
+  const gapY = 12 * scale;
+  const startX = 20 * scale;
+  const startY = 20 * scale;
 
   const displayItems = pageItems.slice(0, 25);
 
-  // Pre-load all 25 skin images in parallel (using cache utility)
+  // Pre-load all 25 skin images in parallel (using our robust direct loader)
   const loadedImages = await Promise.all(
     displayItems.map(async (invItem) => {
       const item = invItem.item || invItem;
@@ -88,48 +95,48 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     const formattedPrice = price > 0 ? formatValueShort(price) : '—';
     const borderColor = getRarityColor(item.rarity);
 
-    // Cell Background - Deep Obsidian Card
-    ctx.fillStyle = '#05060b';
+    // Cell Background - Dark container background matching (#1e1f22)
+    ctx.fillStyle = '#1e1f22';
     ctx.beginPath();
-    ctx.roundRect(x, y, cellW, cellH, 10); // smoother rounded corners
+    ctx.roundRect(x, y, cellW, cellH, 6 * scale); // 6px rounded corner
     ctx.fill();
 
-    // Rarity Colored Border (2.5px thick for extra visual pop)
+    // Rarity Colored Border (2px thick)
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2 * scale;
     ctx.stroke();
 
-    // Item Name Header (Top Center)
+    // Item Name Header (Top Center, white text)
     const rawName = (item.name || 'Item').replace(/^_+/, '').trim();
-    ctx.font = 'bold 12px RobotoBold';
-    ctx.fillStyle = '#e2e8f0';
+    ctx.font = `bold ${12 * scale}px RobotoBold`;
+    ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
 
     let displayName = rawName;
     if (displayName.length > 20) {
       displayName = displayName.substring(0, 18) + '..';
     }
-    ctx.fillText(displayName, x + cellW / 2, y + 18);
+    ctx.fillText(displayName, x + cellW / 2, y + 18 * scale);
 
-    // Item Render Image (Middle Center - enlarged to fill cell box clearly!)
+    // Item Render Image (Middle Center - scaled and centered)
     if (itemImg) {
       const isCharacter = item.type === 'BODY_SKIN' || rawName.toLowerCase().includes('character') || rawName.toLowerCase().includes('skin');
       
       let imgW, imgH;
       if (isCharacter) {
         // Character models stand upright and tall
-        imgH = 58; // enlarged from 46
+        imgH = 58 * scale;
         imgW = (itemImg.width / itemImg.height) * imgH;
-        if (imgW > 75) {
-          imgW = 75;
+        if (imgW > 75 * scale) {
+          imgW = 75 * scale;
           imgH = (itemImg.height / itemImg.width) * imgW;
         }
       } else {
         // Weapon models stretch wide
-        imgW = 100; // enlarged from 85
+        imgW = 100 * scale;
         imgH = (itemImg.height / itemImg.width) * imgW;
-        if (imgH > 50) {
-          imgH = 50;
+        if (imgH > 50 * scale) {
+          imgH = 50 * scale;
           imgW = (itemImg.width / itemImg.height) * imgH;
         }
       }
@@ -137,23 +144,23 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
       ctx.drawImage(
         itemImg, 
         x + (cellW - imgW) / 2, 
-        y + 18 + (cellH - 26 - imgH) / 2, 
+        y + 18 * scale + (cellH - 26 * scale - imgH) / 2, 
         imgW, 
         imgH
       );
     }
 
-    // Price Text (Bottom Left)
-    ctx.font = 'bold 12px Roboto';
-    ctx.fillStyle = '#fbbf24'; // Warm Gold
+    // Price Text (Bottom Left, white text)
+    ctx.font = `bold ${11 * scale}px RobotoBold`;
+    ctx.fillStyle = '#ffffff'; 
     ctx.textAlign = 'left';
-    ctx.fillText(formattedPrice, x + 10, y + cellH - 10);
+    ctx.fillText(formattedPrice, x + 10 * scale, y + cellH - 10 * scale);
 
-    // Quantity (Bottom Right)
-    ctx.font = 'bold 12px Roboto';
-    ctx.fillStyle = '#94a3b8';
+    // Quantity (Bottom Right, white text - no 'x' prefix!)
+    ctx.font = `bold ${11 * scale}px RobotoBold`;
+    ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'right';
-    ctx.fillText(`x${qty}`, x + cellW - 10, y + cellH - 10);
+    ctx.fillText(String(qty), x + cellW - 10 * scale, y + cellH - 10 * scale);
   }
 
   return canvas.toBuffer('image/png');
