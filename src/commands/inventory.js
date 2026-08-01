@@ -100,6 +100,20 @@ export async function execute(interaction) {
 
     const attachment = new AttachmentBuilder(imageBuffer, { name: `inventory-page-${pageIdx + 1}.png` });
 
+    // Embed matching Image 1 layout exactly
+    const embed = new EmbedBuilder()
+      .setColor('#3b82f6')
+      .setDescription(
+        '```text\n' +
+        `• Skins Count:     ${totalSkinsCount.toLocaleString()} (${uniqueSkinsCount} unique)\n` +
+        `• Inventory Value: ${formatValueLong(totalValue)}\n` +
+        '```'
+      )
+      .setImage(`attachment://inventory-page-${pageIdx + 1}.png`)
+      .setFooter({
+        text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
+      });
+
     // Buttons
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -114,13 +128,14 @@ export async function execute(interaction) {
         .setDisabled(pageIdx >= totalPages - 1)
     );
 
-    return { attachment, row };
+    return { embed, attachment, row };
   };
 
   let currentPage = 0;
   const initialData = await renderPage(currentPage);
 
   const message = await interaction.editReply({
+    embeds: [initialData.embed],
     files: [initialData.attachment],
     components: totalPages > 1 ? [initialData.row] : []
   });
@@ -149,6 +164,7 @@ export async function execute(interaction) {
     const newPageData = await renderPage(currentPage);
 
     await interaction.editReply({
+      embeds: [newPageData.embed],
       files: [newPageData.attachment],
       components: [newPageData.row]
     });
