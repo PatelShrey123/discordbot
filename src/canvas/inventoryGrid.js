@@ -41,8 +41,8 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // 1. Dark grey background matching the layout screenshot exactly (#202020)
-  ctx.fillStyle = '#202020';
+  // 1. Dark grey slate canvas background (#1a1b20)
+  ctx.fillStyle = '#1a1b20';
   ctx.fillRect(0, 0, width, height);
 
   const cols = 5;
@@ -97,20 +97,26 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     const formattedPrice = price > 0 ? formatValueShort(price) : '—';
     const borderColor = getRarityColor(item.rarity);
 
-    // Cell Background - Dark charcoal container (#151515)
-    ctx.fillStyle = '#151515';
+    // Cell Background - Slate Card (#22232a)
+    ctx.fillStyle = '#22232a';
     ctx.beginPath();
-    ctx.roundRect(x, y, cellW, cellH, 8 * scale); // Moderately rounded corners matching screenshot
+    ctx.roundRect(x, y, cellW, cellH, 14 * scale); // Highly rounded corners
     ctx.fill();
 
-    // Rarity Colored Border (approx 2px thick scaled)
-    ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 2 * scale;
+    // Card Outline Border (Subtle white overlay)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 1.5 * scale;
     ctx.stroke();
+
+    // Bottom colored stripe representing rarity (6px high scaled)
+    ctx.fillStyle = borderColor;
+    ctx.beginPath();
+    ctx.roundRect(x, y + cellH - 6 * scale, cellW, 6 * scale, [0, 0, 14 * scale, 14 * scale]);
+    ctx.fill();
 
     // Item Name Header (Top Center, white text)
     const rawName = (item.name || 'Item').replace(/^_+/, '').trim();
-    ctx.font = `bold ${12 * scale}px RobotoBold`;
+    ctx.font = `bold ${13 * scale}px RobotoBold`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
 
@@ -118,7 +124,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     if (displayName.length > 20) {
       displayName = displayName.substring(0, 18) + '..';
     }
-    ctx.fillText(displayName, x + cellW / 2, y + 22 * scale);
+    ctx.fillText(displayName, x + cellW / 2, y + 24 * scale);
 
     // Item Render Image (Middle Center - scaled and centered)
     if (itemImg) {
@@ -153,16 +159,16 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     }
 
     // Price Text (Bottom Left, white text)
-    ctx.font = `bold ${11 * scale}px RobotoBold`;
+    ctx.font = `bold ${12 * scale}px RobotoBold`;
     ctx.fillStyle = '#ffffff'; 
     ctx.textAlign = 'left';
-    ctx.fillText(formattedPrice, x + 12 * scale, y + cellH - 12 * scale);
+    ctx.fillText(formattedPrice, x + 14 * scale, y + cellH - 14 * scale);
 
-    // Quantity (Bottom Right, white text - no 'x' prefix!)
-    ctx.font = `bold ${11 * scale}px RobotoBold`;
+    // Quantity (Bottom Right, white text)
+    ctx.font = `bold ${12 * scale}px RobotoBold`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'right';
-    ctx.fillText(String(qty), x + cellW - 12 * scale, y + cellH - 12 * scale);
+    ctx.fillText(String(qty), x + cellW - 14 * scale, y + cellH - 14 * scale);
   }
 
   return canvas.toBuffer('image/png');
