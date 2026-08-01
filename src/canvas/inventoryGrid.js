@@ -41,15 +41,15 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // 1. Dark grey background matching the layout screenshot exactly (#1e1e1e)
-  ctx.fillStyle = '#1e1e1e';
+  // 1. Dark grey background matching the layout screenshot exactly (#202020)
+  ctx.fillStyle = '#202020';
   ctx.fillRect(0, 0, width, height);
 
   const cols = 5;
-  const cellW = 178 * scale; 
-  const cellH = 98 * scale;  
-  const gapX = 0;
-  const gapY = 0;
+  const cellW = 170 * scale; 
+  const cellH = 90 * scale;  
+  const gapX = 10 * scale;
+  const gapY = 10 * scale;
   const startX = 20 * scale;
   const startY = 20 * scale;
 
@@ -90,15 +90,15 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     const formattedPrice = price > 0 ? formatValueShort(price) : '—';
     const borderColor = getRarityColor(item.rarity);
 
-    // Cell Background - Pitch black-charcoal cell container (#111111)
-    ctx.fillStyle = '#111111';
+    // Cell Background - Dark charcoal container (#151515)
+    ctx.fillStyle = '#151515';
     ctx.beginPath();
-    ctx.roundRect(x, y, cellW, cellH, 6 * scale); // Rounded corners slightly tighter for borderless grid look
+    ctx.roundRect(x, y, cellW, cellH, 8 * scale); // Moderately rounded corners matching screenshot
     ctx.fill();
 
     // Rarity Colored Border (approx 2px thick scaled)
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 1.5 * scale;
+    ctx.lineWidth = 2 * scale;
     ctx.stroke();
 
     // Item Name Header (Top Center, white text)
@@ -111,7 +111,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     if (displayName.length > 20) {
       displayName = displayName.substring(0, 18) + '..';
     }
-    ctx.fillText(displayName, x + cellW / 2, y + 20 * scale);
+    ctx.fillText(displayName, x + cellW / 2, y + 22 * scale);
 
     // Item Render Image (Middle Center - scaled and centered)
     if (itemImg) {
@@ -120,18 +120,18 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
       let imgW, imgH;
       if (isCharacter) {
         // Character models stand upright and tall
-        imgH = 58 * scale;
+        imgH = 54 * scale;
         imgW = (itemImg.width / itemImg.height) * imgH;
-        if (imgW > 75 * scale) {
-          imgW = 75 * scale;
+        if (imgW > 70 * scale) {
+          imgW = 70 * scale;
           imgH = (itemImg.height / itemImg.width) * imgW;
         }
       } else {
         // Weapon models stretch wide
-        imgW = 100 * scale;
+        imgW = 95 * scale;
         imgH = (itemImg.height / itemImg.width) * imgW;
-        if (imgH > 50 * scale) {
-          imgH = 50 * scale;
+        if (imgH > 48 * scale) {
+          imgH = 48 * scale;
           imgW = (itemImg.width / itemImg.height) * imgH;
         }
       }
@@ -139,7 +139,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
       ctx.drawImage(
         itemImg, 
         x + (cellW - imgW) / 2, 
-        y + 18 * scale + (cellH - 26 * scale - imgH) / 2, 
+        y + 20 * scale + (cellH - 32 * scale - imgH) / 2, 
         imgW, 
         imgH
       );
@@ -149,13 +149,13 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     ctx.font = `bold ${11 * scale}px RobotoBold`;
     ctx.fillStyle = '#ffffff'; 
     ctx.textAlign = 'left';
-    ctx.fillText(formattedPrice, x + 10 * scale, y + cellH - 10 * scale);
+    ctx.fillText(formattedPrice, x + 12 * scale, y + cellH - 12 * scale);
 
     // Quantity (Bottom Right, white text - no 'x' prefix!)
     ctx.font = `bold ${11 * scale}px RobotoBold`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'right';
-    ctx.fillText(String(qty), x + cellW - 10 * scale, y + cellH - 10 * scale);
+    ctx.fillText(String(qty), x + cellW - 12 * scale, y + cellH - 12 * scale);
   }
 
   return canvas.toBuffer('image/png');
