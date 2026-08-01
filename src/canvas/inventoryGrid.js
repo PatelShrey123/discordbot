@@ -46,10 +46,10 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
   ctx.fillRect(0, 0, width, height);
 
   const cols = 5;
-  const cellW = 172 * scale; 
-  const cellH = 92 * scale;  
-  const gapX = 12 * scale;
-  const gapY = 12 * scale;
+  const cellW = 178 * scale; 
+  const cellH = 98 * scale;  
+  const gapX = 0;
+  const gapY = 0;
   const startX = 20 * scale;
   const startY = 20 * scale;
 
@@ -93,12 +93,12 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     // Cell Background - Pitch black-charcoal cell container (#111111)
     ctx.fillStyle = '#111111';
     ctx.beginPath();
-    ctx.roundRect(x, y, cellW, cellH, 8 * scale); // Rounded corner radius matches screenshot
+    ctx.roundRect(x, y, cellW, cellH, 6 * scale); // Rounded corners slightly tighter for borderless grid look
     ctx.fill();
 
     // Rarity Colored Border (approx 2px thick scaled)
     ctx.strokeStyle = borderColor;
-    ctx.lineWidth = 2 * scale;
+    ctx.lineWidth = 1.5 * scale;
     ctx.stroke();
 
     // Item Name Header (Top Center, white text)

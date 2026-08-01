@@ -111,7 +111,7 @@ export async function execute(interaction) {
       )
       .setImage(`attachment://inventory-page-${pageIdx + 1}.png`)
       .setFooter({
-        text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.id || '').substring(0, 6).toUpperCase()}`
+        text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
       });
 
     // Buttons
