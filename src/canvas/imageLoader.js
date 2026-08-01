@@ -34,7 +34,7 @@ export async function getCachedImage(url) {
 
   // Remote image loading: Fetch direct image buffer with browser User-Agent
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
+  const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
 
   try {
     const res = await fetch(cleanUrl, {

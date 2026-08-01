@@ -63,7 +63,14 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
       if (imgUrl) {
         try {
           const cleanUrl = imgUrl.trim();
-          const targetUrl = cleanUrl.startsWith('/') ? `https://kirka.io${cleanUrl}` : cleanUrl;
+          let targetUrl = cleanUrl;
+          if (cleanUrl.startsWith('https://kirka.iodata:')) {
+            targetUrl = cleanUrl.substring(16); // strip 'https://kirka.io' (length of 'https://kirka.io' is 16)
+          } else if (cleanUrl.startsWith('/data:')) {
+            targetUrl = cleanUrl.substring(1);
+          } else if (cleanUrl.startsWith('/')) {
+            targetUrl = `https://kirka.io${cleanUrl}`;
+          }
           return await getCachedImage(targetUrl);
         } catch (err) {
           return null;
