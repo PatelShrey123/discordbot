@@ -6,6 +6,7 @@ import * as clanCmd from './commands/clan.js';
 import * as skinCmd from './commands/skin.js';
 import * as leaderboardCmd from './commands/leaderboard.js';
 import * as hCmd from './commands/h.js';
+import * as linkCmd from './commands/link.js';
 
 dotenv.config();
 
@@ -15,7 +16,8 @@ const commands = [
   clanCmd.data.toJSON(),
   skinCmd.data.toJSON(),
   leaderboardCmd.data.toJSON(),
-  hCmd.data.toJSON()
+  hCmd.data.toJSON(),
+  linkCmd.data.toJSON()
 ];
 
 export async function registerCommands() {
