@@ -203,11 +203,19 @@ export async function renderProfileCard(profile, customBgUrl = null) {
     { label: 'KDR', val: kdr }
   ];
 
+  const getAccountAgeDays = (createdAt) => {
+    if (!createdAt) return '—';
+    const diff = Date.now() - new Date(createdAt).getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    return `${days} days`;
+  };
+
   const row3 = [
     { label: 'W/L', val: wl },
     { label: 'Coins', val: formatNumber(profile?.coins || 0) },
     { label: 'Diamonds', val: formatNumber(profile?.diamonds || profile?.gems || 0) },
-    { label: 'Total XP', val: formatNumber(totalXp) }
+    { label: 'Total XP', val: formatNumber(totalXp) },
+    { label: 'Created', val: getAccountAgeDays(profile?.createdAt) }
   ];
 
   const gridStartY = 210;
@@ -241,10 +249,9 @@ export async function renderProfileCard(profile, customBgUrl = null) {
     ctx.fillText(String(cell.val), x, y + 28);
   });
 
-  // Draw Row 3 (4 columns centered - NO Kirka ID)
-  const colWidth4 = (width - 70) / 4;
+  // Draw Row 3 (5 columns aligned)
   row3.forEach((cell, idx) => {
-    const x = barX + idx * colWidth4 + colWidth4 / 2;
+    const x = barX + idx * colWidth5 + colWidth5 / 2;
     const y = gridStartY + 2 * rowHeight;
     ctx.font = 'bold 16px RobotoBold';
     ctx.fillStyle = '#fbbf24';
