@@ -1,4 +1,11 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { 
+  SlashCommandBuilder, 
+  EmbedBuilder, 
+  ActionRowBuilder, 
+  ButtonBuilder, 
+  ButtonStyle, 
+  ComponentType 
+} from 'discord.js';
 import { pendingLinks } from '../utils/chatListener.js';
 import { getLinkedAccount } from '../api/db.js';
 
@@ -20,19 +27,30 @@ export async function execute(interaction) {
     });
   }
 
-  // 2. Generate a unique, recognizable token format (e.g. kirkabot-0x[random_hex])
+  // 2. Generate a unique, recognizable token format custom to KirkaHub (kirkahub-0x[random_hex])
   const tokenValue = Math.floor(Math.random() * 0xffffff).toString(16).padEnd(6, '0');
-  const token = `kirkabot-0x${tokenValue}`;
+  const token = `kirkahub-0x${tokenValue}`;
 
   // 3. Register token in pendingLinks map
   pendingLinks.set(token, { discordId });
 
-  // 4. Set auto-expiry timeout (5 minutes)
-  setTimeout(() => {
-    if (pendingLinks.has(token)) {
-      pendingLinks.delete(token);
-    }
-  }, 5 * 60 * 1000);
+  // 4. Create the Interactive Action Row buttons
+  const doneButton = new ButtonBuilder()
+    .setCustomId('link_done')
+    .setLabel('Done')
+    .setStyle(ButtonStyle.Success);
+
+  const cancelButton = new ButtonBuilder()
+    .setCustomId('link_cancel')
+    .setLabel('Cancel')
+    .setStyle(ButtonStyle.Danger);
+
+  const chatButton = new ButtonBuilder()
+    .setLabel('Chat')
+    .setURL('https://kirka.io/')
+    .setStyle(ButtonStyle.Link);
+
+  const row = new ActionRowBuilder().addComponents(doneButton, cancelButton, chatButton);
 
   // 5. Create Embed presentation
   const embed = new EmbedBuilder()
@@ -54,14 +72,72 @@ export async function execute(interaction) {
       },
       { 
         name: 'Step 4: Done!', 
-        value: 'Send the chat message in-game. The bot will automatically detect it and send you a confirmation DM!' 
+        value: 'Send the chat message in-game and click the **Done** button below!' 
       }
     )
     .setFooter({ text: 'This verification code will expire in 5 minutes.' })
     .setTimestamp();
 
-  await interaction.reply({
+  const response = await interaction.reply({
     embeds: [embed],
+    components: [row],
     flags: 64 // ephemeral
+  });
+
+  // 6. Create Message Component Collector to handle button interaction
+  const collector = response.createMessageComponentCollector({
+    componentType: ComponentType.Button,
+    time: 5 * 60 * 1000 // 5 minutes
+  });
+
+  collector.on('collect', async (i) => {
+    if (i.customId === 'link_done') {
+      await i.deferReply({ flags: 64 });
+
+      // Check if they are successfully linked in database
+      const linked = await getLinkedAccount(discordId);
+      if (linked) {
+        // Stop collector and edit parent message to success state
+        collector.stop('success');
+        
+        const successEmbed = new EmbedBuilder()
+          .setTitle('✅ Account Linked Successfully!')
+          .setDescription(`Your Discord account is now linked to Kirka profile **${linked.name}** (\`#${linked.shortId}\`).`)
+          .setColor('#22c55e')
+          .setTimestamp();
+
+        await interaction.editReply({
+          embeds: [successEmbed],
+          components: []
+        });
+
+        await i.editReply({ content: '✅ Link verified successfully!' });
+      } else {
+        await i.editReply({
+          content: `❌ Code not detected in-game yet. Please ensure you sent \`${token}\` in the Kirka server lobby chat and click **Done** again!`
+        });
+      }
+    } else if (i.customId === 'link_cancel') {
+      collector.stop('cancelled');
+      pendingLinks.delete(token);
+
+      await interaction.editReply({
+        content: '❌ Link request cancelled.',
+        embeds: [],
+        components: []
+      });
+    }
+  });
+
+  collector.on('end', (collected, reason) => {
+    // If the 5 minutes timed out without successful linking
+    if (reason === 'time' && pendingLinks.has(token)) {
+      pendingLinks.delete(token);
+      interaction.editReply({
+        content: '⚠️ Verification code expired. Please run `/link` again to generate a new token.',
+        embeds: [],
+        components: []
+      }).catch(() => {});
+    }
   });
 }
