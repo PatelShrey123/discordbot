@@ -1,17 +1,11 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { fetchUserProfile } from '../api/kirka.js';
-import { setUserBackground } from '../api/db.js';
+import { getLinkedAccount, setUserBackground } from '../api/db.js';
 
 export const data = new SlashCommandBuilder()
   .setName('h')
-  .setDescription('Set a custom profile background for a Kirka account')
+  .setDescription('Set a custom profile background for your linked Kirka account')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2)
-  .addStringOption(option =>
-    option.setName('user')
-      .setDescription('Kirka username or player ID you want to customize')
-      .setRequired(true)
-  )
   .addStringOption(option =>
     option.setName('url')
       .setDescription('Direct link URL of the background image')
@@ -26,9 +20,16 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction) {
   await interaction.deferReply();
 
-  const query = interaction.options.getString('user');
   const url = interaction.options.getString('url');
   const attachment = interaction.options.getAttachment('image');
+
+  // 1. Verify that the Discord user has linked their account
+  const linked = await getLinkedAccount(interaction.user.id);
+  if (!linked || !linked.id) {
+    return interaction.editReply({
+      content: '❌ **Privacy Protection:** You must link your Kirka account to your Discord account first to customize your profile background.\n\nPlease link your profile first by running the **/link** command!'
+    });
+  }
 
   // Validate that at least one image source was provided
   let bgUrl = null;
@@ -51,23 +52,15 @@ export async function execute(interaction) {
     });
   }
 
-  // 1. Fetch Kirka profile to verify it exists and get their unique ID
-  const profile = await fetchUserProfile(query);
-  if (!profile) {
-    return interaction.editReply({
-      content: `❌ Could not find a Kirka player matching **${query}**. Background was not set.`
-    });
-  }
-
   try {
     // 2. Save background mapping in Supabase (keyed by unique Kirka user ID)
-    await setUserBackground(profile.id, bgUrl);
+    await setUserBackground(linked.id, bgUrl);
 
     return interaction.editReply({
-      content: `✅ Successfully set custom profile background for **${profile.name}**!\n🖼️ Link: <${bgUrl}>`
+      content: `✅ Successfully set custom profile background for your linked Kirka profile **${linked.name}**!\n🖼️ Link: <${bgUrl}>`
     });
   } catch (err) {
-    console.error(`Failed to set background for ${profile.name}:`, err.message);
+    console.error(`Failed to set background for ${linked.name}:`, err.message);
     return interaction.editReply({
       content: '⚠️ Failed to save background to database. Please check connection and try again.'
     });
