@@ -1,4 +1,5 @@
 import { saveLinkedAccount } from '../api/db.js';
+import WebSocket from 'ws';
 
 // Map of temporary active verification codes: token -> { discordId }
 export const pendingLinks = new Map();
@@ -20,16 +21,16 @@ function connectWebSocket() {
 
   console.log('[ChatListener] Connecting to Kirka Lobby Chat WebSocket (wss://chat.kirka.io)...');
   
-  // Use Node 22 global native WebSocket
+  // Use imported WebSocket from 'ws' package for cross-Node compatibility
   ws = new WebSocket('wss://chat.kirka.io');
 
-  ws.onopen = () => {
+  ws.on('open', () => {
     console.log('[ChatListener] Connected to wss://chat.kirka.io successfully!');
-  };
+  });
 
-  ws.onmessage = async (event) => {
+  ws.on('message', async (rawData) => {
     try {
-      const data = JSON.parse(event.data);
+      const data = JSON.parse(rawData.toString());
 
       // type 2 is general user chat messages in the Kirka server lobby
       if (data.type === 2 && data.user && typeof data.message === 'string') {
@@ -62,15 +63,15 @@ function connectWebSocket() {
     } catch (err) {
       // Ignore parse/process errors
     }
-  };
+  });
 
-  ws.onerror = (error) => {
+  ws.on('error', (error) => {
     console.error('[ChatListener] WebSocket encountered error:', error.message || error);
-  };
+  });
 
-  ws.onclose = () => {
+  ws.on('close', () => {
     console.warn('[ChatListener] WebSocket disconnected. Retrying connection in 5 seconds...');
     ws = null;
     setTimeout(connectWebSocket, 5000);
-  };
+  });
 }
