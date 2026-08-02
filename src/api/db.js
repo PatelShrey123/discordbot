@@ -1,13 +1,10 @@
 // Supabase REST API Database Adapter
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://bxebfeyqchjukibgfeqs.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
+// Fallback to the verified public anon key if not set in environment variables
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_I5SYfP4fDrzFP3_bPcXg9A_sUuuuWD2';
 
 // No-op for HTTP-based initialization (tables already created via SQL migrate)
 export async function initDb() {
-  if (!SUPABASE_KEY) {
-    console.warn('[Database] SUPABASE_KEY is not defined. Database operations will be disabled.');
-    return;
-  }
   console.log('[Database] Supabase HTTPS REST API initialized successfully!');
 }
 
@@ -15,7 +12,6 @@ export async function initDb() {
  * Get user's custom background URL
  */
 export async function getUserBackground(userId) {
-  if (!SUPABASE_KEY) return null;
   try {
     const url = `${SUPABASE_URL}/rest/v1/user_backgrounds?user_id=eq.${userId}&select=background_url`;
     const res = await fetch(url, {
@@ -39,7 +35,6 @@ export async function getUserBackground(userId) {
  * Upsert user's custom background URL
  */
 export async function setUserBackground(userId, bgUrl) {
-  if (!SUPABASE_KEY) throw new Error('Database is not initialized');
   try {
     const url = `${SUPABASE_URL}/rest/v1/user_backgrounds`;
     const res = await fetch(url, {
@@ -68,7 +63,6 @@ export async function setUserBackground(userId, bgUrl) {
  * Save user's linked account in database
  */
 export async function saveLinkedAccount(discordId, kirkaUser) {
-  if (!SUPABASE_KEY) throw new Error('Database is not initialized');
   try {
     const url = `${SUPABASE_URL}/rest/v1/linked_accounts`;
     const res = await fetch(url, {
@@ -99,7 +93,6 @@ export async function saveLinkedAccount(discordId, kirkaUser) {
  * Get user's linked account details
  */
 export async function getLinkedAccount(discordId) {
-  if (!SUPABASE_KEY) return null;
   try {
     const url = `${SUPABASE_URL}/rest/v1/linked_accounts?discord_id=eq.${discordId}&select=kirka_id,kirka_username,short_id`;
     const res = await fetch(url, {
@@ -127,7 +120,6 @@ export async function getLinkedAccount(discordId) {
  * Get Discord ID linked to a Kirka short ID
  */
 export async function getDiscordLinkedToKirka(kirkaShortId) {
-  if (!SUPABASE_KEY) return null;
   try {
     const url = `${SUPABASE_URL}/rest/v1/linked_accounts?short_id=ilike.${kirkaShortId}&select=discord_id`;
     const res = await fetch(url, {

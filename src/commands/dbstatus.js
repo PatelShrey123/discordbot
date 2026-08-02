@@ -10,21 +10,15 @@ export async function execute(interaction) {
   await interaction.deferReply({ flags: 64 });
 
   const url = process.env.SUPABASE_URL || 'https://bxebfeyqchjukibgfeqs.supabase.co';
-  const key = process.env.SUPABASE_KEY;
-
-  if (!key) {
-    return interaction.editReply({
-      content: '❌ **Database Status:** `SUPABASE_KEY` environment variable is not defined in the bot settings!'
-    });
-  }
+  const key = process.env.SUPABASE_KEY || 'sb_publishable_I5SYfP4fDrzFP3_bPcXg9A_sUuuuWD2';
 
   // Mask the key for safety
   const maskedKey = key.substring(0, 15) + '...';
 
   try {
     const start = Date.now();
-    // Fetch schema info from Supabase REST API
-    const res = await fetch(`${url}/rest/v1/`, {
+    // Fetch from linked_accounts table endpoint to verify authorization status
+    const res = await fetch(`${url}/rest/v1/linked_accounts?select=*`, {
       headers: {
         'apikey': key,
         'Authorization': `Bearer ${key}`
