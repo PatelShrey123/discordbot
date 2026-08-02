@@ -14,6 +14,7 @@ import * as skinCmd from './commands/skin.js';
 import * as leaderboardCmd from './commands/leaderboard.js';
 import * as hCmd from './commands/h.js';
 import * as linkCmd from './commands/link.js';
+import * as dbstatusCmd from './commands/dbstatus.js';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ client.commands.set(skinCmd.data.name, skinCmd);
 client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
 client.commands.set(hCmd.data.name, hCmd);
 client.commands.set(linkCmd.data.name, linkCmd);
+client.commands.set(dbstatusCmd.data.name, dbstatusCmd);
 
 client.once('ready', async () => {
   console.log(`🤖 Logged in as ${client.user.tag}!`);
