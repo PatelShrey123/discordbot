@@ -10,6 +10,7 @@ const REGIONS = [
   { name: 'AS', url: 'wss://chat-as.kirka.io' }
 ];
 
+const wsInstances = new Map();
 let clientInstance = null;
 
 export function startChatListener(client) {
@@ -19,10 +20,29 @@ export function startChatListener(client) {
   });
 }
 
+export function getWebSocketStatus() {
+  const status = [];
+  REGIONS.forEach(region => {
+    const ws = wsInstances.get(region.name);
+    let state = 'NOT_STARTED';
+    if (ws) {
+      switch (ws.readyState) {
+        case 0: state = 'CONNECTING'; break;
+        case 1: state = 'OPEN'; break;
+        case 2: state = 'CLOSING'; break;
+        case 3: state = 'CLOSED'; break;
+      }
+    }
+    status.push({ name: region.name, state });
+  });
+  return status;
+}
+
 function connectRegionWebSocket(region) {
   console.log(`[ChatListener] Connecting to Kirka ${region.name} Chat WebSocket (${region.url})...`);
   
   const ws = new WebSocket(region.url);
+  wsInstances.set(region.name, ws);
 
   ws.on('open', () => {
     console.log(`[ChatListener] Connected to Kirka ${region.name} WebSocket successfully!`);
