@@ -4,11 +4,14 @@ import dotenv from 'dotenv';
 import dns from 'dns';
 
 dns.setDefaultResultOrder('ipv4first');
+
 import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard } from './api/kirka.js';
 import { getBoltPriceMap } from './api/boltPrices.js';
 import { initDb } from './api/db.js';
 import { startChatListener } from './utils/chatListener.js';
+import { createSkinEmbed } from './commands/skin.js';
+
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
@@ -27,7 +30,11 @@ if (!token) {
 }
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
 });
 
 client.commands = new Collection();
@@ -81,6 +88,48 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.followUp(replyMsg);
     } else {
       await interaction.reply(replyMsg);
+    }
+  }
+});
+
+// Support prefix command trigger: .skin [name]
+client.on('messageCreate', async (message) => {
+  if (message.author.bot) return;
+
+  const content = message.content.trim();
+  if (content.toLowerCase().startsWith('.skin ')) {
+    const searchName = content.substring(6).trim().toLowerCase();
+    if (!searchName) return;
+
+    try {
+      const [catalog, priceMap] = await Promise.all([
+        getPublicCatalog(),
+        getBoltPriceMap()
+      ]);
+
+      // Find exact or closest match in catalog
+      let matchedItem = catalog.find(item => 
+        item.name && item.name.replace(/^_+/, '').trim().toLowerCase() === searchName
+      );
+
+      // Partial match fallback
+      if (!matchedItem) {
+        matchedItem = catalog.find(item => 
+          item.name && item.name.toLowerCase().includes(searchName)
+        );
+      }
+
+      if (!matchedItem) {
+        return message.reply(`❌ Could not find a skin/item matching **${content.substring(6).trim()}**.`);
+      }
+
+      const embed = createSkinEmbed(matchedItem, priceMap);
+      await message.reply({
+        embeds: [embed]
+      });
+    } catch (err) {
+      console.error('Error in message prefix skin command:', err);
+      await message.reply(`⚠️ Failed to retrieve skin details.`);
     }
   }
 });

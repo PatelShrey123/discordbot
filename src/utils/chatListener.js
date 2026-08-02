@@ -5,9 +5,7 @@ import WebSocket from 'ws';
 export const pendingLinks = new Map();
 
 const REGIONS = [
-  { name: 'EU', url: 'wss://chat-eu.kirka.io' },
-  { name: 'US', url: 'wss://chat-us.kirka.io' },
-  { name: 'AS', url: 'wss://chat-as.kirka.io' }
+  { name: 'Global', url: 'wss://chat.kirka.io' }
 ];
 
 const wsInstances = new Map();
@@ -61,7 +59,7 @@ function connectRegionWebSocket(region) {
           const { discordId } = pendingLinks.get(text);
           const kirkaUser = data.user; // { id, shortId, name }
 
-          console.log(`[ChatListener] Verification matched on ${region.name}! Discord User: ${discordId} -> Kirka: ${kirkaUser.name} (#${kirkaUser.shortId})`);
+          console.log(`[ChatListener] Verification matched! Discord User: ${discordId} -> Kirka: ${kirkaUser.name} (#${kirkaUser.shortId})`);
 
           // 1. Save link in Supabase Postgres
           await saveLinkedAccount(discordId, kirkaUser);
@@ -91,6 +89,7 @@ function connectRegionWebSocket(region) {
 
   ws.on('close', () => {
     console.warn(`[ChatListener] WebSocket ${region.name} disconnected. Retrying in 5 seconds...`);
+    wsInstances.set(region.name, null);
     setTimeout(() => connectRegionWebSocket(region), 5000);
   });
 }
