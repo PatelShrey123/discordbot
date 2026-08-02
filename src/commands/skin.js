@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { getPublicCatalog, getAllItemData, fetchUserInventory } from '../api/kirka.js';
+import { getPublicCatalog, getAllItemData } from '../api/kirka.js';
 import { getBoltPriceMap, formatValueLong } from '../api/boltPrices.js';
-import { getLinkedAccount } from '../api/db.js';
 
 export const data = new SlashCommandBuilder()
   .setName('skin')
@@ -28,7 +27,7 @@ function formatNumber(num) {
   return Number(num).toLocaleString('en-US');
 }
 
-export function createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits = 0) {
+export function createSkinEmbed(matchedItem, priceMap, allItemData) {
   const normalizedName = matchedItem.name.replace(/^_+/, '').trim().toLowerCase();
 
   // Find metadata from AllItemData.json
@@ -95,7 +94,6 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits =
       { name: 'TOTAL OWNED', value: `\`${formatNumber(totalOwned)}\``, inline: true },
       { name: 'CREATED', value: `\`${createdDate}\``, inline: true },
       { name: 'BOLT VALUE', value: `\`${boltValueStr}\``, inline: true },
-      { name: 'UNITS OWNED', value: `\`${ownedUnits}\``, inline: true },
       { name: 'SHARE LINK', value: shareLink, inline: false }
     )
     .setTimestamp();
@@ -106,30 +104,6 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits =
   }
 
   return embed;
-}
-
-/**
- * Helper to count owned units for a Discord user
- */
-export async function getOwnedUnitsCount(discordId, itemName) {
-  try {
-    const linked = await getLinkedAccount(discordId);
-    if (linked && linked.id) {
-      const inventory = await fetchUserInventory(linked.id);
-      if (Array.isArray(inventory)) {
-        const cleanSearchName = itemName.replace(/^_+/, '').trim().toLowerCase();
-        const matchedInvItems = inventory.filter(invItem => {
-          const invName = (invItem.item?.name || invItem.name || '');
-          return invName.replace(/^_+/, '').trim().toLowerCase() === cleanSearchName;
-        });
-        // Sum up the amount (or length if no amount field)
-        return matchedInvItems.reduce((sum, item) => sum + (item.amount || 1), 0);
-      }
-    }
-  } catch (err) {
-    console.warn(`[Skin] Error looking up units owned for Discord user ${discordId}:`, err.message);
-  }
-  return 0;
 }
 
 export async function execute(interaction) {
@@ -161,8 +135,7 @@ export async function execute(interaction) {
   }
 
   try {
-    const ownedUnits = await getOwnedUnitsCount(interaction.user.id, matchedItem.name);
-    const embed = createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits);
+    const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
     await interaction.editReply({
       embeds: [embed]
     });

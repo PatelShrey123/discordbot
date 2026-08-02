@@ -10,7 +10,7 @@ import { getPublicCatalog, fetchClanLeaderboard, getAllItemData } from './api/ki
 import { getBoltPriceMap } from './api/boltPrices.js';
 import { initDb } from './api/db.js';
 import { startChatListener } from './utils/chatListener.js';
-import { createSkinEmbed, getOwnedUnitsCount } from './commands/skin.js';
+import { createSkinEmbed } from './commands/skin.js';
 
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
@@ -127,8 +127,7 @@ client.on('messageCreate', async (message) => {
         return message.reply(`❌ Could not find a skin/item matching **${content.substring(6).trim()}**.`);
       }
 
-      const ownedUnits = await getOwnedUnitsCount(message.author.id, matchedItem.name);
-      const embed = createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits);
+      const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
       await message.reply({
         embeds: [embed]
       });
