@@ -1,74 +1,33 @@
-import pg from 'pg';
+// Supabase REST API Database Adapter
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://bxebfeyqchjukibgfeqs.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-const { Pool } = pg;
-
-let pool = null;
-
-function getPool() {
-  if (!pool) {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) return null;
-    pool = new Pool({
-      connectionString,
-      ssl: {
-        rejectUnauthorized: false
-      }
-    });
-  }
-  return pool;
-}
-
-// Initialize database schema
+// No-op for HTTP-based initialization (tables already created via SQL migrate)
 export async function initDb() {
-  const activePool = getPool();
-  if (!activePool) {
-    console.warn('[Database] DATABASE_URL is not set. Custom backgrounds and linking will be disabled.');
+  if (!SUPABASE_KEY) {
+    console.warn('[Database] SUPABASE_KEY is not defined. Database operations will be disabled.');
     return;
   }
-  try {
-    const client = await activePool.connect();
-    console.log('[Database] Connected to Supabase PostgreSQL successfully!');
-    
-    // Create user_backgrounds table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS user_backgrounds (
-        user_id VARCHAR(64) PRIMARY KEY,
-        background_url TEXT NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // Create linked_accounts table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS linked_accounts (
-        discord_id VARCHAR(64) PRIMARY KEY,
-        kirka_id VARCHAR(64) NOT NULL,
-        kirka_username VARCHAR(128) NOT NULL,
-        short_id VARCHAR(16) NOT NULL,
-        linked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-    
-    console.log('[Database] Schema initialized.');
-    client.release();
-  } catch (err) {
-    console.error('[Database] Failed to connect/initialize database:', err.message);
-  }
+  console.log('[Database] Supabase HTTPS REST API initialized successfully!');
 }
 
 /**
  * Get user's custom background URL
  */
 export async function getUserBackground(userId) {
-  const activePool = getPool();
-  if (!activePool) return null;
+  if (!SUPABASE_KEY) return null;
   try {
-    const res = await activePool.query(
-      'SELECT background_url FROM user_backgrounds WHERE user_id = $1',
-      [userId]
-    );
-    if (res.rows.length > 0) {
-      return res.rows[0].background_url;
+    const url = `${SUPABASE_URL}/rest/v1/user_backgrounds?user_id=eq.${userId}&select=background_url`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rows = await res.json();
+    if (rows && rows.length > 0) {
+      return rows[0].background_url;
     }
   } catch (err) {
     console.error(`[Database] Error getting background for user ${userId}:`, err.message);
@@ -79,16 +38,25 @@ export async function getUserBackground(userId) {
 /**
  * Upsert user's custom background URL
  */
-export async function setUserBackground(userId, url) {
-  const activePool = getPool();
-  if (!activePool) throw new Error('Database is not connected');
+export async function setUserBackground(userId, bgUrl) {
+  if (!SUPABASE_KEY) throw new Error('Database is not initialized');
   try {
-    await activePool.query(`
-      INSERT INTO user_backgrounds (user_id, background_url, updated_at)
-      VALUES ($1, $2, CURRENT_TIMESTAMP)
-      ON CONFLICT (user_id)
-      DO UPDATE SET background_url = EXCLUDED.background_url, updated_at = CURRENT_TIMESTAMP
-    `, [userId, url]);
+    const url = `${SUPABASE_URL}/rest/v1/user_backgrounds`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        background_url: bgUrl,
+        updated_at: new Date().toISOString()
+      })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return true;
   } catch (err) {
     console.error(`[Database] Error setting background for user ${userId}:`, err.message);
@@ -100,15 +68,26 @@ export async function setUserBackground(userId, url) {
  * Save user's linked account in database
  */
 export async function saveLinkedAccount(discordId, kirkaUser) {
-  const activePool = getPool();
-  if (!activePool) throw new Error('Database is not connected');
+  if (!SUPABASE_KEY) throw new Error('Database is not initialized');
   try {
-    await activePool.query(`
-      INSERT INTO linked_accounts (discord_id, kirka_id, kirka_username, short_id, linked_at)
-      VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-      ON CONFLICT (discord_id)
-      DO UPDATE SET kirka_id = EXCLUDED.kirka_id, kirka_username = EXCLUDED.kirka_username, short_id = EXCLUDED.short_id, linked_at = CURRENT_TIMESTAMP
-    `, [discordId, kirkaUser.id, kirkaUser.name, kirkaUser.shortId]);
+    const url = `${SUPABASE_URL}/rest/v1/linked_accounts`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        discord_id: discordId,
+        kirka_id: kirkaUser.id,
+        kirka_username: kirkaUser.name,
+        short_id: kirkaUser.shortId,
+        linked_at: new Date().toISOString()
+      })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return true;
   } catch (err) {
     console.error(`[Database] Error saving linked account for Discord user ${discordId}:`, err.message);
@@ -120,18 +99,22 @@ export async function saveLinkedAccount(discordId, kirkaUser) {
  * Get user's linked account details
  */
 export async function getLinkedAccount(discordId) {
-  const activePool = getPool();
-  if (!activePool) return null;
+  if (!SUPABASE_KEY) return null;
   try {
-    const res = await activePool.query(
-      'SELECT kirka_id, kirka_username, short_id FROM linked_accounts WHERE discord_id = $1',
-      [discordId]
-    );
-    if (res.rows.length > 0) {
+    const url = `${SUPABASE_URL}/rest/v1/linked_accounts?discord_id=eq.${discordId}&select=kirka_id,kirka_username,short_id`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rows = await res.json();
+    if (rows && rows.length > 0) {
       return {
-        id: res.rows[0].kirka_id,
-        name: res.rows[0].kirka_username,
-        shortId: res.rows[0].short_id
+        id: rows[0].kirka_id,
+        name: rows[0].kirka_username,
+        shortId: rows[0].short_id
       };
     }
   } catch (err) {
@@ -144,15 +127,19 @@ export async function getLinkedAccount(discordId) {
  * Get Discord ID linked to a Kirka short ID
  */
 export async function getDiscordLinkedToKirka(kirkaShortId) {
-  const activePool = getPool();
-  if (!activePool) return null;
+  if (!SUPABASE_KEY) return null;
   try {
-    const res = await activePool.query(
-      'SELECT discord_id FROM linked_accounts WHERE UPPER(short_id) = UPPER($1)',
-      [kirkaShortId]
-    );
-    if (res.rows.length > 0) {
-      return res.rows[0].discord_id;
+    const url = `${SUPABASE_URL}/rest/v1/linked_accounts?short_id=ilike.${kirkaShortId}&select=discord_id`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rows = await res.json();
+    if (rows && rows.length > 0) {
+      return rows[0].discord_id;
     }
   } catch (err) {
     console.error(`[Database] Error looking up Discord ID for Kirka account ${kirkaShortId}:`, err.message);

@@ -1,50 +1,50 @@
 import { SlashCommandBuilder } from 'discord.js';
-import pg from 'pg';
 
 export const data = new SlashCommandBuilder()
   .setName('dbstatus')
-  .setDescription('Check the bot database connection status')
+  .setDescription('Check the bot database connection status (HTTPS REST API)')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2);
 
 export async function execute(interaction) {
   await interaction.deferReply({ flags: 64 });
 
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
+  const url = process.env.SUPABASE_URL || 'https://bxebfeyqchjukibgfeqs.supabase.co';
+  const key = process.env.SUPABASE_KEY;
+
+  if (!key) {
     return interaction.editReply({
-      content: '❌ **Database Status:** `DATABASE_URL` environment variable is not defined in the bot settings!'
+      content: '❌ **Database Status:** `SUPABASE_KEY` environment variable is not defined in the bot settings!'
     });
   }
 
-  // Parse connection string to mask password for safety
-  let maskedUrl = 'unknown';
-  try {
-    const parsed = new URL(connectionString);
-    parsed.password = '*****';
-    maskedUrl = parsed.toString();
-  } catch (e) {
-    maskedUrl = connectionString.substring(0, 15) + '...';
-  }
-
-  const pool = new pg.Pool({
-    connectionString,
-    ssl: { rejectUnauthorized: false }
-  });
+  // Mask the key for safety
+  const maskedKey = key.substring(0, 15) + '...';
 
   try {
     const start = Date.now();
-    const res = await pool.query('SELECT NOW(), current_database()');
+    // Fetch schema info from Supabase REST API
+    const res = await fetch(`${url}/rest/v1/`, {
+      headers: {
+        'apikey': key,
+        'Authorization': `Bearer ${key}`
+      }
+    });
     const duration = Date.now() - start;
 
-    await interaction.editReply({
-      content: `✅ **Database Connected Successfully!**\n\n• **DB Name:** \`${res.rows[0].current_database}\`\n• **Ping:** \`${duration}ms\`\n• **Connection URL:** \`${maskedUrl}\`\n• **Time:** \`${res.rows[0].now}\``
-    });
+    if (res.ok) {
+      await interaction.editReply({
+        content: `✅ **Database Connected Successfully (HTTPS REST API)!**\n\n• **Endpoint:** \`${url}\`\n• **Ping:** \`${duration}ms\`\n• **API Key:** \`${maskedKey}\`\n• **HTTP Status:** \`${res.status} ${res.statusText}\``
+      });
+    } else {
+      const errorText = await res.text();
+      await interaction.editReply({
+        content: `❌ **Database Connection Failed!**\n\n• **HTTP Error:** \`${res.status} ${res.statusText}\`\n• **Message:** \`${errorText}\`\n• **Endpoint:** \`${url}\``
+      });
+    }
   } catch (err) {
     await interaction.editReply({
-      content: `❌ **Database Connection Failed!**\n\n• **Error:** \`${err.message}\`\n• **Connection URL:** \`${maskedUrl}\``
+      content: `❌ **Database Connection Failed (Network Error)!**\n\n• **Error:** \`${err.message}\`\n• **Endpoint:** \`${url}\``
     });
-  } finally {
-    await pool.end();
   }
 }
