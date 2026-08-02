@@ -1,7 +1,9 @@
 import { Client, GatewayIntentBits, Collection } from 'discord.js';
 import http from 'http';
 import dotenv from 'dotenv';
+import dns from 'dns';
 
+dns.setDefaultResultOrder('ipv4first');
 import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard } from './api/kirka.js';
 import { getBoltPriceMap } from './api/boltPrices.js';
