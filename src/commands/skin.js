@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { getPublicCatalog } from '../api/kirka.js';
-import { getBoltPriceMap } from '../api/boltPrices.js';
+import { getPublicCatalog, getAllItemData, fetchUserInventory } from '../api/kirka.js';
+import { getBoltPriceMap, formatValueLong } from '../api/boltPrices.js';
+import { getLinkedAccount } from '../api/db.js';
 
 export const data = new SlashCommandBuilder()
   .setName('skin')
@@ -23,38 +24,79 @@ const RARITY_COLORS = {
 };
 
 function formatNumber(num) {
-  if (num === null || num === undefined || isNaN(num)) return 'N/A';
+  if (num === null || num === undefined || isNaN(num)) return '0';
   return Number(num).toLocaleString('en-US');
 }
 
-export function createSkinEmbed(matchedItem, priceMap) {
-  const rarity = matchedItem.rarity || 'COMMON';
+export function createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits = 0) {
+  const normalizedName = matchedItem.name.replace(/^_+/, '').trim().toLowerCase();
+
+  // Find metadata from AllItemData.json
+  const metadata = allItemData.find(item => 
+    item.name && item.name.replace(/^_+/, '').trim().toLowerCase() === normalizedName
+  ) || matchedItem;
+
+  const rarity = metadata.rarity || matchedItem.rarity || 'COMMON';
   const color = RARITY_COLORS[rarity.toUpperCase()] || '#9ca3af';
 
-  const typeFormatted = (matchedItem.type || 'ITEM')
-    .replace(/_/g, ' ')
-    .toUpperCase();
+  // Format type nicely (e.g. CHARACTER, WEAPON SKIN)
+  let typeFormatted = 'ITEM';
+  if (metadata.type === 'BODY_SKIN') {
+    typeFormatted = 'CHARACTER';
+  } else if (metadata.type === 'WEAPON_SKIN') {
+    typeFormatted = 'WEAPON SKIN';
+  } else if (metadata.type) {
+    typeFormatted = metadata.type.replace(/_/g, ' ');
+  }
 
-  const parentName = matchedItem.parent?.name || 'None';
-  const totalOwned = matchedItem.totalOwned ?? 'N/A';
+  const isUnique = metadata.unique !== undefined ? (metadata.unique ? 'YES' : 'NO') : 'NO';
 
-  // Get price from Bolt Price Map
-  const matchedPrice = priceMap[matchedItem.name];
-  const baseValue = matchedPrice ? `${formatNumber(matchedPrice.average)}` : 'N/A';
+  // Find price and obtainable method from Bolt price sheet
+  const typeKey = metadata.type === 'BODY_SKIN' ? 'character' : (metadata.parent?.name || '').toLowerCase();
+  const compositeKey = `${normalizedName}_${typeKey}`;
+  const boltPriceData = priceMap.get(compositeKey) || priceMap.get(normalizedName);
 
-  // Share link
+  // Obtainable Method: check Bolt price sheet first, then characterCard/chest info, then default to N/A
+  let obtainableMethod = 'N/A';
+  if (boltPriceData && boltPriceData.obtainableBy && boltPriceData.obtainableBy !== 'N/A') {
+    obtainableMethod = boltPriceData.obtainableBy;
+  } else if (metadata.characterCard?.price) {
+    obtainableMethod = `${formatNumber(metadata.characterCard.price)}X 💎`;
+  } else if (metadata.chest?.price) {
+    obtainableMethod = `${formatNumber(metadata.chest.price)}X 🔑`;
+  }
+
+  const totalOwned = metadata.totalOwned ?? matchedItem.totalOwned ?? 0;
+
+  // Format Created date
+  const createdDate = metadata.createdAt
+    ? new Date(metadata.createdAt).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      })
+    : 'May 16, 2025';
+
+  // Bolt Value
+  const boltValue = boltPriceData?.baseValue ?? 0;
+  const boltValueStr = boltValue > 0 ? formatValueLong(boltValue) : '—';
+
+  // Share link pointing directly to the website routing path
   const shareLink = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name)}`;
 
   const embed = new EmbedBuilder()
-    .setTitle(matchedItem.name)
+    .setTitle(matchedItem.name.toUpperCase())
     .setColor(color)
     .addFields(
-      { name: 'Type', value: typeFormatted, inline: false },
-      { name: 'Rarity', value: rarity.toUpperCase(), inline: false },
-      { name: 'Parent Weapon', value: parentName, inline: false },
-      { name: 'Total Owned', value: formatNumber(totalOwned), inline: false },
-      { name: 'Base Value', value: baseValue, inline: false },
-      { name: 'Share Link', value: shareLink, inline: false }
+      { name: 'TYPE', value: `\`${typeFormatted}\``, inline: true },
+      { name: 'RARITY', value: `\`${rarity.toUpperCase()}\``, inline: true },
+      { name: 'UNIQUE', value: `\`${isUnique}\``, inline: true },
+      { name: 'OBTAINABLE BY', value: `\`${obtainableMethod}\``, inline: true },
+      { name: 'TOTAL OWNED', value: `\`${formatNumber(totalOwned)}\``, inline: true },
+      { name: 'CREATED', value: `\`${createdDate}\``, inline: true },
+      { name: 'BOLT VALUE', value: `\`${boltValueStr}\``, inline: true },
+      { name: 'UNITS OWNED', value: `\`${ownedUnits}\``, inline: true },
+      { name: 'SHARE LINK', value: shareLink, inline: false }
     )
     .setTimestamp();
 
@@ -66,13 +108,38 @@ export function createSkinEmbed(matchedItem, priceMap) {
   return embed;
 }
 
+/**
+ * Helper to count owned units for a Discord user
+ */
+export async function getOwnedUnitsCount(discordId, itemName) {
+  try {
+    const linked = await getLinkedAccount(discordId);
+    if (linked && linked.id) {
+      const inventory = await fetchUserInventory(linked.id);
+      if (Array.isArray(inventory)) {
+        const cleanSearchName = itemName.replace(/^_+/, '').trim().toLowerCase();
+        const matchedInvItems = inventory.filter(invItem => {
+          const invName = (invItem.item?.name || invItem.name || '');
+          return invName.replace(/^_+/, '').trim().toLowerCase() === cleanSearchName;
+        });
+        // Sum up the amount (or length if no amount field)
+        return matchedInvItems.reduce((sum, item) => sum + (item.amount || 1), 0);
+      }
+    }
+  } catch (err) {
+    console.warn(`[Skin] Error looking up units owned for Discord user ${discordId}:`, err.message);
+  }
+  return 0;
+}
+
 export async function execute(interaction) {
   await interaction.deferReply();
   const searchName = interaction.options.getString('name').trim().toLowerCase();
 
-  const [catalog, priceMap] = await Promise.all([
+  const [catalog, priceMap, allItemData] = await Promise.all([
     getPublicCatalog(),
-    getBoltPriceMap()
+    getBoltPriceMap(),
+    getAllItemData()
   ]);
 
   // Find exact or closest match in catalog
@@ -94,7 +161,8 @@ export async function execute(interaction) {
   }
 
   try {
-    const embed = createSkinEmbed(matchedItem, priceMap);
+    const ownedUnits = await getOwnedUnitsCount(interaction.user.id, matchedItem.name);
+    const embed = createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits);
     await interaction.editReply({
       embeds: [embed]
     });

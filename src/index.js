@@ -6,11 +6,11 @@ import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
 import { registerCommands } from './register-commands.js';
-import { getPublicCatalog, fetchClanLeaderboard } from './api/kirka.js';
+import { getPublicCatalog, fetchClanLeaderboard, getAllItemData } from './api/kirka.js';
 import { getBoltPriceMap } from './api/boltPrices.js';
 import { initDb } from './api/db.js';
 import { startChatListener } from './utils/chatListener.js';
-import { createSkinEmbed } from './commands/skin.js';
+import { createSkinEmbed, getOwnedUnitsCount } from './commands/skin.js';
 
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
@@ -58,11 +58,12 @@ client.once('ready', async () => {
   startChatListener(client);
 
   // Warm up all API caches in background concurrently
-  console.log('🔥 Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard)...');
+  console.log('🔥 Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard, AllItemData)...');
   Promise.all([
     getPublicCatalog(),
     getBoltPriceMap(),
-    fetchClanLeaderboard()
+    fetchClanLeaderboard(),
+    getAllItemData()
   ]).then(() => {
     console.log('✅ API cache warmup complete! Bot is fully primed and ready for instant replies.');
   }).catch(err => {
@@ -104,9 +105,10 @@ client.on('messageCreate', async (message) => {
     if (!searchName) return;
 
     try {
-      const [catalog, priceMap] = await Promise.all([
+      const [catalog, priceMap, allItemData] = await Promise.all([
         getPublicCatalog(),
-        getBoltPriceMap()
+        getBoltPriceMap(),
+        getAllItemData()
       ]);
 
       // Find exact or closest match in catalog
@@ -125,7 +127,8 @@ client.on('messageCreate', async (message) => {
         return message.reply(`❌ Could not find a skin/item matching **${content.substring(6).trim()}**.`);
       }
 
-      const embed = createSkinEmbed(matchedItem, priceMap);
+      const ownedUnits = await getOwnedUnitsCount(message.author.id, matchedItem.name);
+      const embed = createSkinEmbed(matchedItem, priceMap, allItemData, ownedUnits);
       await message.reply({
         embeds: [embed]
       });

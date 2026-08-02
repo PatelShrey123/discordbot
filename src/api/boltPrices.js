@@ -79,12 +79,14 @@ export async function getBoltPriceMap() {
           const baseValueStr = (row['Base Value'] || '').toString().replace(/,/g, '');
           const baseValue = parseInt(baseValueStr, 10) || 0;
           const type = (row['Type'] || '').trim();
+          const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
 
           const itemObj = {
             skinName,
             rarity,
             baseValue,
-            type
+            type,
+            obtainableBy
           };
 
           const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;

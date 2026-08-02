@@ -225,3 +225,22 @@ export async function fetchClanLeaderboard() {
   }
   return clanLeaderboardCache || [];
 }
+
+let allItemDataCache = null;
+
+export async function getAllItemData() {
+  if (allItemDataCache) return allItemDataCache;
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/OBS-Akuma/KirkaSkins/refs/heads/main/AllItemData.json');
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        allItemDataCache = data;
+        return data;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch AllItemData:', err.message);
+  }
+  return [];
+}
