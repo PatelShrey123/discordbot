@@ -10,6 +10,7 @@ import {
 import { fetchUserProfile, fetchUserInventory } from '../api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong, formatValueShort } from '../api/boltPrices.js';
 import { renderInventoryGridPage } from '../canvas/inventoryGrid.js';
+import { getLinkedAccount } from '../api/db.js';
 
 export const data = new SlashCommandBuilder()
   .setName('inventory')
@@ -19,12 +20,22 @@ export const data = new SlashCommandBuilder()
   .addStringOption(option =>
     option.setName('user')
       .setDescription('Kirka username or player ID')
-      .setRequired(true)
+      .setRequired(false)
   );
 
 export async function execute(interaction) {
   await interaction.deferReply();
-  const query = interaction.options.getString('user');
+  
+  let query = interaction.options.getString('user');
+  if (!query) {
+    const linked = await getLinkedAccount(interaction.user.id);
+    if (!linked) {
+      return interaction.editReply({
+        content: `❌ You haven't linked a Kirka account yet. Use \`/link\` to bind your profile, or specify a user (e.g. \`/inventory user:CrackedYOU\`).`
+      });
+    }
+    query = linked.shortId;
+  }
 
   // 1. Fetch Profile & Inventory
   const profile = await fetchUserProfile(query);

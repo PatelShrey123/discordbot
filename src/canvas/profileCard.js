@@ -19,13 +19,53 @@ function formatNumber(num) {
   return Number(num).toLocaleString('en-US');
 }
 
-export async function renderProfileCard(profile, customBgUrl = null) {
-  const width = 760;
-  const height = 425; // Adjusted height since footer is removed
-  const canvas = createCanvas(width, height);
-  const ctx = canvas.getContext('2d');
+function drawDiscordLogo(ctx, x, y, size) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(size / 24, size / 24);
+  ctx.fillStyle = '#5865F2'; // Discord color
+  
+  ctx.beginPath();
+  ctx.moveTo(18.97, 4.88);
+  ctx.bezierCurveTo(17.62, 4.25, 16.17, 3.79, 14.64, 3.53);
+  ctx.bezierCurveTo(14.45, 3.87, 14.24, 4.25, 14.09, 4.62);
+  ctx.bezierCurveTo(12.45, 4.37, 10.82, 4.37, 9.22, 4.62);
+  ctx.bezierCurveTo(9.07, 4.25, 8.85, 3.87, 8.66, 3.53);
+  ctx.bezierCurveTo(7.13, 3.79, 5.68, 4.25, 4.33, 4.88);
+  ctx.bezierCurveTo(1.6, 8.99, 0.9, 13.0, 1.27, 16.97);
+  ctx.bezierCurveTo(3.07, 18.29, 4.79, 19.09, 6.49, 19.62);
+  ctx.bezierCurveTo(6.91, 19.04, 7.29, 18.42, 7.61, 17.76);
+  ctx.bezierCurveTo(6.99, 17.53, 6.4, 17.24, 5.84, 16.89);
+  ctx.bezierCurveTo(5.99, 16.78, 6.13, 16.67, 6.27, 16.55);
+  ctx.bezierCurveTo(9.68, 18.12, 13.39, 18.12, 16.75, 16.55);
+  ctx.bezierCurveTo(16.89, 16.67, 17.03, 16.78, 17.18, 16.89);
+  ctx.bezierCurveTo(16.62, 17.24, 16.03, 17.53, 15.41, 17.76);
+  ctx.bezierCurveTo(15.73, 18.42, 16.11, 19.04, 16.53, 19.62);
+  ctx.bezierCurveTo(18.23, 19.09, 19.95, 18.29, 21.75, 16.97);
+  ctx.bezierCurveTo(22.19, 12.34, 21.01, 8.38, 19.18, 4.88);
+  ctx.closePath();
+  ctx.fill();
 
-  // Safely extract stats from Kirka API schema
+  // Left Eye
+  ctx.beginPath();
+  ctx.arc(8.02, 12.24, 1.25, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+
+  // Right Eye
+  ctx.beginPath();
+  ctx.arc(15.98, 12.24, 1.25, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  
+  ctx.restore();
+}
+
+export async function renderProfileCard(profile, customBgUrl = null, discordUsername = null) {
+  const width = 760;
+  const height = 465; 
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');  // Safely extract stats from Kirka API schema
   const stats = profile?.stats || {};
   const kills = stats.kills ?? profile?.kills ?? 0;
   const deaths = stats.deaths ?? profile?.deaths ?? 0;
@@ -262,6 +302,30 @@ export async function renderProfileCard(profile, customBgUrl = null) {
     ctx.fillStyle = '#ffffff';
     ctx.fillText(String(cell.val), x, y + 28);
   });
+
+  // Draw Discord footer bar
+  const footerY = height - 40;
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+  ctx.fillRect(0, footerY, width, 40);
+
+  // Draw top border for footer bar
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, footerY);
+  ctx.lineTo(width, footerY);
+  ctx.stroke();
+
+  // Draw Discord Logo
+  const discordLogoX = 35;
+  const discordLogoY = footerY + 10;
+  drawDiscordLogo(ctx, discordLogoX, discordLogoY, 20);
+
+  // Draw Discord Name
+  ctx.font = 'bold 15px Roboto';
+  ctx.fillStyle = '#e2e8f0';
+  ctx.textAlign = 'left';
+  ctx.fillText(discordUsername || 'Unknown', discordLogoX + 30, footerY + 25);
 
   return canvas.toBuffer('image/png');
 }

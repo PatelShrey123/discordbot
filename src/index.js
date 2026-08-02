@@ -6,12 +6,14 @@ import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard } from './api/kirka.js';
 import { getBoltPriceMap } from './api/boltPrices.js';
 import { initDb } from './api/db.js';
+import { startChatListener } from './utils/chatListener.js';
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
 import * as skinCmd from './commands/skin.js';
 import * as leaderboardCmd from './commands/leaderboard.js';
 import * as hCmd from './commands/h.js';
+import * as linkCmd from './commands/link.js';
 
 dotenv.config();
 
@@ -32,6 +34,7 @@ client.commands.set(clanCmd.data.name, clanCmd);
 client.commands.set(skinCmd.data.name, skinCmd);
 client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
 client.commands.set(hCmd.data.name, hCmd);
+client.commands.set(linkCmd.data.name, linkCmd);
 
 client.once('ready', async () => {
   console.log(`🤖 Logged in as ${client.user.tag}!`);
@@ -39,6 +42,9 @@ client.once('ready', async () => {
 
   // Initialize Supabase Database Connection
   await initDb();
+
+  // Initialize Chat WebSocket Listener
+  startChatListener(client);
 
   // Warm up all API caches in background concurrently
   console.log('🔥 Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard)...');
