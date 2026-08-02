@@ -9,7 +9,7 @@ const bgPath = join(__dirname, '../../assets/bg.jpg');
 
 try {
   GlobalFonts.registerFromPath(join(__dirname, '../../assets/RobotoMono.ttf'), 'RobotoMono');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/RobotoMono-Bold.ttf'), 'RobotoMonoBold');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/RobotoMono-Bold.ttf'), 'RobotoMono');
 } catch (err) {
   console.warn('Failed to register RobotoMono fonts in clanRoster:', err.message);
 }
@@ -138,7 +138,7 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
     const drawCell = (label, val, x, y) => {
       ctx.textAlign = 'center';
       // Label (grey, size 13px)
-      ctx.font = 'bold 13px RobotoMonoBold';
+      ctx.font = 'bold 13px RobotoMono';
       ctx.fillStyle = '#8e9297'; 
       ctx.fillText(label, x, y);
       
@@ -164,7 +164,7 @@ export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
   // Helper to draw item (perfectly aligned matching Image 9, using monospaced fonts!)
   const drawRow = (item, x, y) => {
     if (item.type === 'header') {
-      ctx.font = 'bold 24px RobotoMonoBold';
+      ctx.font = 'bold 24px RobotoMono';
       ctx.fillStyle = item.color;
       ctx.textAlign = 'left';
       ctx.fillText(item.text, x, y + 16 * scale);

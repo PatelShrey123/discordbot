@@ -10,7 +10,7 @@ const __dirname = dirname(__filename);
 
 try {
   GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'Roboto');
 } catch (err) {
   console.warn('Failed to register Roboto fonts in inventoryGrid:', err.message);
 }
@@ -153,7 +153,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeH, 4 * scale);
     ctx.stroke();
 
-    ctx.font = `bold ${8.5 * scale}px RobotoBold`;
+    ctx.font = `bold ${8.5 * scale}px Roboto`;
     ctx.fillStyle = '#94a3b8';
     ctx.textAlign = 'center';
     ctx.fillText(`x${qty}`, badgeX + badgeW/2, badgeY + badgeH - 3.5 * scale);
@@ -198,7 +198,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
 
     // Bottom Left: Item Name only
     const rawName = (item.name || 'Item').replace(/^_+/, '').trim();
-    ctx.font = `bold ${12.5 * scale}px RobotoBold`;
+    ctx.font = `bold ${12.5 * scale}px Roboto`;
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     let displayName = rawName;
@@ -208,7 +208,7 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
     ctx.fillText(displayName, x + 10 * scale, y + cellH - 9 * scale);
 
     // Bottom Right: Coin Icon & Price only
-    ctx.font = `bold ${12.5 * scale}px RobotoBold`;
+    ctx.font = `bold ${12.5 * scale}px Roboto`;
     ctx.fillStyle = '#eab308'; // Bold yellow price value
     ctx.textAlign = 'right';
     ctx.fillText(formattedPrice, x + cellW - 10 * scale, y + cellH - 9 * scale);

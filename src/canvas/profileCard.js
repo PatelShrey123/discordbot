@@ -9,7 +9,7 @@ const bgPath = join(__dirname, '../../assets/bg.jpg');
 
 try {
   GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'Roboto');
 } catch (err) {
   console.warn('Failed to register Roboto fonts in profileCard:', err.message);
 }
@@ -149,7 +149,7 @@ export async function renderProfileCard(profile, customBgUrl = null) {
   const nameX = 145;
   const nameY = 80; // slightly lower center
 
-  ctx.font = 'bold 34px RobotoBold';
+  ctx.font = 'bold 34px Roboto';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
   ctx.fillText(`${profile?.name || 'Unknown'}${clanTag}`, nameX, nameY);
@@ -178,7 +178,7 @@ export async function renderProfileCard(profile, customBgUrl = null) {
   }
 
   // XP Text
-  ctx.font = 'bold 16px RobotoBold';
+  ctx.font = 'bold 16px Roboto';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.fillText(`${formatNumber(currentXp)} / ${formatNumber(xpUntilNext)}`, width / 2 - 20, barY + 22);
@@ -225,7 +225,7 @@ export async function renderProfileCard(profile, customBgUrl = null) {
   const colWidth5 = (width - 70) / 5;
   row1.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
-    ctx.font = 'bold 16px RobotoBold';
+    ctx.font = 'bold 16px Roboto';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
     ctx.fillText(cell.label, x, gridStartY);
@@ -239,7 +239,7 @@ export async function renderProfileCard(profile, customBgUrl = null) {
   row2.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
     const y = gridStartY + rowHeight;
-    ctx.font = 'bold 16px RobotoBold';
+    ctx.font = 'bold 16px Roboto';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
     ctx.fillText(cell.label, x, y);
@@ -253,7 +253,7 @@ export async function renderProfileCard(profile, customBgUrl = null) {
   row3.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
     const y = gridStartY + 2 * rowHeight;
-    ctx.font = 'bold 16px RobotoBold';
+    ctx.font = 'bold 16px Roboto';
     ctx.fillStyle = '#fbbf24';
     ctx.textAlign = 'center';
     ctx.fillText(cell.label, x, y);

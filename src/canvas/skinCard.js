@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 try {
   GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'RobotoBold');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'Roboto');
 } catch (err) {
   console.warn('Failed to register Roboto fonts in skinCard:', err.message);
 }
@@ -84,7 +84,7 @@ export async function renderSkinCard(item, priceMap) {
     ctx.stroke();
 
     // Badge text
-    ctx.font = 'bold 15px RobotoBold';
+    ctx.font = 'bold 15px Roboto';
     ctx.fillStyle = badge.color;
     ctx.textAlign = 'center';
     ctx.fillText(badge.text, leftPanelW / 2, currentY + 23);
@@ -101,7 +101,7 @@ export async function renderSkinCard(item, priceMap) {
   ctx.stroke();
 
   // Header "Skin Value"
-  ctx.font = 'bold 16px RobotoBold';
+  ctx.font = 'bold 16px Roboto';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.fillText('Skin Value', leftPanelW / 2, 215);
@@ -115,7 +115,7 @@ export async function renderSkinCard(item, priceMap) {
   ctx.stroke();
 
   // Label tag
-  ctx.font = 'bold 12px RobotoBold';
+  ctx.font = 'bold 12px Roboto';
   ctx.fillStyle = '#fbbf24'; // Golden Bolt text
   ctx.textAlign = 'left';
   ctx.fillText('BOLT', 28, 250);
@@ -127,7 +127,7 @@ export async function renderSkinCard(item, priceMap) {
   ctx.strokeRect(28, 258, leftPanelW - 56, 42);
 
   // Value text
-  ctx.font = 'bold 16px RobotoBold';
+  ctx.font = 'bold 16px Roboto';
   ctx.fillStyle = '#fbbf24'; // Warm Gold
   ctx.textAlign = 'center';
   ctx.fillText(formattedPrice, leftPanelW / 2, 285);
