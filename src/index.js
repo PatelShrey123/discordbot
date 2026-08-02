@@ -91,14 +91,16 @@ client.on('interactionCreate', async (interaction) => {
     }
   }
 });
-
 // Support prefix command trigger: .skin [name]
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
   const content = message.content.trim();
+  console.log(`[MessageReceived] From: ${message.author.tag}, Content: "${content}"`);
+
   if (content.toLowerCase().startsWith('.skin ')) {
     const searchName = content.substring(6).trim().toLowerCase();
+    console.log(`[MessageReceived] Matched .skin! Query: "${searchName}"`);
     if (!searchName) return;
 
     try {

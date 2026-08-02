@@ -43,7 +43,7 @@ export function createSkinEmbed(matchedItem, priceMap) {
   const baseValue = matchedPrice ? `${formatNumber(matchedPrice.average)}` : 'N/A';
 
   // Share link
-  const shareLink = `https://kirka.io/`;
+  const shareLink = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name)}`;
 
   const embed = new EmbedBuilder()
     .setTitle(matchedItem.name)
