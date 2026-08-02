@@ -4,28 +4,28 @@ import WebSocket from 'ws';
 // Map of temporary active verification codes: token -> { discordId }
 export const pendingLinks = new Map();
 
-let ws = null;
+const REGIONS = [
+  { name: 'EU', url: 'wss://chat-eu.kirka.io' },
+  { name: 'US', url: 'wss://chat-us.kirka.io' },
+  { name: 'AS', url: 'wss://chat-as.kirka.io' }
+];
+
 let clientInstance = null;
 
 export function startChatListener(client) {
   clientInstance = client;
-  connectWebSocket();
+  REGIONS.forEach(region => {
+    connectRegionWebSocket(region);
+  });
 }
 
-function connectWebSocket() {
-  if (ws) {
-    try {
-      ws.close();
-    } catch (e) {}
-  }
-
-  console.log('[ChatListener] Connecting to Kirka Lobby Chat WebSocket (wss://chat.kirka.io)...');
+function connectRegionWebSocket(region) {
+  console.log(`[ChatListener] Connecting to Kirka ${region.name} Chat WebSocket (${region.url})...`);
   
-  // Use imported WebSocket from 'ws' package for cross-Node compatibility
-  ws = new WebSocket('wss://chat.kirka.io');
+  const ws = new WebSocket(region.url);
 
   ws.on('open', () => {
-    console.log('[ChatListener] Connected to wss://chat.kirka.io successfully!');
+    console.log(`[ChatListener] Connected to Kirka ${region.name} WebSocket successfully!`);
   });
 
   ws.on('message', async (rawData) => {
@@ -41,7 +41,7 @@ function connectWebSocket() {
           const { discordId } = pendingLinks.get(text);
           const kirkaUser = data.user; // { id, shortId, name }
 
-          console.log(`[ChatListener] Verification matched! Discord User: ${discordId} -> Kirka: ${kirkaUser.name} (#${kirkaUser.shortId})`);
+          console.log(`[ChatListener] Verification matched on ${region.name}! Discord User: ${discordId} -> Kirka: ${kirkaUser.name} (#${kirkaUser.shortId})`);
 
           // 1. Save link in Supabase Postgres
           await saveLinkedAccount(discordId, kirkaUser);
@@ -66,12 +66,11 @@ function connectWebSocket() {
   });
 
   ws.on('error', (error) => {
-    console.error('[ChatListener] WebSocket encountered error:', error.message || error);
+    console.error(`[ChatListener] WebSocket ${region.name} error:`, error.message || error);
   });
 
   ws.on('close', () => {
-    console.warn('[ChatListener] WebSocket disconnected. Retrying connection in 5 seconds...');
-    ws = null;
-    setTimeout(connectWebSocket, 5000);
+    console.warn(`[ChatListener] WebSocket ${region.name} disconnected. Retrying in 5 seconds...`);
+    setTimeout(() => connectRegionWebSocket(region), 5000);
   });
 }
