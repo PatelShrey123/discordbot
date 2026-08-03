@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Collection } from 'discord.js';
+import { Client, GatewayIntentBits, Collection, AttachmentBuilder, EmbedBuilder } from 'discord.js';
 import http from 'http';
 import dotenv from 'dotenv';
 import dns from 'dns';
@@ -6,11 +6,13 @@ import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
 import { registerCommands } from './register-commands.js';
-import { getPublicCatalog, fetchClanLeaderboard, getAllItemData } from './api/kirka.js';
-import { getBoltPriceMap } from './api/boltPrices.js';
-import { initDb } from './api/db.js';
+import { getPublicCatalog, fetchClanLeaderboard, getAllItemData, fetchUserProfile, fetchUserInventory } from './api/kirka.js';
+import { getBoltPriceMap, getItemPrice, formatValueLong } from './api/boltPrices.js';
+import { initDb, getUserBackground, getLinkedAccount, getDiscordLinkedToKirka } from './api/db.js';
 import { startChatListener } from './utils/chatListener.js';
 import { createSkinEmbed } from './commands/skin.js';
+import { renderProfileCard } from './canvas/profileCard.js';
+import { renderInventoryGridPage } from './canvas/inventoryGrid.js';
 
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
@@ -134,6 +136,147 @@ client.on('messageCreate', async (message) => {
     } catch (err) {
       console.error('Error in message prefix skin command:', err);
       await message.reply(`⚠️ Failed to retrieve skin details.`);
+    }
+  }
+
+  // Support prefix command trigger: .profile [username/id]
+  if (content.toLowerCase().startsWith('.profile')) {
+    let query = content.substring(8).trim();
+    console.log(`[MessageReceived] Matched .profile! Query: "${query}"`);
+    if (!query) {
+      const linked = await getLinkedAccount(message.author.id);
+      if (!linked) {
+        return message.reply(`❌ You haven't linked a Kirka account yet. Use \`/link\` to bind your profile, or search for a player: \`.profile CrackedYOU\`.`);
+      }
+      query = linked.shortId;
+    }
+
+    try {
+      const profile = await fetchUserProfile(query);
+      if (!profile) {
+        return message.reply(`❌ Could not find a Kirka player matching **${query}**.`);
+      }
+
+      const customBg = await getUserBackground(profile.id);
+
+      // Resolve Discord linked name if any exists
+      let discordUsername = null;
+      try {
+        const linkedDiscordId = await getDiscordLinkedToKirka(profile.shortId);
+        if (linkedDiscordId) {
+          const linkedUser = await client.users.fetch(linkedDiscordId);
+          if (linkedUser) {
+            discordUsername = linkedUser.tag;
+          }
+        }
+      } catch (dbErr) {
+        console.warn('[Profile] Failed to fetch linked Discord details:', dbErr.message);
+      }
+
+      const cardBuffer = await renderProfileCard(profile, customBg, discordUsername);
+      const attachment = new AttachmentBuilder(cardBuffer, { name: 'profile-card.png' });
+
+      await message.reply({
+        files: [attachment]
+      });
+    } catch (err) {
+      console.error('Error in message prefix profile command:', err);
+      await message.reply(`⚠️ Failed to render profile card image.`);
+    }
+  }
+
+  // Support prefix command trigger: .inv [username/id]
+  if (content.toLowerCase().startsWith('.inv')) {
+    let query = content.substring(4).trim();
+    console.log(`[MessageReceived] Matched .inv! Query: "${query}"`);
+    if (!query) {
+      const linked = await getLinkedAccount(message.author.id);
+      if (!linked) {
+        return message.reply(`❌ You haven't linked a Kirka account yet. Use \`/link\` to bind your profile, or search for a player: \`.inv CrackedYOU\`.`);
+      }
+      query = linked.shortId;
+    }
+
+    try {
+      const profile = await fetchUserProfile(query);
+      if (!profile) {
+        return message.reply(`❌ Could not find a Kirka player matching **${query}**.`);
+      }
+
+      const inventory = await fetchUserInventory(profile.id);
+      if (!inventory || inventory.length === 0) {
+        return message.reply(`📦 **${profile.name}** has no items in their Kirka inventory.`);
+      }
+
+      const priceMap = await getBoltPriceMap();
+
+      let totalValue = 0;
+      let totalSkinsCount = 0;
+
+      inventory.forEach(invItem => {
+        const item = invItem.item || invItem;
+        const qty = invItem.amount || 1;
+        const p = getItemPrice(priceMap, item);
+        totalValue += p * qty;
+        totalSkinsCount += qty;
+      });
+
+      const uniqueSkinsCount = inventory.length;
+
+      const getSortWeight = (invItem) => {
+        const item = invItem.item || invItem;
+        const price = getItemPrice(priceMap, item);
+        if (price > 0) return price;
+
+        const rarity = (item.rarity || '').toLowerCase().trim();
+        switch (rarity) {
+          case 'contraband': return 50000000;
+          case 'exotic':      return 35000000;
+          case 'mythical':
+          case 'mythic':     return 20000000;
+          case 'legendary':  return 4000000;
+          case 'epic':       return 500000;
+          case 'rare':       return 50000;
+          case 'uncommon':   return 5000;
+          default:           return 1;
+        }
+      };
+
+      const sortedInventory = [...inventory].sort((a, b) => getSortWeight(b) - getSortWeight(a));
+      const pageItems = sortedInventory.slice(0, 25);
+      const totalPages = Math.ceil(sortedInventory.length / 25);
+
+      const imageBuffer = await renderInventoryGridPage({
+        items: sortedInventory,
+        pageItems,
+        priceMap,
+        pageIndex: 0,
+        totalPages,
+        username: profile.name
+      });
+
+      const attachment = new AttachmentBuilder(imageBuffer, { name: 'inventory-page-1.png' });
+
+      const embed = new EmbedBuilder()
+        .setColor('#3b82f6')
+        .setDescription(
+          '```text\n' +
+          `• Skins Count:     ${totalSkinsCount.toLocaleString()} (${uniqueSkinsCount} unique)\n` +
+          `• Inventory Value: ${formatValueLong(totalValue)}\n` +
+          '```'
+        )
+        .setImage('attachment://inventory-page-1.png')
+        .setFooter({
+          text: `Page 1 of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
+        });
+
+      await message.reply({
+        embeds: [embed],
+        files: [attachment]
+      });
+    } catch (err) {
+      console.error('Error in message prefix inv command:', err);
+      await message.reply(`⚠️ Failed to render inventory grid.`);
     }
   }
 });

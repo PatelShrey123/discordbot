@@ -50,6 +50,9 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
 
   const isUnique = metadata.unique !== undefined ? (metadata.unique ? 'YES' : 'NO') : 'NO';
 
+  // Resolve Creator
+  const creator = metadata.creator?.name || matchedItem.creator?.name || 'Kirka';
+
   // Find price and obtainable method from Bolt price sheet
   const typeKey = metadata.type === 'BODY_SKIN' ? 'character' : (metadata.parent?.name || '').toLowerCase();
   const compositeKey = `${normalizedName}_${typeKey}`;
@@ -90,6 +93,7 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
       { name: 'TYPE', value: `\`${typeFormatted}\``, inline: true },
       { name: 'RARITY', value: `\`${rarity.toUpperCase()}\``, inline: true },
       { name: 'UNIQUE', value: `\`${isUnique}\``, inline: true },
+      { name: 'CREATOR', value: `\`${creator}\``, inline: true },
       { name: 'OBTAINABLE BY', value: `\`${obtainableMethod}\``, inline: true },
       { name: 'TOTAL OWNED', value: `\`${formatNumber(totalOwned)}\``, inline: true },
       { name: 'CREATED', value: `\`${createdDate}\``, inline: true },
