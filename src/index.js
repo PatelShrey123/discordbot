@@ -1,9 +1,8 @@
+import './dns-init.js';
 import { Client, GatewayIntentBits, Collection, AttachmentBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } from 'discord.js';
 import http from 'http';
 import dotenv from 'dotenv';
 import dns from 'dns';
-
-dns.setDefaultResultOrder('ipv4first');
 
 import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard, getAllItemData, fetchUserProfile, fetchUserInventory, fetchClan } from './api/kirka.js';
