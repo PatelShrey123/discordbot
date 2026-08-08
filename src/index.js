@@ -22,8 +22,6 @@ import * as leaderboardCmd from './commands/leaderboard.js';
 import * as hCmd from './commands/h.js';
 import * as linkCmd from './commands/link.js';
 import * as dbstatusCmd from './commands/dbstatus.js';
-import * as pfpCmd from './commands/pfp.js';
-import * as avatarCmd from './commands/avatar.js';
 
 dotenv.config();
 
@@ -51,8 +49,6 @@ client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
 client.commands.set(hCmd.data.name, hCmd);
 client.commands.set(linkCmd.data.name, linkCmd);
 client.commands.set(dbstatusCmd.data.name, dbstatusCmd);
-client.commands.set(pfpCmd.data.name, pfpCmd);
-client.commands.set(avatarCmd.data.name, avatarCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -587,13 +583,6 @@ client.on('messageCreate', async (message) => {
       console.error('Error rendering clan roster:', err);
       await message.reply('⚠️ Failed to render clan roster page.');
     }
-  }
-
-  // 9. .pfp / .avatar [user]
-  else if (lowerContent.startsWith('.pfp') || lowerContent.startsWith('.avatar')) {
-    const parts = content.split(/ +/);
-    const args = parts.slice(1);
-    await pfpCmd.executePrefix(message, args);
   }
 });
 
