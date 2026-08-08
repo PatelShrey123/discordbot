@@ -39,6 +39,7 @@ const client = new Client({
   ]
 });
 
+console.log('🔊 [Startup] Step 1: Registering commands collection...');
 client.commands = new Collection();
 client.commands.set(profileCmd.data.name, profileCmd);
 client.commands.set(inventoryCmd.data.name, inventoryCmd);
@@ -48,32 +49,50 @@ client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
 client.commands.set(hCmd.data.name, hCmd);
 client.commands.set(linkCmd.data.name, linkCmd);
 client.commands.set(dbstatusCmd.data.name, dbstatusCmd);
+console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
+console.log('🔊 [Startup] Step 2: Setting up ready listener...');
 client.once('ready', async () => {
-  console.log(`🤖 Logged in as ${client.user.tag}!`);
-  console.log(`🌐 Bot active in ${client.guilds.cache.size} server(s).`);
+  console.log(`🤖 [Startup] Step 3: KirkaHub Bot successfully logged in as ${client.user.tag}!`);
+  console.log(`🌐 [Startup] Bot active in ${client.guilds.cache.size} server(s).`);
 
-  // Initialize Supabase Database Connection
-  await initDb();
+  console.log('🔊 [Startup] Step 4: Connecting to Supabase Database...');
+  try {
+    await initDb();
+    console.log('✅ [Startup] Step 4: Supabase Database connected.');
+  } catch (err) {
+    console.error('❌ [Startup] Step 4: Supabase connection failed:', err);
+  }
 
-  // Initialize Chat WebSocket Listener
-  startChatListener(client);
+  console.log('🔊 [Startup] Step 5: Connecting Chat WebSocket Listener...');
+  try {
+    startChatListener(client);
+    console.log('✅ [Startup] Step 5: Chat WebSocket Listener connected.');
+  } catch (err) {
+    console.error('❌ [Startup] Step 5: Chat WebSocket connection failed:', err);
+  }
 
-  // Warm up all API caches in background concurrently
-  console.log('🔥 Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard, AllItemData)...');
+  console.log('🔥 [Startup] Step 6: Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard, AllItemData)...');
   Promise.all([
     getPublicCatalog(),
     getBoltPriceMap(),
     fetchClanLeaderboard(),
     getAllItemData()
   ]).then(() => {
-    console.log('✅ API cache warmup complete! Bot is fully primed and ready for instant replies.');
+    console.log('✅ [Startup] Step 6: API cache warmup complete! Bot is fully primed.');
   }).catch(err => {
-    console.warn('⚠️ Warning: Cache warmup encountered an error:', err.message);
+    console.warn('⚠️ [Startup] Step 6: Cache warmup encountered an error:', err.message);
   });
 
-  // Auto-register slash commands on startup
-  await registerCommands();
+  console.log('🤖 [Startup] Step 7: Deploying global slash commands...');
+  try {
+    await registerCommands();
+    console.log('✅ [Startup] Step 7: Slash commands deployed successfully.');
+  } catch (err) {
+    console.error('❌ [Startup] Step 7: Failed to deploy slash commands:', err);
+  }
+
+  console.log('🎉 [Startup] KirkaHub Bot is fully ready and online!');
 });
 
 client.on('interactionCreate', async (interaction) => {
