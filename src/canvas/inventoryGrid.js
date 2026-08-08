@@ -9,10 +9,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 try {
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Doto.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Doto.ttf'), 'Roboto-Bold');
 } catch (err) {
-  console.warn('Failed to register Roboto fonts in inventoryGrid:', err.message);
+  console.warn('Failed to register Doto fonts in inventoryGrid:', err.message);
 }
 
 // Exact colors matching the user screenshot

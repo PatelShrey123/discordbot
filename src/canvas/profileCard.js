@@ -8,10 +8,10 @@ const __dirname = dirname(__filename);
 const bgPath = join(__dirname, '../../assets/bg.jpg');
 
 try {
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto.ttf'), 'Roboto');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Roboto-Bold.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Doto.ttf'), 'Roboto');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Doto.ttf'), 'Roboto-Bold');
 } catch (err) {
-  console.warn('Failed to register Roboto fonts in profileCard:', err.message);
+  console.warn('Failed to register Doto fonts in profileCard:', err.message);
 }
 
 function formatNumber(num) {

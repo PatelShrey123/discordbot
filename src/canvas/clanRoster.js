@@ -8,10 +8,10 @@ const __dirname = dirname(__filename);
 const bgPath = join(__dirname, '../../assets/bg.jpg');
 
 try {
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/RobotoMono.ttf'), 'RobotoMono');
-  GlobalFonts.registerFromPath(join(__dirname, '../../assets/RobotoMono-Bold.ttf'), 'RobotoMono');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Doto.ttf'), 'RobotoMono');
+  GlobalFonts.registerFromPath(join(__dirname, '../../assets/Doto.ttf'), 'RobotoMono-Bold');
 } catch (err) {
-  console.warn('Failed to register RobotoMono fonts in clanRoster:', err.message);
+  console.warn('Failed to register Doto fonts in clanRoster:', err.message);
 }
 
 export async function renderClanRosterPage(clan, rank, pageIdx, totalPages) {
