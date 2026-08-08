@@ -573,8 +573,11 @@ const PORT = process.env.PORT || 3000;
 http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ status: 'online', bot: client.user ? client.user.tag : 'initializing' }));
-}).listen(PORT, () => {
-  console.log(`📡 Health-check server listening on port ${PORT}`);
+}).listen(PORT, '0.0.0.0', () => {
+  console.log(`📡 Health-check server listening on port ${PORT} (0.0.0.0)`);
 });
 
-client.login(token);
+client.login(token).catch(err => {
+  console.error('❌ Failed to login to Discord:', err);
+  process.exit(1);
+});
