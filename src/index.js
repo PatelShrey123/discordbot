@@ -1,4 +1,5 @@
 import './dns-init.js';
+import './utils/override.js';
 import { Client, GatewayIntentBits, Collection, AttachmentBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } from 'discord.js';
 import http from 'http';
 import dotenv from 'dotenv';
