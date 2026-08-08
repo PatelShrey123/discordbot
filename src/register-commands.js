@@ -8,6 +8,8 @@ import * as leaderboardCmd from './commands/leaderboard.js';
 import * as hCmd from './commands/h.js';
 import * as linkCmd from './commands/link.js';
 import * as dbstatusCmd from './commands/dbstatus.js';
+import * as pfpCmd from './commands/pfp.js';
+import * as avatarCmd from './commands/avatar.js';
 
 dotenv.config();
 
@@ -19,7 +21,9 @@ const commands = [
   leaderboardCmd.data.toJSON(),
   hCmd.data.toJSON(),
   linkCmd.data.toJSON(),
-  dbstatusCmd.data.toJSON()
+  dbstatusCmd.data.toJSON(),
+  pfpCmd.data.toJSON(),
+  avatarCmd.data.toJSON()
 ];
 
 export async function registerCommands() {
