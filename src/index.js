@@ -22,6 +22,7 @@ import * as leaderboardCmd from './commands/leaderboard.js';
 import * as hCmd from './commands/h.js';
 import * as linkCmd from './commands/link.js';
 import * as dbstatusCmd from './commands/dbstatus.js';
+import * as unlinkCmd from './commands/unlink.js';
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ client.commands.set(leaderboardCmd.data.name, leaderboardCmd);
 client.commands.set(hCmd.data.name, hCmd);
 client.commands.set(linkCmd.data.name, linkCmd);
 client.commands.set(dbstatusCmd.data.name, dbstatusCmd);
+client.commands.set(unlinkCmd.data.name, unlinkCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -406,6 +408,11 @@ client.on('messageCreate', async (message) => {
         }).catch(() => {});
       }
     });
+  }
+
+  // 4b. .unlink
+  else if (lowerContent.startsWith('.unlink')) {
+    await unlinkCmd.executePrefix(message);
   }
 
   // 5. .h [url/image]

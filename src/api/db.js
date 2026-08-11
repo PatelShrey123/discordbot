@@ -138,3 +138,25 @@ export async function getDiscordLinkedToKirka(kirkaShortId) {
   }
   return null;
 }
+
+/**
+ * Delete user's linked account from database
+ */
+export async function deleteLinkedAccount(discordId) {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/linked_accounts?discord_id=eq.${discordId}`;
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return true;
+  } catch (err) {
+    console.error(`[Database] Error deleting linked account for Discord user ${discordId}:`, err.message);
+    throw err;
+  }
+}
+
