@@ -8,7 +8,7 @@ import {
   ComponentType
 } from 'discord.js';
 import { fetchUserProfile, fetchUserInventory } from '../api/kirka.js';
-import { getBoltPriceMap, getItemPrice, formatValueLong, formatValueShort } from '../api/boltPrices.js';
+import { getBoltPriceMap, getItemPrice, formatValueLong } from '../api/boltPrices.js';
 import { renderInventoryGridPage } from '../canvas/inventoryGrid.js';
 import { getLinkedAccount } from '../api/db.js';
 
@@ -188,5 +188,161 @@ export async function execute(interaction) {
       new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true)
     );
     interaction.editReply({ components: [disabledRow] }).catch(() => {});
+  });
+}
+
+export async function executePrefix(message, args) {
+  let query = args.join(' ').trim();
+  if (!query) {
+    const linked = await getLinkedAccount(message.author.id);
+    if (!linked) {
+      return message.reply(`❌ You haven't linked a Kirka account yet. Use \`.link\` to bind your profile, or search for a player: \`.inv CrackedYOU\`.`);
+    }
+    query = linked.shortId;
+  }
+
+  // 1. Fetch Profile & Inventory
+  const profile = await fetchUserProfile(query);
+  if (!profile) {
+    return message.reply(`❌ Could not find a Kirka player matching **${query}**.`);
+  }
+
+  const inventory = await fetchUserInventory(profile.id);
+  if (!inventory || inventory.length === 0) {
+    return message.reply(`📦 **${profile.name}** has no items in their Kirka inventory.`);
+  }
+
+  // 2. Load Bolt Prices & Compute Total Valuation
+  const priceMap = await getBoltPriceMap();
+
+  let totalValue = 0;
+  let totalSkinsCount = 0;
+
+  inventory.forEach(invItem => {
+    const item = invItem.item || invItem;
+    const qty = invItem.amount || 1;
+    const p = getItemPrice(priceMap, item);
+    totalValue += p * qty;
+    totalSkinsCount += qty;
+  });
+
+  const uniqueSkinsCount = inventory.length;
+
+  const getSortWeight = (invItem) => {
+    const item = invItem.item || invItem;
+    const price = getItemPrice(priceMap, item);
+    if (price > 0) return price;
+
+    const rarity = (item.rarity || '').toLowerCase().trim();
+    switch (rarity) {
+      case 'contraband': return 50000000;
+      case 'exotic':      return 35000000;
+      case 'mythical':
+      case 'mythic':     return 20000000;
+      case 'legendary':  return 4000000;
+      case 'epic':       return 500000;
+      case 'rare':       return 50000;
+      case 'uncommon':   return 5000;
+      default:           return 1;
+    }
+  };
+
+  // 3. Sort items
+  const sortedInventory = [...inventory].sort((a, b) => {
+    return getSortWeight(b) - getSortWeight(a);
+  });
+
+  const itemsPerPage = 25;
+  const totalPages = Math.ceil(sortedInventory.length / itemsPerPage);
+
+  // 4. Render initial page
+  const renderPage = async (pageIdx) => {
+    const start = pageIdx * itemsPerPage;
+    const pageItems = sortedInventory.slice(start, start + itemsPerPage);
+
+    const imageBuffer = await renderInventoryGridPage({
+      items: sortedInventory,
+      pageItems,
+      priceMap,
+      pageIndex: pageIdx,
+      totalPages,
+      username: profile.name
+    });
+
+    const attachment = new AttachmentBuilder(imageBuffer, { name: `inventory-page-${pageIdx + 1}.png` });
+
+    const embed = new EmbedBuilder()
+      .setColor('#3b82f6')
+      .setDescription(
+        '```text\n' +
+        `• Skins Count:     ${totalSkinsCount.toLocaleString()} (${uniqueSkinsCount} unique)\n` +
+        `• Inventory Value: ${formatValueLong(totalValue)}\n` +
+        '```'
+      )
+      .setImage(`attachment://inventory-page-${pageIdx + 1}.png`)
+      .setFooter({
+        text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
+      });
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`prev_${pageIdx}`)
+        .setLabel('◀')
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(pageIdx === 0),
+      new ButtonBuilder()
+        .setCustomId(`next_${pageIdx}`)
+        .setLabel('▶')
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(pageIdx >= totalPages - 1)
+    );
+
+    return { embed, attachment, row };
+  };
+
+  let currentPage = 0;
+  const initialData = await renderPage(currentPage);
+
+  const response = await message.reply({
+    embeds: [initialData.embed],
+    files: [initialData.attachment],
+    components: totalPages > 1 ? [initialData.row] : []
+  });
+
+  if (totalPages <= 1) return;
+
+  const collector = response.createMessageComponentCollector({
+    componentType: ComponentType.Button,
+    time: 120000 // 2 minutes
+  });
+
+  collector.on('collect', async (i) => {
+    if (i.user.id !== message.author.id) {
+      return i.reply({ content: '⚠️ Only the command user can control pagination buttons.', flags: 64 });
+    }
+
+    await i.deferUpdate();
+
+    if (i.customId.startsWith('prev_')) {
+      currentPage = Math.max(0, currentPage - 1);
+    } else if (i.customId.startsWith('next_')) {
+      currentPage = Math.min(totalPages - 1, currentPage + 1);
+    }
+
+    const newPageData = await renderPage(currentPage);
+
+    await response.edit({
+      embeds: [newPageData.embed],
+      files: [newPageData.attachment],
+      components: [newPageData.row]
+    });
+  });
+
+  collector.on('end', () => {
+    const disabledRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId('prev_dis').setLabel('◀').setStyle(ButtonStyle.Secondary).setDisabled(true),
+      new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true)
+    );
+    response.edit({ components: [disabledRow] }).catch(() => {});
   });
 }
