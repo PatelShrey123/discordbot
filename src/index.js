@@ -23,6 +23,7 @@ import * as hCmd from './commands/h.js';
 import * as linkCmd from './commands/link.js';
 import * as dbstatusCmd from './commands/dbstatus.js';
 import * as unlinkCmd from './commands/unlink.js';
+import * as aiCmd from './commands/ai.js';
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ client.commands.set(hCmd.data.name, hCmd);
 client.commands.set(linkCmd.data.name, linkCmd);
 client.commands.set(dbstatusCmd.data.name, dbstatusCmd);
 client.commands.set(unlinkCmd.data.name, unlinkCmd);
+client.commands.set(aiCmd.data.name, aiCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
