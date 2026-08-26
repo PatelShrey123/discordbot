@@ -103,12 +103,16 @@ export async function fetchUserProfile(query) {
       headers: getHeaders(),
       body: JSON.stringify({ id: cleanQuery })
     });
+    if (res.status >= 500) {
+      throw new Error(`Kirka API Outage (${res.status})`);
+    }
     if (res.ok) {
       const data = await res.json();
       if (data && (data.id || data.name)) return await enrichProfile(data);
     }
   } catch (err) {
     console.error('getProfile ID error:', err.message);
+    if (err.message.includes('Outage')) throw err;
   }
 
   // 2. Try as shortId (e.g. FUYR7K)
@@ -119,18 +123,25 @@ export async function fetchUserProfile(query) {
         headers: getHeaders(),
         body: JSON.stringify({ id: cleanQuery.toUpperCase(), isShortId: true })
       });
+      if (res.status >= 500) {
+        throw new Error(`Kirka API Outage (${res.status})`);
+      }
       if (res.ok) {
         const data = await res.json();
         if (data && (data.id || data.name)) return await enrichProfile(data);
       }
     } catch (err) {
       console.error('getProfile shortId error:', err.message);
+      if (err.message.includes('Outage')) throw err;
     }
   }
 
   // 3. Search leaderboard for username match
   try {
     const res = await fetch(`${BASE_URL}/leaderboard/solo`, { headers: getHeaders() });
+    if (res.status >= 500) {
+      throw new Error(`Kirka API Outage (${res.status})`);
+    }
     if (res.ok) {
       const json = await res.json();
       const results = json.results || json || [];
@@ -142,6 +153,7 @@ export async function fetchUserProfile(query) {
     }
   } catch (err) {
     console.error('Leaderboard search error:', err.message);
+    if (err.message.includes('Outage')) throw err;
   }
 
   return null;

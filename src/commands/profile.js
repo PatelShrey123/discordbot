@@ -28,7 +28,17 @@ export async function execute(interaction) {
     query = linked.shortId;
   }
 
-  const profile = await fetchUserProfile(query);
+  let profile;
+  try {
+    profile = await fetchUserProfile(query);
+  } catch (err) {
+    if (err.message.includes('Outage')) {
+      return interaction.editReply({
+        content: `⚠️ **Kirka.io API Outage**: The Kirka profile database is currently experiencing issues and returned a 500 Internal Server Error. This is an official Kirka API server outage. Please try again later!`
+      });
+    }
+  }
+
   if (!profile) {
     return interaction.editReply({
       content: `❌ Could not find a Kirka player matching **${query}**. Please check the username or ID and try again.`
