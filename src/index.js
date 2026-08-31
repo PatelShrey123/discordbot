@@ -27,7 +27,6 @@ import * as botnameCmd from './commands/botname.js';
 import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
-import * as seasonCmd from './commands/season.js';
 
 dotenv.config();
 
@@ -60,7 +59,6 @@ client.commands.set(botnameCmd.data.name, botnameCmd);
 client.commands.set(botavatarCmd.data.name, botavatarCmd);
 client.commands.set(questsCmd.data.name, questsCmd);
 client.commands.set(rankedCmd.data.name, rankedCmd);
-client.commands.set(seasonCmd.data.name, seasonCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -533,12 +531,6 @@ client.on('messageCreate', async (message) => {
   else if (lowerContent.startsWith('.ranked')) {
     const args = content.substring(7).trim().split(/ +/).filter(Boolean);
     await rankedCmd.executePrefix(message, args);
-  }
-
-  // 13. .season
-  else if (lowerContent.startsWith('.season')) {
-    const args = content.substring(7).trim().split(/ +/).filter(Boolean);
-    await seasonCmd.executePrefix(message, args);
   }
 });
 

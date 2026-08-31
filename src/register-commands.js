@@ -13,7 +13,6 @@ import * as botnameCmd from './commands/botname.js';
 import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
-import * as seasonCmd from './commands/season.js';
 
 dotenv.config();
 
@@ -30,8 +29,7 @@ const commands = [
   botnameCmd.data.toJSON(),
   botavatarCmd.data.toJSON(),
   questsCmd.data.toJSON(),
-  rankedCmd.data.toJSON(),
-  seasonCmd.data.toJSON()
+  rankedCmd.data.toJSON()
 ];
 
 export async function registerCommands() {
