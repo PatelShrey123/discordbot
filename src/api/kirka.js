@@ -256,3 +256,48 @@ export async function getAllItemData() {
   }
   return [];
 }
+
+export async function fetchQuests(type = null) {
+  try {
+    const body = type ? JSON.stringify({ type }) : JSON.stringify({});
+    const res = await fetch(`${BASE_URL}/quests`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.error('Failed to fetch quests:', err.message);
+  }
+  return [];
+}
+
+export async function fetchRankedLeaderboard(category) {
+  try {
+    const res = await fetch(`${BASE_URL}/leaderboard/ranked${category}`, {
+      headers: getHeaders()
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.error(`Failed to fetch ranked ${category} leaderboard:`, err.message);
+  }
+  return null;
+}
+
+export async function fetchSoloLeaderboardWithRewards() {
+  try {
+    const res = await fetch(`${BASE_URL}/leaderboard/solo`, {
+      headers: getHeaders()
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.error('Failed to fetch solo leaderboard with rewards:', err.message);
+  }
+  return null;
+}

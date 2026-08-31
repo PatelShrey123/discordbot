@@ -25,6 +25,10 @@ import * as dbstatusCmd from './commands/dbstatus.js';
 import * as unlinkCmd from './commands/unlink.js';
 import * as botnameCmd from './commands/botname.js';
 import * as botavatarCmd from './commands/botavatar.js';
+import * as questsCmd from './commands/quests.js';
+import * as rankedCmd from './commands/ranked.js';
+import * as seasonCmd from './commands/season.js';
+import * as clanactivityCmd from './commands/clanactivity.js';
 
 dotenv.config();
 
@@ -55,6 +59,10 @@ client.commands.set(dbstatusCmd.data.name, dbstatusCmd);
 client.commands.set(unlinkCmd.data.name, unlinkCmd);
 client.commands.set(botnameCmd.data.name, botnameCmd);
 client.commands.set(botavatarCmd.data.name, botavatarCmd);
+client.commands.set(questsCmd.data.name, questsCmd);
+client.commands.set(rankedCmd.data.name, rankedCmd);
+client.commands.set(seasonCmd.data.name, seasonCmd);
+client.commands.set(clanactivityCmd.data.name, clanactivityCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -515,6 +523,30 @@ client.on('messageCreate', async (message) => {
   else if (lowerContent.startsWith('.botavatar')) {
     const args = content.substring(10).trim().split(/ +/).filter(Boolean);
     await botavatarCmd.executePrefix(message, args);
+  }
+
+  // 11. .quests [type]
+  else if (lowerContent.startsWith('.quests')) {
+    const args = content.substring(7).trim().split(/ +/).filter(Boolean);
+    await questsCmd.executePrefix(message, args);
+  }
+
+  // 12. .ranked [category]
+  else if (lowerContent.startsWith('.ranked')) {
+    const args = content.substring(7).trim().split(/ +/).filter(Boolean);
+    await rankedCmd.executePrefix(message, args);
+  }
+
+  // 13. .season
+  else if (lowerContent.startsWith('.season')) {
+    const args = content.substring(7).trim().split(/ +/).filter(Boolean);
+    await seasonCmd.executePrefix(message, args);
+  }
+
+  // 14. .clanactivity [name]
+  else if (lowerContent.startsWith('.clanactivity')) {
+    const args = content.substring(13).trim().split(/ +/).filter(Boolean);
+    await clanactivityCmd.executePrefix(message, args);
   }
 });
 
