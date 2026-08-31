@@ -23,6 +23,8 @@ import * as hCmd from './commands/h.js';
 import * as linkCmd from './commands/link.js';
 import * as dbstatusCmd from './commands/dbstatus.js';
 import * as unlinkCmd from './commands/unlink.js';
+import * as botnameCmd from './commands/botname.js';
+import * as botavatarCmd from './commands/botavatar.js';
 
 dotenv.config();
 
@@ -51,6 +53,8 @@ client.commands.set(hCmd.data.name, hCmd);
 client.commands.set(linkCmd.data.name, linkCmd);
 client.commands.set(dbstatusCmd.data.name, dbstatusCmd);
 client.commands.set(unlinkCmd.data.name, unlinkCmd);
+client.commands.set(botnameCmd.data.name, botnameCmd);
+client.commands.set(botavatarCmd.data.name, botavatarCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -499,6 +503,18 @@ client.on('messageCreate', async (message) => {
       console.error('Error rendering clan roster:', err);
       await message.reply('⚠️ Failed to render clan roster page.');
     }
+  }
+  
+  // 9. .botname [new_name]
+  else if (lowerContent.startsWith('.botname')) {
+    const args = content.substring(8).trim().split(/ +/).filter(Boolean);
+    await botnameCmd.executePrefix(message, args);
+  }
+
+  // 10. .botavatar [url/image]
+  else if (lowerContent.startsWith('.botavatar')) {
+    const args = content.substring(10).trim().split(/ +/).filter(Boolean);
+    await botavatarCmd.executePrefix(message, args);
   }
 });
 

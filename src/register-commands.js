@@ -9,6 +9,8 @@ import * as hCmd from './commands/h.js';
 import * as linkCmd from './commands/link.js';
 import * as dbstatusCmd from './commands/dbstatus.js';
 import * as unlinkCmd from './commands/unlink.js';
+import * as botnameCmd from './commands/botname.js';
+import * as botavatarCmd from './commands/botavatar.js';
 
 dotenv.config();
 
@@ -21,7 +23,9 @@ const commands = [
   hCmd.data.toJSON(),
   linkCmd.data.toJSON(),
   dbstatusCmd.data.toJSON(),
-  unlinkCmd.data.toJSON()
+  unlinkCmd.data.toJSON(),
+  botnameCmd.data.toJSON(),
+  botavatarCmd.data.toJSON()
 ];
 
 export async function registerCommands() {
