@@ -28,7 +28,6 @@ import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
 import * as seasonCmd from './commands/season.js';
-import * as clanactivityCmd from './commands/clanactivity.js';
 
 dotenv.config();
 
@@ -62,7 +61,6 @@ client.commands.set(botavatarCmd.data.name, botavatarCmd);
 client.commands.set(questsCmd.data.name, questsCmd);
 client.commands.set(rankedCmd.data.name, rankedCmd);
 client.commands.set(seasonCmd.data.name, seasonCmd);
-client.commands.set(clanactivityCmd.data.name, clanactivityCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -541,12 +539,6 @@ client.on('messageCreate', async (message) => {
   else if (lowerContent.startsWith('.season')) {
     const args = content.substring(7).trim().split(/ +/).filter(Boolean);
     await seasonCmd.executePrefix(message, args);
-  }
-
-  // 14. .clanactivity [name]
-  else if (lowerContent.startsWith('.clanactivity')) {
-    const args = content.substring(13).trim().split(/ +/).filter(Boolean);
-    await clanactivityCmd.executePrefix(message, args);
   }
 });
 
