@@ -3,6 +3,8 @@ import { Client, GatewayIntentBits, Collection, AttachmentBuilder, EmbedBuilder,
 import http from 'http';
 import dotenv from 'dotenv';
 import dns from 'dns';
+import fs from 'fs';
+import path from 'path';
 
 import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard, getAllItemData, fetchUserProfile, fetchUserInventory, fetchClan } from './api/kirka.js';
@@ -162,6 +164,16 @@ client.on('messageCreate', async (message) => {
       }
 
       const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+      const files = [];
+
+      const cleanName = (matchedItem.name || '').replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+      const localRenderPath = path.resolve(`assets/renders/${cleanName}.gif`);
+      if (fs.existsSync(localRenderPath)) {
+        const attachment = new AttachmentBuilder(localRenderPath, { name: 'skin-3d.gif' });
+        embed.setImage('attachment://skin-3d.gif');
+        files.push(attachment);
+      }
+
       const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -172,6 +184,7 @@ client.on('messageCreate', async (message) => {
 
       await message.reply({
         embeds: [embed],
+        files: files.length > 0 ? files : undefined,
         components: [row]
       });
     } catch (err) {
