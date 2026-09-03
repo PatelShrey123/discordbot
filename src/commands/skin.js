@@ -1,8 +1,6 @@
-import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, AttachmentBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getPublicCatalog, getAllItemData } from '../api/kirka.js';
 import { getBoltPriceMap, formatValueLong } from '../api/boltPrices.js';
-import fs from 'fs';
-import path from 'path';
 
 export const data = new SlashCommandBuilder()
   .setName('skin')
@@ -142,16 +140,6 @@ export async function execute(interaction) {
 
   try {
     const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
-    const files = [];
-
-    // Check for authentic pre-rendered 3D rotating GIF
-    const cleanName = (matchedItem.name || '').replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
-    const localRenderPath = path.resolve(`assets/renders/${cleanName}.gif`);
-    if (fs.existsSync(localRenderPath)) {
-      const attachment = new AttachmentBuilder(localRenderPath, { name: 'skin-3d.gif' });
-      embed.setImage('attachment://skin-3d.gif');
-      files.push(attachment);
-    }
 
     const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
     const row = new ActionRowBuilder().addComponents(
@@ -163,7 +151,6 @@ export async function execute(interaction) {
 
     await interaction.editReply({
       embeds: [embed],
-      files: files.length > 0 ? files : undefined,
       components: [row]
     });
   } catch (err) {
