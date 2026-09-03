@@ -69,13 +69,13 @@ function createGecko3pxCharacter(THREE, texture) {
   const group = new THREE.Group();
   const skinMat = new THREE.MeshStandardMaterial({
     map: texture,
-    roughness: 0.4,
+    roughness: 0.35,
     metalness: 0.05,
     side: THREE.DoubleSide
   });
   const skinMatAlpha = new THREE.MeshStandardMaterial({
     map: texture,
-    roughness: 0.4,
+    roughness: 0.35,
     metalness: 0.05,
     transparent: true,
     alphaTest: 0.5,
@@ -174,13 +174,13 @@ async function getHelper() {
 }
 
 /**
- * Render a genuine 3D rotating GIF for any skin
+ * Render a high-end, studio-lit, slow cinematic 3D rotating GIF on Pure Black
  */
-export async function generate3dGif(item, customTextureUrl = null, customType = null) {
+export async function generate3dGif(item, customTextureUrl = null, customType = null, forceOverwrite = false) {
   const cleanName = (item?.name || 'skin').replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
   const outputFile = path.join(RENDERS_DIR, `${cleanName}.gif`);
 
-  if (fs.existsSync(outputFile)) {
+  if (fs.existsSync(outputFile) && !forceOverwrite) {
     console.log(`[Skip] Already exists: ${outputFile}`);
     return outputFile;
   }
@@ -220,31 +220,41 @@ export async function generate3dGif(item, customTextureUrl = null, customType = 
   const scene = new THREE.Scene();
   const pivot = new THREE.Group();
 
-  // Studio Lighting (identical to website)
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
+  // Premium Website-Grade Studio Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
   scene.add(ambientLight);
-  const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+
+  // Key front-top light (white brilliance)
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
   keyLight.position.set(3, 4, 3);
   scene.add(keyLight);
-  const fillLight = new THREE.DirectionalLight(0x7dd3fc, 1.2);
+
+  // Fill bottom-side light (cool cyan accent)
+  const fillLight = new THREE.DirectionalLight(0x7dd3fc, 1.5);
   fillLight.position.set(-3, -1, -2);
   scene.add(fillLight);
 
-  let width = 360;
-  let height = 240;
+  // Golden Rim Light (website signature rim highlights!)
+  const rimLight = new THREE.DirectionalLight(0xfcd34d, 2.2);
+  rimLight.position.set(0, 3, -3);
+  scene.add(rimLight);
+
+  let width = 380;
+  let height = 250;
   let camera;
 
   if (isChar) {
     width = 300;
     height = 300;
     camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, -0.05, 2.3);
+    // 3/4 elevated perspective
+    camera.position.set(0, -0.05, 2.25);
 
     const charGroup = createGecko3pxCharacter(THREE, dataTexture);
     pivot.add(charGroup);
   } else {
     camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 0.15, 1.85);
+    camera.position.set(0, 0.12, 1.8);
 
     const modelPath = path.resolve(`assets/models/${modelFilename}`);
     if (!fs.existsSync(modelPath)) return null;
@@ -262,8 +272,8 @@ export async function generate3dGif(item, customTextureUrl = null, customType = 
       if (child.isMesh) {
         child.material = new THREE.MeshStandardMaterial({
           map: dataTexture,
-          roughness: 0.35,
-          metalness: 0.1,
+          roughness: 0.32,
+          metalness: 0.12,
           side: THREE.DoubleSide
         });
       }
@@ -284,21 +294,25 @@ export async function generate3dGif(item, customTextureUrl = null, customType = 
 
   scene.add(pivot);
 
-  const frames = 16;
+  // 32 Silky Smooth Frames for Slow, Majestic 360° Rotation
+  const frames = 32;
   const gif = GIFEncoder();
 
   for (let i = 0; i < frames; i++) {
     pivot.rotation.y = (i / frames) * Math.PI * 2;
-    const pngBuf = await render({ scene, camera, width, height, background: '#0e1017' });
+    // Pure Black Background (#000000)
+    const pngBuf = await render({ scene, camera, width, height, background: '#000000' });
     const { data: framePixels } = await sharp(pngBuf).raw().ensureAlpha().toBuffer({ resolveWithObject: true });
-    const palette = quantize(framePixels, 64);
+    // Full 256-color palette for vibrant, non-dull colors
+    const palette = quantize(framePixels, 256);
     const index = applyPalette(framePixels, palette);
-    gif.writeFrame(index, width, height, { palette, delay: 1000 / 12 });
+    // delay: 100ms per frame = 10 fps -> 3.2 seconds total rotation time (slow, smooth, premium)
+    gif.writeFrame(index, width, height, { palette, delay: 100 });
   }
 
   gif.finish();
   const gifBuffer = Buffer.from(gif.bytes());
   fs.writeFileSync(outputFile, gifBuffer);
-  console.log(`✅ [Rendered 3D] ${cleanName}.gif (${(gifBuffer.length / 1024).toFixed(1)} KB)`);
+  console.log(`✨ [Premium 3D Render] ${cleanName}.gif (${(gifBuffer.length / 1024).toFixed(1)} KB) - 32 frames on Pure Black`);
   return outputFile;
 }
