@@ -1,6 +1,7 @@
-import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, AttachmentBuilder } from 'discord.js';
 import { getPublicCatalog, getAllItemData } from '../api/kirka.js';
 import { getBoltPriceMap, formatValueLong } from '../api/boltPrices.js';
+import { renderSkin3DGif } from '../canvas/skin3dGif.js';
 
 export const data = new SlashCommandBuilder()
   .setName('skin')
@@ -140,6 +141,26 @@ export async function execute(interaction) {
 
   try {
     const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+    const files = [];
+
+    // Render or load cached 360 rotating 3D preview GIF
+    try {
+      const metadata = allItemData.find(item => 
+        item.name && item.name.replace(/^_+/, '').trim().toLowerCase() === matchedItem.name.replace(/^_+/, '').trim().toLowerCase()
+      ) || matchedItem;
+      const textureUrl = metadata.textureUrl || matchedItem.textureUrl;
+      const weaponType = metadata.type === 'BODY_SKIN' ? 'CHARACTER' : metadata.parent?.name;
+
+      const gifBuffer = await renderSkin3DGif(matchedItem, textureUrl, weaponType);
+      if (gifBuffer) {
+        const attachment = new AttachmentBuilder(gifBuffer, { name: 'skin-3d.gif' });
+        embed.setImage('attachment://skin-3d.gif');
+        files.push(attachment);
+      }
+    } catch (gifErr) {
+      console.warn('[SkinCommand] Could not generate 3D GIF, using static render:', gifErr.message);
+    }
+
     const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -150,6 +171,7 @@ export async function execute(interaction) {
 
     await interaction.editReply({
       embeds: [embed],
+      files: files.length > 0 ? files : undefined,
       components: [row]
     });
   } catch (err) {

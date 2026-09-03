@@ -13,6 +13,7 @@ import { createSkinEmbed } from './commands/skin.js';
 import { renderProfileCard } from './canvas/profileCard.js';
 import { renderInventoryGridPage } from './canvas/inventoryGrid.js';
 import { renderClanRosterPage } from './canvas/clanRoster.js';
+import { renderSkin3DGif } from './canvas/skin3dGif.js';
 
 import * as profileCmd from './commands/profile.js';
 import * as inventoryCmd from './commands/inventory.js';
@@ -162,6 +163,25 @@ client.on('messageCreate', async (message) => {
       }
 
       const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+      const files = [];
+
+      try {
+        const metadata = allItemData.find(item => 
+          item.name && item.name.replace(/^_+/, '').trim().toLowerCase() === matchedItem.name.replace(/^_+/, '').trim().toLowerCase()
+        ) || matchedItem;
+        const textureUrl = metadata.textureUrl || matchedItem.textureUrl;
+        const weaponType = metadata.type === 'BODY_SKIN' ? 'CHARACTER' : metadata.parent?.name;
+
+        const gifBuffer = await renderSkin3DGif(matchedItem, textureUrl, weaponType);
+        if (gifBuffer) {
+          const attachment = new AttachmentBuilder(gifBuffer, { name: 'skin-3d.gif' });
+          embed.setImage('attachment://skin-3d.gif');
+          files.push(attachment);
+        }
+      } catch (gifErr) {
+        console.warn('[PrefixSkin] Could not generate 3D GIF, using static render:', gifErr.message);
+      }
+
       const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -170,7 +190,11 @@ client.on('messageCreate', async (message) => {
           .setURL(web3DUrl)
       );
 
-      await message.reply({ embeds: [embed], components: [row] });
+      await message.reply({
+        embeds: [embed],
+        files: files.length > 0 ? files : undefined,
+        components: [row]
+      });
     } catch (err) {
       console.error('Error in prefix skin command:', err);
       await message.reply(`⚠️ Failed to retrieve skin details.`);
