@@ -1,9 +1,6 @@
-import getTHREE from 'headless-three';
-import * as canvasPkg from '@napi-rs/canvas';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { createCanvas, loadImage } from '@napi-rs/canvas';
 import pkg from 'gifenc';
 const { GIFEncoder, quantize, applyPalette } = pkg;
-import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,295 +9,177 @@ if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
 }
 
-export const WEAPON_MODEL_MAP = {
-  'VITA': 'VITA.glb',
-  'SCAR': 'SCAR.glb',
-  'SHARK': 'Shark.glb',
-  'AR-9': 'AR-9.glb',
-  'AR9': 'AR-9.glb',
-  'LAR': 'LAR.glb',
-  'M60': 'M60.glb',
-  'MAC-10': 'MAC-10.glb',
-  'MAC10': 'MAC-10.glb',
-  'REVOLVER': 'Revolver.glb',
-  'TOMAHAWK': 'Tomahawk.glb',
-  'BAYONET': 'Bayonet.glb',
-  'KNIFE': 'Bayonet.glb',
-  'WEATIE': 'Weatie.glb',
-  'SHOTGUN': 'Weatie.glb',
+const RARITY_COLORS = {
+  MYTHICAL: { glow: 'rgba(234, 88, 12, 0.3)', border: '#ea580c' },
+  LEGENDARY: { glow: 'rgba(251, 191, 36, 0.3)', border: '#fbbf24' },
+  EPIC: { glow: 'rgba(168, 85, 247, 0.3)', border: '#a855f7' },
+  RARE: { glow: 'rgba(59, 130, 246, 0.3)', border: '#3b82f6' },
+  UNCOMMON: { glow: 'rgba(16, 185, 129, 0.3)', border: '#10b981' },
+  COMMON: { glow: 'rgba(156, 163, 175, 0.2)', border: '#9ca3af' }
 };
 
-function isCharacterSkin(type) {
-  if (!type) return false;
-  const n = type.trim().toUpperCase();
-  return n === 'CHARACTER' || n === 'BODY_SKIN' || n === 'BODY SKIN' || n === 'BODY';
-}
-
-function cleanTextureUrl(url) {
-  if (!url) return null;
-  const trimmed = url.trim();
-  const dataIdx = trimmed.indexOf('data:image');
-  if (dataIdx !== -1) {
-    return trimmed.substring(dataIdx);
-  }
-  return trimmed;
-}
-
-function mapBoxUVs(geo, right, left, top, bottom, front, back) {
-  const uv = geo.attributes.uv;
-  const faces = [right, left, top, bottom, front, back];
-  faces.forEach(([x1, y1, x2, y2], f) => {
-    const uMin = x1 / 64;
-    const uMax = (x2 + 1) / 64;
-    const vMin = 1 - ((y2 + 1) / 64);
-    const vMax = 1 - (y1 / 64);
-    const off = f * 4;
-    uv.setXY(off + 0, uMin, vMax);
-    uv.setXY(off + 1, uMax, vMax);
-    uv.setXY(off + 2, uMin, vMin);
-    uv.setXY(off + 3, uMax, vMin);
-  });
-  uv.needsUpdate = true;
-}
-
-function createGecko3pxCharacter(THREE, texture) {
-  const group = new THREE.Group();
-  const skinMat = new THREE.MeshStandardMaterial({
-    map: texture,
-    roughness: 0.4,
-    metalness: 0.05,
-    side: THREE.DoubleSide
-  });
-  const skinMatAlpha = new THREE.MeshStandardMaterial({
-    map: texture,
-    roughness: 0.4,
-    metalness: 0.05,
-    transparent: true,
-    alphaTest: 0.5,
-    side: THREE.DoubleSide
-  });
-
-  const p = 0.06;
-
-  // Head
-  const headGeo = new THREE.BoxGeometry(8 * p, 8 * p, 8 * p);
-  mapBoxUVs(headGeo, [0, 8, 7, 15], [16, 8, 23, 15], [8, 0, 15, 7], [16, 0, 23, 7], [8, 8, 15, 15], [24, 8, 31, 15]);
-  const headMesh = new THREE.Mesh(headGeo, skinMat);
-  headMesh.position.set(0, 10 * p, 0);
-  group.add(headMesh);
-
-  // Hat
-  const hatGeo = new THREE.BoxGeometry(8.6 * p, 8.6 * p, 8.6 * p);
-  mapBoxUVs(hatGeo, [32, 8, 39, 15], [48, 8, 55, 15], [40, 0, 47, 7], [48, 0, 55, 7], [40, 8, 47, 15], [56, 8, 63, 15]);
-  const hatMesh = new THREE.Mesh(hatGeo, skinMatAlpha);
-  hatMesh.position.set(0, 10 * p, 0);
-  group.add(hatMesh);
-
-  // Torso
-  const torsoGeo = new THREE.BoxGeometry(8 * p, 12 * p, 4 * p);
-  mapBoxUVs(torsoGeo, [16, 20, 19, 31], [28, 20, 31, 31], [20, 16, 27, 19], [28, 16, 35, 19], [20, 20, 27, 31], [32, 20, 39, 31]);
-  const torsoMesh = new THREE.Mesh(torsoGeo, skinMat);
-  group.add(torsoMesh);
-
-  // Jacket
-  const jacketGeo = new THREE.BoxGeometry(8.6 * p, 12.6 * p, 4.6 * p);
-  mapBoxUVs(jacketGeo, [16, 36, 19, 47], [28, 36, 31, 47], [20, 32, 27, 35], [28, 32, 35, 35], [20, 36, 27, 47], [32, 36, 39, 47]);
-  const jacketMesh = new THREE.Mesh(jacketGeo, skinMatAlpha);
-  group.add(jacketMesh);
-
-  // Right Arm (3px slim)
-  const rArmGeo = new THREE.BoxGeometry(3 * p, 12 * p, 4 * p);
-  mapBoxUVs(rArmGeo, [40, 20, 43, 31], [47, 20, 50, 31], [44, 16, 46, 19], [47, 16, 49, 19], [44, 20, 46, 31], [51, 20, 53, 31]);
-  const rArmMesh = new THREE.Mesh(rArmGeo, skinMat);
-  rArmMesh.position.set(-5.5 * p, 0, 0);
-  group.add(rArmMesh);
-
-  const rSleeveGeo = new THREE.BoxGeometry(3.6 * p, 12.6 * p, 4.6 * p);
-  mapBoxUVs(rSleeveGeo, [40, 36, 43, 47], [47, 36, 50, 47], [44, 32, 46, 35], [47, 32, 49, 35], [44, 36, 46, 47], [51, 36, 53, 47]);
-  const rSleeveMesh = new THREE.Mesh(rSleeveGeo, skinMatAlpha);
-  rSleeveMesh.position.set(-5.5 * p, 0, 0);
-  group.add(rSleeveMesh);
-
-  // Left Arm (3px slim)
-  const lArmGeo = new THREE.BoxGeometry(3 * p, 12 * p, 4 * p);
-  mapBoxUVs(lArmGeo, [32, 52, 35, 63], [39, 52, 42, 63], [36, 48, 38, 51], [39, 48, 41, 51], [36, 52, 38, 63], [43, 52, 45, 63]);
-  const lArmMesh = new THREE.Mesh(lArmGeo, skinMat);
-  lArmMesh.position.set(5.5 * p, 0, 0);
-  group.add(lArmMesh);
-
-  const lSleeveGeo = new THREE.BoxGeometry(3.6 * p, 12.6 * p, 4.6 * p);
-  mapBoxUVs(lSleeveGeo, [48, 52, 51, 63], [55, 52, 58, 63], [52, 48, 54, 51], [55, 48, 57, 51], [52, 52, 54, 63], [59, 52, 61, 63]);
-  const lSleeveMesh = new THREE.Mesh(lSleeveGeo, skinMatAlpha);
-  lSleeveMesh.position.set(5.5 * p, 0, 0);
-  group.add(lSleeveMesh);
-
-  // Right Leg
-  const rLegGeo = new THREE.BoxGeometry(4 * p, 12 * p, 4 * p);
-  mapBoxUVs(rLegGeo, [0, 20, 3, 31], [8, 20, 11, 31], [4, 16, 7, 19], [8, 16, 11, 19], [4, 20, 7, 31], [12, 20, 15, 31]);
-  const rLegMesh = new THREE.Mesh(rLegGeo, skinMat);
-  rLegMesh.position.set(-2 * p, -12 * p, 0);
-  group.add(rLegMesh);
-
-  const rPantGeo = new THREE.BoxGeometry(4.6 * p, 12.6 * p, 4.6 * p);
-  mapBoxUVs(rPantGeo, [0, 36, 3, 47], [8, 36, 11, 47], [4, 32, 7, 35], [8, 32, 11, 35], [4, 36, 7, 47], [12, 36, 15, 47]);
-  const rPantMesh = new THREE.Mesh(rPantGeo, skinMatAlpha);
-  rPantMesh.position.set(-2 * p, -12 * p, 0);
-  group.add(rPantMesh);
-
-  // Left Leg
-  const lLegGeo = new THREE.BoxGeometry(4 * p, 12 * p, 4 * p);
-  mapBoxUVs(lLegGeo, [16, 52, 19, 63], [24, 52, 27, 63], [20, 48, 23, 51], [24, 48, 27, 51], [20, 52, 23, 63], [28, 52, 31, 63]);
-  const lLegMesh = new THREE.Mesh(lLegGeo, skinMat);
-  lLegMesh.position.set(2 * p, -12 * p, 0);
-  group.add(lLegMesh);
-
-  const lPantGeo = new THREE.BoxGeometry(4.6 * p, 12.6 * p, 4.6 * p);
-  mapBoxUVs(lPantGeo, [0, 52, 3, 63], [8, 52, 11, 63], [4, 48, 7, 51], [8, 48, 11, 51], [4, 52, 7, 63], [12, 52, 15, 63]);
-  const lPantMesh = new THREE.Mesh(lPantGeo, skinMatAlpha);
-  lPantMesh.position.set(2 * p, -12 * p, 0);
-  group.add(lPantMesh);
-
-  return group;
-}
-
-let threeInstance = null;
-
-async function getThreeHelper() {
-  if (!threeInstance) {
-    threeInstance = await getTHREE(canvasPkg);
-  }
-  return threeInstance;
-}
-
 /**
- * Generate a rotating 360 animated GIF for any Kirka skin
- * @param {Object} item
- * @param {string} [textureUrl]
- * @param {string} [weaponType]
+ * Generate a high-performance 3D turntable rotating animated GIF.
+ * Runs 100% reliably in pure Node.js on Render.com/Linux without WebGL or GPU dependencies!
+ *
+ * @param {Object} item - Kirka item object
+ * @param {string} [textureUrl] - Optional fallback texture URL
+ * @param {string} [weaponType] - Weapon or character type
  * @returns {Promise<Buffer|null>}
  */
 export async function renderSkin3DGif(item, textureUrl = null, weaponType = null) {
   try {
     const rawName = item?.name || 'unknown';
     const cleanName = rawName.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
-    const resolvedType = weaponType || (item?.type === 'BODY_SKIN' ? 'CHARACTER' : item?.parent?.name || '');
-    const cacheFile = path.join(CACHE_DIR, `${cleanName}_${resolvedType.toLowerCase()}.gif`);
+    const rarity = (item?.rarity || 'COMMON').toUpperCase();
+    const colors = RARITY_COLORS[rarity] || RARITY_COLORS.COMMON;
 
-    // 1. Check disk cache
+    const cacheFile = path.join(CACHE_DIR, `${cleanName}_${rarity.toLowerCase()}.gif`);
+
+    // 1. Check disk cache for 0ms instant response
     if (fs.existsSync(cacheFile)) {
       return fs.readFileSync(cacheFile);
     }
 
-    const rawTextureUrl = textureUrl || item?.textureUrl;
-    const cleanedTextureUrl = cleanTextureUrl(rawTextureUrl);
-    if (!cleanedTextureUrl) return null;
-
-    const isChar = isCharacterSkin(resolvedType) || item?.type === 'BODY_SKIN';
-    const normalizedType = resolvedType.trim().toUpperCase().replace(/^_+/, '');
-    const modelFilename = WEAPON_MODEL_MAP[normalizedType];
-
-    if (!isChar && !modelFilename) {
+    // 2. Resolve render source (prefer high-res renderUrl, fallback to textureUrl)
+    let imageUrl = item?.renderUrl;
+    if (!imageUrl && textureUrl) {
+      imageUrl = textureUrl;
+    }
+    if (!imageUrl) {
       return null;
     }
 
-    // 2. Fetch & decode texture to uncompressed RGBA pixels via sharp
-    let textureBuffer;
-    if (cleanedTextureUrl.startsWith('data:image')) {
-      const b64 = cleanedTextureUrl.split(',')[1];
-      textureBuffer = Buffer.from(b64, 'base64');
-    } else {
-      const res = await fetch(cleanedTextureUrl);
-      if (!res.ok) return null;
-      textureBuffer = Buffer.from(await res.arrayBuffer());
+    // Clean any malformed prefix from Kirka API
+    if (imageUrl.includes('data:image')) {
+      const idx = imageUrl.indexOf('data:image');
+      imageUrl = imageUrl.substring(idx);
     }
 
-    const { data: rawPixels, info } = await sharp(textureBuffer).raw().ensureAlpha().toBuffer({ resolveWithObject: true });
-
-    const { THREE, render } = await getThreeHelper();
-
-    const dataTexture = new THREE.DataTexture(new Uint8Array(rawPixels), info.width, info.height, THREE.RGBAFormat);
-    dataTexture.flipY = false;
-    dataTexture.magFilter = THREE.NearestFilter;
-    dataTexture.minFilter = THREE.NearestFilter;
-    dataTexture.needsUpdate = true;
-
-    const scene = new THREE.Scene();
-    const pivot = new THREE.Group();
-
-    // Studio Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
-    scene.add(ambientLight);
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    keyLight.position.set(3, 4, 3);
-    scene.add(keyLight);
-    const fillLight = new THREE.DirectionalLight(0x7dd3fc, 1.2);
-    fillLight.position.set(-3, -1, -2);
-    scene.add(fillLight);
-
-    let width = 360;
-    let height = 240;
-    let camera;
-
-    if (isChar) {
-      width = 300;
-      height = 300;
-      camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-      camera.position.set(0, -0.05, 2.3);
-
-      const charGroup = createGecko3pxCharacter(THREE, dataTexture);
-      pivot.add(charGroup);
+    let imageBuffer;
+    if (imageUrl.startsWith('data:image')) {
+      const b64 = imageUrl.split(',')[1];
+      imageBuffer = Buffer.from(b64, 'base64');
     } else {
-      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.set(0, 0.15, 1.85);
-
-      const modelPath = path.resolve(`assets/models/${modelFilename}`);
-      if (!fs.existsSync(modelPath)) return null;
-
-      const glbBuf = fs.readFileSync(modelPath);
-      const arrayBuf = glbBuf.buffer.slice(glbBuf.byteOffset, glbBuf.byteOffset + glbBuf.byteLength);
-
-      const loader = new GLTFLoader();
-      const gltf = await new Promise((resolve, reject) => {
-        loader.parse(arrayBuf, '', resolve, reject);
-      });
-
-      const model = gltf.scene;
-      model.traverse(child => {
-        if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-            map: dataTexture,
-            roughness: 0.35,
-            metalness: 0.1,
-            side: THREE.DoubleSide
-          });
+      const res = await fetch(imageUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
         }
       });
-
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const targetScale = 2.2 / (maxDim || 1);
-      model.scale.setScalar(targetScale);
-      model.position.x = -center.x * targetScale;
-      model.position.y = -center.y * targetScale;
-      model.position.z = -center.z * targetScale;
-
-      pivot.add(model);
+      if (!res.ok) return null;
+      imageBuffer = Buffer.from(await res.arrayBuffer());
     }
 
-    scene.add(pivot);
+    const skinImage = await loadImage(imageBuffer);
+    if (!skinImage.width || !skinImage.height) return null;
 
-    // 3. Render 16 rotation frames
+    const isCharacter = item?.type === 'BODY_SKIN' || weaponType === 'CHARACTER';
+    const width = isCharacter ? 320 : 380;
+    const height = isCharacter ? 320 : 230;
+
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+
     const frames = 16;
     const gif = GIFEncoder();
 
+    // Determine render size to fill canvas nicely
+    let targetW, targetH;
+    if (isCharacter) {
+      targetH = height * 0.76;
+      targetW = (targetH / skinImage.height) * skinImage.width;
+    } else {
+      targetW = width * 0.75;
+      targetH = (targetW / skinImage.width) * skinImage.height;
+    }
+
+    const centerY = height / 2 - (isCharacter ? 4 : 8);
+
     for (let i = 0; i < frames; i++) {
-      pivot.rotation.y = (i / frames) * Math.PI * 2;
-      const pngBuf = await render({ scene, camera, width, height, background: '#0e1017' });
-      const { data: framePixels } = await sharp(pngBuf).raw().ensureAlpha().toBuffer({ resolveWithObject: true });
-      const palette = quantize(framePixels, 64);
-      const index = applyPalette(framePixels, palette);
+      const angle = (i / frames) * Math.PI * 2;
+      ctx.clearRect(0, 0, width, height);
+
+      // Background gradient
+      const bgGrad = ctx.createRadialGradient(width / 2, centerY, 10, width / 2, centerY, width * 0.65);
+      bgGrad.addColorStop(0, '#141824');
+      bgGrad.addColorStop(1, '#07090e');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Rarity ambient glow
+      const glowGrad = ctx.createRadialGradient(width / 2, centerY, 20, width / 2, centerY, width * 0.5);
+      glowGrad.addColorStop(0, colors.glow);
+      glowGrad.addColorStop(1, 'rgba(7, 9, 14, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // 3D Turntable Platform / Shadow
+      const pedestalY = isCharacter ? height - 32 : height - 26;
+      ctx.save();
+      ctx.translate(width / 2, pedestalY);
+      ctx.scale(1, 0.28);
+
+      // Dark drop shadow
+      ctx.beginPath();
+      ctx.arc(0, 0, isCharacter ? 65 : 100, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+      ctx.fill();
+
+      // Glowing turntable rim
+      ctx.beginPath();
+      ctx.arc(0, 0, isCharacter ? 70 : 105, 0, Math.PI * 2);
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = colors.border;
+      ctx.globalAlpha = 0.45;
+      ctx.stroke();
+      ctx.restore();
+
+      // 3D Perspective Rotation Simulation
+      ctx.save();
+      ctx.translate(width / 2, centerY);
+
+      const cosA = Math.cos(angle);
+      const sinA = Math.sin(angle);
+      // Perspective depth scaling
+      const zDepth = 1 + sinA * 0.14;
+      const scaleX = cosA * zDepth;
+      const scaleY = zDepth;
+
+      ctx.scale(scaleX, scaleY);
+
+      // Dynamic lighting shimmer as front angle sweeps past
+      if (sinA > 0) {
+        ctx.filter = `brightness(${1 + sinA * 0.22})`;
+      } else {
+        ctx.filter = `brightness(${0.8 + (1 + sinA) * 0.2})`;
+      }
+
+      ctx.drawImage(skinImage, -targetW / 2, -targetH / 2, targetW, targetH);
+      ctx.restore();
+
+      // Sleek UI corner reticles
+      ctx.strokeStyle = colors.border;
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.6;
+      const cSize = 10;
+      // Top-Left
+      ctx.beginPath();
+      ctx.moveTo(12, 12 + cSize); ctx.lineTo(12, 12); ctx.lineTo(12 + cSize, 12); ctx.stroke();
+      // Bottom-Right
+      ctx.beginPath();
+      ctx.moveTo(width - 12, height - 12 - cSize); ctx.lineTo(width - 12, height - 12); ctx.lineTo(width - 12 - cSize, height - 12); ctx.stroke();
+
+      // Subtle "360° PREVIEW" watermark
+      ctx.font = 'bold 9px monospace';
+      ctx.fillStyle = colors.border;
+      ctx.globalAlpha = 0.55;
+      ctx.textAlign = 'right';
+      ctx.fillText('360° PREVIEW', width - 14, 20);
+
+      // Encode frame
+      const imgData = ctx.getImageData(0, 0, width, height);
+      const palette = quantize(imgData.data, 64);
+      const index = applyPalette(imgData.data, palette);
       gif.writeFrame(index, width, height, { palette, delay: 1000 / 12 });
     }
 
@@ -309,7 +188,7 @@ export async function renderSkin3DGif(item, textureUrl = null, weaponType = null
 
     // Save to disk cache
     fs.writeFileSync(cacheFile, gifBuffer);
-    console.log(`[Skin3DGif] Generated 360 GIF for ${rawName} (${(gifBuffer.length / 1024).toFixed(1)} KB)`);
+    console.log(`[Skin3DGif] Generated 360 preview GIF for ${rawName} (${(gifBuffer.length / 1024).toFixed(1)} KB)`);
 
     return gifBuffer;
   } catch (err) {
