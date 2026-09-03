@@ -162,7 +162,15 @@ client.on('messageCreate', async (message) => {
       }
 
       const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
-      await message.reply({ embeds: [embed] });
+      const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel('🎮 View in 3D (360° Studio)')
+          .setStyle(ButtonStyle.Link)
+          .setURL(web3DUrl)
+      );
+
+      await message.reply({ embeds: [embed], components: [row] });
     } catch (err) {
       console.error('Error in prefix skin command:', err);
       await message.reply(`⚠️ Failed to retrieve skin details.`);

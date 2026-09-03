@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getPublicCatalog, getAllItemData } from '../api/kirka.js';
 import { getBoltPriceMap, formatValueLong } from '../api/boltPrices.js';
 
@@ -140,8 +140,17 @@ export async function execute(interaction) {
 
   try {
     const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+    const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setLabel('🎮 View in 3D (360° Studio)')
+        .setStyle(ButtonStyle.Link)
+        .setURL(web3DUrl)
+    );
+
     await interaction.editReply({
-      embeds: [embed]
+      embeds: [embed],
+      components: [row]
     });
   } catch (err) {
     console.error('Error executing skin command:', err);
