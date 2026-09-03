@@ -135,19 +135,32 @@ export async function execute(interaction) {
         text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
       });
 
+    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+
     // Buttons
-    const row = new ActionRowBuilder().addComponents(
+    const components = [];
+    if (totalPages > 1) {
+      components.push(
+        new ButtonBuilder()
+          .setCustomId(`prev_${pageIdx}`)
+          .setLabel('◀')
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(pageIdx === 0),
+        new ButtonBuilder()
+          .setCustomId(`next_${pageIdx}`)
+          .setLabel('▶')
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(pageIdx >= totalPages - 1)
+      );
+    }
+    components.push(
       new ButtonBuilder()
-        .setCustomId(`prev_${pageIdx}`)
-        .setLabel('◀')
-        .setStyle(ButtonStyle.Primary)
-        .setDisabled(pageIdx === 0),
-      new ButtonBuilder()
-        .setCustomId(`next_${pageIdx}`)
-        .setLabel('▶')
-        .setStyle(ButtonStyle.Primary)
-        .setDisabled(pageIdx >= totalPages - 1)
+        .setLabel('🌐 View on KirkaHub')
+        .setStyle(ButtonStyle.Link)
+        .setURL(webInventoryUrl)
     );
+
+    const row = new ActionRowBuilder().addComponents(...components);
 
     return { embed, attachment, row };
   };
@@ -158,7 +171,7 @@ export async function execute(interaction) {
   const message = await interaction.editReply({
     embeds: [initialData.embed],
     files: [initialData.attachment],
-    components: totalPages > 1 ? [initialData.row] : []
+    components: [initialData.row]
   });
 
   if (totalPages <= 1) return;
@@ -193,10 +206,13 @@ export async function execute(interaction) {
 
   collector.on('end', () => {
     // Disable buttons on timeout
-    const disabledRow = new ActionRowBuilder().addComponents(
+    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+    const disabledComponents = [
       new ButtonBuilder().setCustomId('prev_dis').setLabel('◀').setStyle(ButtonStyle.Secondary).setDisabled(true),
-      new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true)
-    );
+      new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true),
+      new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL(webInventoryUrl)
+    ];
+    const disabledRow = new ActionRowBuilder().addComponents(...disabledComponents);
     interaction.editReply({ components: [disabledRow] }).catch(() => {});
   });
 }
@@ -294,18 +310,31 @@ export async function executePrefix(message, args) {
         text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
       });
 
-    const row = new ActionRowBuilder().addComponents(
+    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+
+    const components = [];
+    if (totalPages > 1) {
+      components.push(
+        new ButtonBuilder()
+          .setCustomId(`prev_${pageIdx}`)
+          .setLabel('◀')
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(pageIdx === 0),
+        new ButtonBuilder()
+          .setCustomId(`next_${pageIdx}`)
+          .setLabel('▶')
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(pageIdx >= totalPages - 1)
+      );
+    }
+    components.push(
       new ButtonBuilder()
-        .setCustomId(`prev_${pageIdx}`)
-        .setLabel('◀')
-        .setStyle(ButtonStyle.Primary)
-        .setDisabled(pageIdx === 0),
-      new ButtonBuilder()
-        .setCustomId(`next_${pageIdx}`)
-        .setLabel('▶')
-        .setStyle(ButtonStyle.Primary)
-        .setDisabled(pageIdx >= totalPages - 1)
+        .setLabel('🌐 View on KirkaHub')
+        .setStyle(ButtonStyle.Link)
+        .setURL(webInventoryUrl)
     );
+
+    const row = new ActionRowBuilder().addComponents(...components);
 
     return { embed, attachment, row };
   };
@@ -316,7 +345,7 @@ export async function executePrefix(message, args) {
   const response = await message.reply({
     embeds: [initialData.embed],
     files: [initialData.attachment],
-    components: totalPages > 1 ? [initialData.row] : []
+    components: [initialData.row]
   });
 
   if (totalPages <= 1) return;
@@ -349,10 +378,13 @@ export async function executePrefix(message, args) {
   });
 
   collector.on('end', () => {
-    const disabledRow = new ActionRowBuilder().addComponents(
+    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+    const disabledComponents = [
       new ButtonBuilder().setCustomId('prev_dis').setLabel('◀').setStyle(ButtonStyle.Secondary).setDisabled(true),
-      new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true)
-    );
+      new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true),
+      new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL(webInventoryUrl)
+    ];
+    const disabledRow = new ActionRowBuilder().addComponents(...disabledComponents);
     response.edit({ components: [disabledRow] }).catch(() => {});
   });
 }
