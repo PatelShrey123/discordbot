@@ -98,13 +98,8 @@ export async function renderServerBrowserCard({ region, rooms, totalPlayers }) {
   ctx.textBaseline = 'middle';
   ctx.fillText('SERVERS', btnX + btnW + 12, btnY + (btnH / 2));
 
-  // Right Side Stats (Live dot + Players count)
+  // Right Side Stats (Players count)
   ctx.textAlign = 'right';
-  ctx.fillStyle = '#10b981';
-  ctx.beginPath();
-  ctx.arc(width - padding - 170, 34, 5, 0, Math.PI * 2);
-  ctx.fill();
-
   ctx.fillStyle = '#10b981';
   ctx.font = '800 15px "Inter", "Segoe UI", sans-serif';
   ctx.fillText(`${totalPlayers} PLAYERS ONLINE`, width - padding, 34);
