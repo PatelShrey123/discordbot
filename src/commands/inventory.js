@@ -11,6 +11,7 @@ import { fetchUserProfile, fetchUserInventory } from '../api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong } from '../api/boltPrices.js';
 import { renderInventoryGridPage } from '../canvas/inventoryGrid.js';
 import { getLinkedAccount } from '../api/db.js';
+import { indexPlayerInventory } from '../api/ownerIndexer.js';
 
 export const data = new SlashCommandBuilder()
   .setName('inventory')
@@ -61,6 +62,9 @@ export async function execute(interaction) {
       content: `📦 **${profile.name}** has no items in their Kirka inventory.`
     });
   }
+
+  // Background index inventory to persist owners in database
+  indexPlayerInventory(profile, inventory).catch(err => console.warn('[InventoryIndexer] Background indexing failed:', err.message));
 
   // 2. Load Bolt Prices & Compute Total Valuation
   const priceMap = await getBoltPriceMap();
@@ -237,6 +241,9 @@ export async function executePrefix(message, args) {
   if (!inventory || inventory.length === 0) {
     return message.reply(`📦 **${profile.name}** has no items in their Kirka inventory.`);
   }
+
+  // Background index inventory to persist owners in database
+  indexPlayerInventory(profile, inventory).catch(err => console.warn('[InventoryIndexer] Background indexing failed:', err.message));
 
   // 2. Load Bolt Prices & Compute Total Valuation
   const priceMap = await getBoltPriceMap();

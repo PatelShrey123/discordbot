@@ -13,6 +13,7 @@ import * as botnameCmd from './commands/botname.js';
 import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
+import * as locateCmd from './commands/locate.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ const commands = [
   inventoryCmd.data.toJSON(),
   clanCmd.data.toJSON(),
   skinCmd.data.toJSON(),
+  locateCmd.data.toJSON(),
   leaderboardCmd.data.toJSON(),
   hCmd.data.toJSON(),
   linkCmd.data.toJSON(),

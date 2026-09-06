@@ -27,6 +27,9 @@ import * as botnameCmd from './commands/botname.js';
 import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
+import * as locateCmd from './commands/locate.js';
+import { runMigration } from './api/migrate.js';
+import { seedTopPlayers } from './api/ownerIndexer.js';
 
 dotenv.config();
 
@@ -59,6 +62,7 @@ client.commands.set(botnameCmd.data.name, botnameCmd);
 client.commands.set(botavatarCmd.data.name, botavatarCmd);
 client.commands.set(questsCmd.data.name, questsCmd);
 client.commands.set(rankedCmd.data.name, rankedCmd);
+client.commands.set(locateCmd.data.name, locateCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -72,6 +76,15 @@ client.once('ready', async () => {
     console.log('✅ [Startup] Step 4: Supabase Database connected.');
   } catch (err) {
     console.error('❌ [Startup] Step 4: Supabase connection failed:', err);
+  }
+
+  console.log('🔊 [Startup] Step 4b: Verifying Skin Owners database table & background seeder...');
+  try {
+    await runMigration();
+    console.log('✅ [Startup] Step 4b: Skin owners table verified.');
+    seedTopPlayers().catch(err => console.warn('⚠️ [Startup] Seeding top players encountered error:', err.message));
+  } catch (err) {
+    console.error('❌ [Startup] Step 4b: Migration/indexer initialization failed:', err.message);
   }
 
   console.log('🔊 [Startup] Step 5: Connecting Chat WebSocket Listener...');
@@ -345,39 +358,7 @@ client.on('messageCreate', async (message) => {
 
   // 5. .h [url/image]
   else if (lowerContent.startsWith('.h')) {
-    const args = content.substring(2).trim();
-    const attachment = message.attachments.first();
-
-    await message.channel.sendTyping();
-    console.log(`[MessageReceived] Matched .h for user: ${message.author.id}`);
-
-    const linked = await getLinkedAccount(message.author.id);
-    if (!linked || !linked.id) {
-      return message.reply('❌ **Privacy Protection:** You must link your Kirka account to your Discord account first to customize your profile background.\n\nPlease link your profile first by running the `.link` command!');
-    }
-
-    let bgUrl = null;
-    if (attachment) {
-      bgUrl = attachment.url;
-    } else if (args) {
-      bgUrl = args.split(' ')[0].trim();
-    }
-
-    if (!bgUrl) {
-      return message.reply('❌ Please provide a background image: either paste a direct link after `.h` OR upload an image alongside the `.h` message.');
-    }
-
-    if (!bgUrl.startsWith('http://') && !bgUrl.startsWith('https://')) {
-      return message.reply('❌ Invalid image URL. It must start with `http://` or `https://`.');
-    }
-
-    try {
-      await setUserBackground(linked.id, bgUrl);
-      return message.reply(`✅ Successfully set custom profile background for your linked Kirka profile **${linked.name}**!\n🖼️ Link: <${bgUrl}>`);
-    } catch (err) {
-      console.error(`Failed to set background for ${linked.name}:`, err.message);
-      return message.reply('⚠️ Failed to save background to database. Please check connection and try again.');
-    }
+    await hCmd.executePrefix(message);
   }
 
   // 6. .dbstatus
@@ -542,6 +523,13 @@ client.on('messageCreate', async (message) => {
   else if (lowerContent.startsWith('.ranked')) {
     const args = content.substring(7).trim().split(/ +/).filter(Boolean);
     await rankedCmd.executePrefix(message, args);
+  }
+
+  // 13. .locate / .find [skin_name]
+  else if (lowerContent.startsWith('.locate') || lowerContent.startsWith('.find')) {
+    const rawArgs = content.substring(lowerContent.startsWith('.locate') ? 7 : 5).trim();
+    const args = rawArgs ? [rawArgs] : [];
+    await locateCmd.executePrefix(message, args);
   }
 });
 
