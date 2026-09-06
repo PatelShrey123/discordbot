@@ -553,20 +553,17 @@ client.on('messageCreate', async (message) => {
     await weaponCmd.executePrefix(message, args);
   }
 
-  // 16. .help / .commands / .guide / .info
+  // 16. .help / .guide / .info
   else if (
     lowerContent === '.help' ||
     lowerContent.startsWith('.help ') ||
-    lowerContent === '.commands' ||
-    lowerContent.startsWith('.commands ') ||
     lowerContent === '.guide' ||
     lowerContent.startsWith('.guide ') ||
     lowerContent === '.info' ||
     lowerContent.startsWith('.info ')
   ) {
     let prefixUsed = '.help';
-    if (lowerContent.startsWith('.commands')) prefixUsed = '.commands';
-    else if (lowerContent.startsWith('.guide')) prefixUsed = '.guide';
+    if (lowerContent.startsWith('.guide')) prefixUsed = '.guide';
     else if (lowerContent.startsWith('.info')) prefixUsed = '.info';
 
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
