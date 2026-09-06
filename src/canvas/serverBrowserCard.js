@@ -23,12 +23,12 @@ export async function renderServerBrowserCard({ region, rooms, totalPlayers }) {
   const displayRooms = rooms.slice(0, 8); // Display top 8 most populated matches
   const rowHeight = 58;
   const rowGap = 10;
-  const headerHeight = 90;
+  const headerHeight = 70;
   const padding = 24;
 
   const width = 840;
   const contentHeight = displayRooms.length > 0 
-    ? headerHeight + (displayRooms.length * (rowHeight + rowGap)) + 20
+    ? headerHeight + (displayRooms.length * (rowHeight + rowGap)) + 16
     : 240;
   const height = Math.max(contentHeight, 260);
 
@@ -50,48 +50,68 @@ export async function renderServerBrowserCard({ region, rooms, totalPlayers }) {
   ctx.stroke();
 
   // 2. Top Header Bar
-  // Region Badge Pill
-  const badgeText = region.id.toUpperCase();
-  ctx.font = '900 12px "Inter", "Segoe UI", sans-serif';
-  const badgeWidth = ctx.measureText(badgeText).width + 18;
-  
-  ctx.fillStyle = 'rgba(6, 182, 212, 0.18)';
-  roundedRect(ctx, padding, 26, badgeWidth, 24, 6);
+  // Authentic Game Button for Active Region
+  const btnText = region.name.toUpperCase();
+  ctx.font = '900 13px "Inter", "Segoe UI", sans-serif';
+  const textWidth = ctx.measureText(btnText).width;
+  const btnW = textWidth + 28;
+  const btnH = 32;
+  const btnX = padding;
+  const btnY = 26;
+
+  // 3D Game Button Box (Kirka slate style with bottom bevel)
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetY = 2;
+
+  const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
+  btnGrad.addColorStop(0, '#2e3d57');
+  btnGrad.addColorStop(1, '#1b2435');
+  ctx.fillStyle = btnGrad;
+  roundedRect(ctx, btnX, btnY, btnW, btnH, 6);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(6, 182, 212, 0.5)';
-  ctx.lineWidth = 1;
+  ctx.restore();
+
+  // Bottom 3D Bevel line
+  ctx.fillStyle = '#0f1623';
+  roundedRect(ctx, btnX + 1, btnY + btnH - 3, btnW - 2, 3, 2);
+  ctx.fill();
+
+  // Button Border
+  ctx.strokeStyle = '#43587d';
+  ctx.lineWidth = 1.5;
+  roundedRect(ctx, btnX, btnY, btnW, btnH, 6);
   ctx.stroke();
 
-  ctx.fillStyle = '#38bdf8';
+  // Button Text
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 13px "Inter", "Segoe UI", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(badgeText, padding + (badgeWidth / 2), 38);
+  ctx.fillText(btnText, btnX + (btnW / 2), btnY + (btnH / 2) - 1);
 
-  // Region Title
+  // Region Title next to Button
   ctx.fillStyle = '#ffffff';
   ctx.font = '900 22px "Inter", "Segoe UI", sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText(`${region.name.toUpperCase()} SERVERS`, padding + badgeWidth + 12, 38);
-
-  // Subtitle
-  ctx.fillStyle = '#8a99b5';
-  ctx.font = '600 13px "Inter", "Segoe UI", sans-serif';
-  ctx.fillText('Real-Time Matchmaker • Colyseus Server Browser', padding, 68);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('SERVERS', btnX + btnW + 12, btnY + (btnH / 2));
 
   // Right Side Stats (Live dot + Players count)
   ctx.textAlign = 'right';
   ctx.fillStyle = '#10b981';
   ctx.beginPath();
-  ctx.arc(width - padding - 170, 52, 5, 0, Math.PI * 2);
+  ctx.arc(width - padding - 170, 34, 5, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = '#10b981';
   ctx.font = '800 15px "Inter", "Segoe UI", sans-serif';
-  ctx.fillText(`${totalPlayers} PLAYERS ONLINE`, width - padding, 42);
+  ctx.fillText(`${totalPlayers} PLAYERS ONLINE`, width - padding, 34);
 
   ctx.fillStyle = '#94a3b8';
   ctx.font = '600 13px "Inter", "Segoe UI", sans-serif';
-  ctx.fillText(`${rooms.length} Active Match Rooms`, width - padding, 64);
+  ctx.fillText(`${rooms.length} Active Match Rooms`, width - padding, 52);
 
   // Separator line under header
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
@@ -186,50 +206,18 @@ export async function renderServerBrowserCard({ region, rooms, totalPlayers }) {
     ctx.font = '600 13px "Courier New", monospace';
     ctx.fillText(room.tag, rowX + 16 + indexWidth + titleWidth + 14, rowY + (rowH / 2) + 1);
 
-    // --- Right Side: Player Count & [JOIN] Button ---
-    const btnW = 86;
-    const btnH = 34;
-    const btnX = rowX + rowW - btnW - 14;
-    const btnY = rowY + ((rowH - btnH) / 2);
-
-    // Player Count (e.g. 2 / 20)
+    // --- Right Side: Player Count (No JOIN button) ---
+    const rightPadding = 24;
     ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
     if (isFull) {
       ctx.fillStyle = '#64748b';
-      ctx.font = '800 17px "Inter", monospace';
+      ctx.font = '800 18px "Inter", monospace';
     } else {
       ctx.fillStyle = '#22c55e';
-      ctx.font = '900 18px "Inter", monospace';
+      ctx.font = '900 19px "Inter", monospace';
     }
-    ctx.fillText(`${room.players} / ${room.maxPlayers}`, btnX - 22, rowY + (rowH / 2));
-
-    // Iconic Slanted Kirka [JOIN] Button
-    ctx.save();
-    const slant = 8;
-    ctx.beginPath();
-    ctx.moveTo(btnX + slant, btnY);
-    ctx.lineTo(btnX + btnW, btnY);
-    ctx.lineTo(btnX + btnW - slant, btnY + btnH);
-    ctx.lineTo(btnX, btnY + btnH);
-    ctx.closePath();
-
-    if (isFull) {
-      ctx.fillStyle = '#92400e';
-    } else {
-      const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX + btnW, btnY + btnH);
-      btnGrad.addColorStop(0, '#fbbf24');
-      btnGrad.addColorStop(1, '#f59e0b');
-      ctx.fillStyle = btnGrad;
-    }
-    ctx.fill();
-
-    // Button Text: JOIN
-    ctx.textAlign = 'center';
-    ctx.fillStyle = isFull ? '#d97706' : '#000000';
-    ctx.font = '900 14px "Inter", "Segoe UI", sans-serif';
-    ctx.fillText('JOIN', btnX + (btnW / 2), btnY + (btnH / 2) + 1);
-
-    ctx.restore();
+    ctx.fillText(`${room.players} / ${room.maxPlayers}`, rowX + rowW - rightPadding, rowY + (rowH / 2));
   }
 
   return canvas.toBuffer('image/png');
