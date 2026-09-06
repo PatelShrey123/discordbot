@@ -29,6 +29,7 @@ import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
 import * as tradeCmd from './commands/trade.js';
 import * as unboxCmd from './commands/unbox.js';
+import * as weaponCmd from './commands/weapon.js';
 
 dotenv.config();
 
@@ -63,6 +64,7 @@ client.commands.set(questsCmd.data.name, questsCmd);
 client.commands.set(rankedCmd.data.name, rankedCmd);
 client.commands.set(tradeCmd.data.name, tradeCmd);
 client.commands.set(unboxCmd.data.name, unboxCmd);
+client.commands.set(weaponCmd.data.name, weaponCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -527,6 +529,26 @@ client.on('messageCreate', async (message) => {
     const prefixUsed = lowerContent.startsWith('.unbox') ? '.unbox' : '.chest';
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
     await unboxCmd.executePrefix(message, args);
+  }
+
+  // 15. .weapon / .gun / .ttk / .weapons / .compare / .vs
+  else if (
+    lowerContent.startsWith('.weapon') ||
+    lowerContent.startsWith('.weapons') ||
+    lowerContent.startsWith('.gun') ||
+    lowerContent.startsWith('.ttk') ||
+    lowerContent.startsWith('.compare') ||
+    lowerContent.startsWith('.vs')
+  ) {
+    let prefixUsed = '.weapon';
+    if (lowerContent.startsWith('.weapons')) prefixUsed = '.weapons';
+    else if (lowerContent.startsWith('.compare')) prefixUsed = '.compare';
+    else if (lowerContent.startsWith('.gun')) prefixUsed = '.gun';
+    else if (lowerContent.startsWith('.ttk')) prefixUsed = '.ttk';
+    else if (lowerContent.startsWith('.vs')) prefixUsed = '.vs';
+
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await weaponCmd.executePrefix(message, args);
   }
 
 });
