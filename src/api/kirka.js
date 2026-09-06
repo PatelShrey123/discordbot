@@ -67,6 +67,44 @@ export async function getPublicItemMap() {
   return map;
 }
 
+/**
+ * Clean malformed URLs (such as https://kirka.iohttps://api2.kirka.io/... or bare https://kirka.io)
+ * and provide live api2.kirka.io redirects.
+ */
+export function cleanItemUrl(url, skinName, isTexture = false) {
+  const cleanName = skinName ? skinName.replace(/^_+/, '').trim() : '';
+  const fallbackEndpoint = isTexture ? 'skin-texture' : 'skin-render';
+
+  if (!url || typeof url !== 'string' || url.trim() === 'https://kirka.io' || url.trim() === '') {
+    if (cleanName) {
+      return `https://api2.kirka.io/api/${fallbackEndpoint}/${encodeURIComponent(cleanName)}`;
+    }
+    return null;
+  }
+
+  let trimmed = url.trim();
+  // Strip duplicate protocol like 'https://kirka.iohttps://api2.kirka.io/...'
+  const secondHttp = trimmed.indexOf('http', 8);
+  if (secondHttp !== -1) {
+    trimmed = trimmed.substring(secondHttp);
+  }
+
+  return trimmed;
+}
+
+function sanitizeCatalog(items) {
+  if (!Array.isArray(items)) return [];
+  return items.map(item => {
+    if (!item) return item;
+    const cleanName = item.name ? item.name.replace(/^_+/, '').trim() : '';
+    return {
+      ...item,
+      renderUrl: cleanItemUrl(item.renderUrl, cleanName, false),
+      textureUrl: cleanItemUrl(item.textureUrl, cleanName, true),
+    };
+  });
+}
+
 export async function getPublicCatalog() {
   if (publicCatalog && publicCatalog.length > 0) return publicCatalog;
 
@@ -84,8 +122,8 @@ export async function getPublicCatalog() {
     if (res.ok) {
       const items = await res.json();
       if (Array.isArray(items) && items.length > 0) {
-        publicCatalog = items;
-        return items;
+        publicCatalog = sanitizeCatalog(items);
+        return publicCatalog;
       }
     } else {
       console.warn(`[KirkaAPI] Catalog fetch returned HTTP ${res.status}`);
@@ -98,8 +136,8 @@ export async function getPublicCatalog() {
   const fallback = getBundledCatalogFallback();
   if (fallback && fallback.length > 0) {
     console.log(`[KirkaAPI] Switched to bundled catalog fallback (${fallback.length} items loaded).`);
-    publicCatalog = fallback;
-    return fallback;
+    publicCatalog = sanitizeCatalog(fallback);
+    return publicCatalog;
   }
 
   return [];

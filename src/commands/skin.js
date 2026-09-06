@@ -50,8 +50,8 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
 
   const isUnique = metadata.unique !== undefined ? (metadata.unique ? 'YES' : 'NO') : 'NO';
 
-  // Resolve Creator
-  const creator = metadata.creator?.name || matchedItem.creator?.name || 'Kirka';
+  // Resolve Creator (check both creators array and creator object)
+  const creator = metadata.creator?.name || metadata.creators?.[0]?.name || matchedItem.creator?.name || matchedItem.creators?.[0]?.name || 'Kirka';
 
   // Find price and obtainable method from Bolt price sheet
   const typeKey = metadata.type === 'BODY_SKIN' ? 'character' : (metadata.parent?.name || '').toLowerCase();
@@ -102,9 +102,20 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
     )
     .setTimestamp();
 
-  // If a render image exists, display it prominently
-  if (matchedItem.renderUrl) {
-    embed.setImage(matchedItem.renderUrl);
+  // Clean render image URL and display prominently
+  let rawUrl = matchedItem.renderUrl || '';
+  if (rawUrl) {
+    const secondHttp = rawUrl.indexOf('http', 8);
+    if (secondHttp !== -1) rawUrl = rawUrl.substring(secondHttp);
+    if (rawUrl.trim() === 'https://kirka.io' || rawUrl.trim() === '') {
+      rawUrl = `https://api2.kirka.io/api/skin-render/${encodeURIComponent(matchedItem.name.replace(/^_+/, '').trim())}`;
+    }
+    try {
+      new URL(rawUrl);
+      embed.setImage(rawUrl);
+    } catch {
+      // Ignore malformed URL
+    }
   }
 
   return embed;
@@ -125,11 +136,31 @@ export async function execute(interaction) {
     item.name && item.name.replace(/^_+/, '').trim().toLowerCase() === searchName
   );
 
-  // Partial match fallback
+  // Partial match fallback in catalog
   if (!matchedItem) {
     matchedItem = catalog.find(item => 
       item.name && item.name.toLowerCase().includes(searchName)
     );
+  }
+
+  // Fallback to Bolt price sheet for newly unlisted/live skins
+  if (!matchedItem) {
+    for (const [key, value] of priceMap.entries()) {
+      const pSkinName = value.skinName ? value.skinName.trim().toLowerCase() : '';
+      if (key === searchName || pSkinName === searchName || pSkinName.includes(searchName)) {
+        matchedItem = {
+          id: `bolt-${value.skinName}`,
+          name: value.skinName,
+          rarity: (value.rarity || 'COMMON').toUpperCase(),
+          type: value.type?.toLowerCase() === 'character' ? 'BODY_SKIN' : 'WEAPON_SKIN',
+          renderUrl: `https://api2.kirka.io/api/skin-render/${encodeURIComponent(value.skinName)}`,
+          textureUrl: `https://api2.kirka.io/api/skin-texture/${encodeURIComponent(value.skinName)}`,
+          parent: value.type?.toLowerCase() !== 'character' ? { name: value.type } : null,
+          totalOwned: 0
+        };
+        break;
+      }
+    }
   }
 
   if (!matchedItem) {
@@ -138,11 +169,13 @@ export async function execute(interaction) {
     });
   }
 
+  let embed;
+  let row;
   try {
-    const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+    embed = createSkinEmbed(matchedItem, priceMap, allItemData);
 
     const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
-    const row = new ActionRowBuilder().addComponents(
+    row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setLabel('🎮 View in 3D (360° Studio)')
         .setStyle(ButtonStyle.Link)
@@ -155,6 +188,19 @@ export async function execute(interaction) {
     });
   } catch (err) {
     console.error('Error executing skin command:', err);
+    // If Discord rejected embed (e.g. image validation), retry without image
+    try {
+      if (embed) {
+        embed.setImage(null);
+        return await interaction.editReply({
+          embeds: [embed],
+          components: row ? [row] : []
+        });
+      }
+    } catch (fallbackErr) {
+      console.error('Fallback reply without image also failed:', fallbackErr);
+    }
+
     await interaction.editReply({
       content: `⚠️ Failed to render skin details for **${matchedItem.name}**.`
     });

@@ -191,23 +191,58 @@ client.on('messageCreate', async (message) => {
         );
       }
 
+      // Fallback to Bolt price sheet for newly unlisted/live skins
+      if (!matchedItem) {
+        for (const [key, value] of priceMap.entries()) {
+          const pSkinName = value.skinName ? value.skinName.trim().toLowerCase() : '';
+          if (key === searchName || pSkinName === searchName || pSkinName.includes(searchName)) {
+            matchedItem = {
+              id: `bolt-${value.skinName}`,
+              name: value.skinName,
+              rarity: (value.rarity || 'COMMON').toUpperCase(),
+              type: value.type?.toLowerCase() === 'character' ? 'BODY_SKIN' : 'WEAPON_SKIN',
+              renderUrl: `https://api2.kirka.io/api/skin-render/${encodeURIComponent(value.skinName)}`,
+              textureUrl: `https://api2.kirka.io/api/skin-texture/${encodeURIComponent(value.skinName)}`,
+              parent: value.type?.toLowerCase() !== 'character' ? { name: value.type } : null,
+              totalOwned: 0
+            };
+            break;
+          }
+        }
+      }
+
       if (!matchedItem) {
         return message.reply(`❌ Could not find a skin/item matching **${content.substring(6).trim()}**.`);
       }
 
-      const embed = createSkinEmbed(matchedItem, priceMap, allItemData);
-      const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setLabel('🎮 View in 3D (360° Studio)')
-          .setStyle(ButtonStyle.Link)
-          .setURL(web3DUrl)
-      );
+      let embed;
+      let row;
+      try {
+        embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+        const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
+        row = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setLabel('🎮 View in 3D (360° Studio)')
+            .setStyle(ButtonStyle.Link)
+            .setURL(web3DUrl)
+        );
 
-      await message.reply({
-        embeds: [embed],
-        components: [row]
-      });
+        await message.reply({
+          embeds: [embed],
+          components: [row]
+        });
+      } catch (innerErr) {
+        console.error('Error sending skin embed with image:', innerErr);
+        if (embed) {
+          embed.setImage(null);
+          await message.reply({
+            embeds: [embed],
+            components: row ? [row] : []
+          });
+        } else {
+          throw innerErr;
+        }
+      }
     } catch (err) {
       console.error('Error in prefix skin command:', err);
       await message.reply(`⚠️ Failed to retrieve skin details.`);
