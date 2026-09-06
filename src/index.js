@@ -27,9 +27,6 @@ import * as botnameCmd from './commands/botname.js';
 import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
-import * as locateCmd from './commands/locate.js';
-import { runMigration } from './api/migrate.js';
-import { seedTopPlayers } from './api/ownerIndexer.js';
 
 dotenv.config();
 
@@ -62,7 +59,6 @@ client.commands.set(botnameCmd.data.name, botnameCmd);
 client.commands.set(botavatarCmd.data.name, botavatarCmd);
 client.commands.set(questsCmd.data.name, questsCmd);
 client.commands.set(rankedCmd.data.name, rankedCmd);
-client.commands.set(locateCmd.data.name, locateCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -76,15 +72,6 @@ client.once('ready', async () => {
     console.log('✅ [Startup] Step 4: Supabase Database connected.');
   } catch (err) {
     console.error('❌ [Startup] Step 4: Supabase connection failed:', err);
-  }
-
-  console.log('🔊 [Startup] Step 4b: Verifying Skin Owners database table & background seeder...');
-  try {
-    await runMigration();
-    console.log('✅ [Startup] Step 4b: Skin owners table verified.');
-    seedTopPlayers().catch(err => console.warn('⚠️ [Startup] Seeding top players encountered error:', err.message));
-  } catch (err) {
-    console.error('❌ [Startup] Step 4b: Migration/indexer initialization failed:', err.message);
   }
 
   console.log('🔊 [Startup] Step 5: Connecting Chat WebSocket Listener...');
@@ -525,12 +512,6 @@ client.on('messageCreate', async (message) => {
     await rankedCmd.executePrefix(message, args);
   }
 
-  // 13. .locate / .find [skin_name]
-  else if (lowerContent.startsWith('.locate') || lowerContent.startsWith('.find')) {
-    const rawArgs = content.substring(lowerContent.startsWith('.locate') ? 7 : 5).trim();
-    const args = rawArgs ? [rawArgs] : [];
-    await locateCmd.executePrefix(message, args);
-  }
 });
 
 // Global server location state for region detection
