@@ -50,8 +50,22 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
 
   const isUnique = metadata.unique !== undefined ? (metadata.unique ? 'YES' : 'NO') : 'NO';
 
-  // Resolve Creator (check both creators array and creator object)
-  const creator = metadata.creator?.name || metadata.creators?.[0]?.name || matchedItem.creator?.name || matchedItem.creators?.[0]?.name || 'Kirka';
+  // Resolve Creator / Credits (give credits to whoever made that skin, or '-' if not provided)
+  const creatorList = (metadata.creators && metadata.creators.length > 0)
+    ? metadata.creators
+    : (matchedItem.creators && matchedItem.creators.length > 0)
+      ? matchedItem.creators
+      : null;
+
+  let creator = '-';
+  if (creatorList && Array.isArray(creatorList)) {
+    const names = creatorList.map(c => c?.name || (typeof c === 'string' ? c : '')).filter(Boolean);
+    if (names.length > 0) {
+      creator = names.join(', ');
+    }
+  } else if (metadata.creator?.name || matchedItem.creator?.name) {
+    creator = metadata.creator?.name || matchedItem.creator?.name;
+  }
 
   // Find price and obtainable method from Bolt price sheet
   const typeKey = metadata.type === 'BODY_SKIN' ? 'character' : (metadata.parent?.name || '').toLowerCase();
