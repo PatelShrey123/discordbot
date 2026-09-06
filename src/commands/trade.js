@@ -1,264 +1,524 @@
-import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
-import { getBoltPriceMap, getItemPrice, formatValueLong } from '../api/boltPrices.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, AttachmentBuilder } from 'discord.js';
+import { getBoltPriceMap, formatValueShort } from '../api/boltPrices.js';
+import { getPublicCatalog } from '../api/kirka.js';
+import { renderTradeCard } from '../canvas/tradeCard.js';
 
 export const data = new SlashCommandBuilder()
   .setName('trade')
-  .setDescription('Find active Kirka trade listings for a skin from Skywalk Trades')
+  .setDescription('Browse live Kirka trade listings and completed trade history with visual cards')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2)
   .addStringOption(option =>
-    option.setName('skin')
-      .setDescription('Name of the skin to search trades for (e.g. Hi-Score, Solitude, Shark)')
-      .setRequired(true)
+    option.setName('mode')
+      .setDescription('Choose between Active Offers or Completed Trade History')
+      .setRequired(false)
+      .addChoices(
+        { name: 'Active Offers (Live Listings)', value: 'active' },
+        { name: 'Trade History (Completed Deals)', value: 'history' }
+      )
+  )
+  .addStringOption(option =>
+    option.setName('query')
+      .setDescription('Search for a skin name or player/tag (e.g. Hi-Score, Shark, Sinister, Bloom)')
+      .setRequired(false)
   );
 
-let tradesCache = null;
-let tradesCacheTime = 0;
+// In-memory trade caches
+let activeTradesCache = null;
+let activeTradesTime = 0;
+
+let historyTradesCache = null;
+let historyTradesTime = 0;
 
 export async function fetchLiveTrades() {
   const now = Date.now();
-  if (tradesCache && (now - tradesCacheTime < 60000)) {
-    return tradesCache;
+  if (activeTradesCache && (now - activeTradesTime < 60000)) {
+    return activeTradesCache;
   }
   try {
     const res = await fetch('https://kirka.lukeskywalk.com/trades.json', {
-      headers: { 'user-agent': 'KirkaHub-Bot/1.0' }
+      headers: { 'user-agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' }
     });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) {
-        tradesCache = data;
-        tradesCacheTime = now;
+        activeTradesCache = data;
+        activeTradesTime = now;
         return data;
       }
     }
   } catch (err) {
     console.error('[Trades] Failed to fetch live trades from Skywalk API:', err.message);
   }
-  return tradesCache || [];
+  return activeTradesCache || [];
 }
 
-const TRADES_PER_PAGE = 3;
-
-function computeItemsValue(items, priceMap) {
-  let total = 0;
-  for (const it of items) {
-    const name = (it.i || '').trim().toLowerCase();
-    const qty = parseInt(it.q || '1', 10) || 1;
-    const price = priceMap.get(name) || 0;
-    total += price * qty;
+export async function fetchTradeHistory() {
+  const now = Date.now();
+  if (historyTradesCache && (now - historyTradesTime < 300000)) {
+    return historyTradesCache;
   }
-  return total;
-}
-
-function formatItemsList(items) {
-  if (!items || items.length === 0) return '*(None)*';
-  return items.map(it => {
-    const qty = it.q && it.q !== '1' ? `${it.q}x ` : '';
-    return `**${qty}${it.i}**`;
-  }).join(', ');
-}
-
-function buildTradeEmbed(query, matchedTrades, page, totalPages, priceMap) {
-  const start = page * TRADES_PER_PAGE;
-  const pageTrades = matchedTrades.slice(start, start + TRADES_PER_PAGE);
-
-  const embed = new EmbedBuilder()
-    .setTitle(`?? Kirka Trades for "${query}"`)
-    .setColor('#38bdf8')
-    .setDescription(
-      matchedTrades.length === 0
-        ? `No active trade listings found matching **"${query}"** right now.\nCheck back soon or view all active listings on KirkaHub!`
-        : `Found **${matchedTrades.length}** active trade listing(s) involving **"${query}"**:`
-    )
-    .setFooter({
-      text: `Page ${page + 1} of ${totalPages} � Powered by Skywalk Trades API & Bolt Valuations`
-    })
-    .setTimestamp();
-
-  for (const trade of pageTrades) {
-    const trader = trade.userAndTag || 'Unknown Trader';
-    const offeredList = formatItemsList(trade.offered);
-    const wantedList = formatItemsList(trade.wanted);
-
-    const offeredVal = computeItemsValue(trade.offered || [], priceMap);
-    const wantedVal = computeItemsValue(trade.wanted || [], priceMap);
-
-    const offeredStr = offeredVal > 0 ? `${offeredList}\n*(?? ~${formatValueLong(offeredVal)} Bolts)*` : offeredList;
-    const wantedStr = wantedVal > 0 ? `${wantedList}\n*(?? ~${formatValueLong(wantedVal)} Bolts)*` : wantedList;
-
-    let evalTag = '?? Value Neutral';
-    if (offeredVal > 0 && wantedVal > 0) {
-      const diff = offeredVal - wantedVal;
-      if (diff > 0) {
-        evalTag = `?? Overpay (+${formatValueLong(diff)})`;
-      } else if (diff < 0) {
-        evalTag = `?? Underpay (-${formatValueLong(Math.abs(diff))})`;
-      } else {
-        evalTag = `?? Equal Value`;
+  try {
+    const res = await fetch('https://kirka.lukeskywalk.com/tradehistory/snapshots.json', {
+      headers: { 'user-agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' }
+    });
+    if (res.ok) {
+      const snapshots = await res.json();
+      if (Array.isArray(snapshots)) {
+        const files = snapshots.filter(s => typeof s === 'string' && s.endsWith('.json') && s !== 'dailyTrades.json').slice(-2);
+        const results = await Promise.all(
+          files.map(f => fetch(`https://kirka.lukeskywalk.com/tradehistory/${f}`).then(r => r.json()).catch(() => []))
+        );
+        const merged = results.flat();
+        merged.sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime());
+        historyTradesCache = merged;
+        historyTradesTime = now;
+        return merged;
       }
     }
-
-    embed.addFields({
-      name: `?? Trade #${trade.tradeId || ''} � ${trader}`,
-      value: `**Offering:** ${offeredStr}\n**Wanting:** ${wantedStr}\n**Assessment:** \`${evalTag}\``,
-      inline: false
-    });
+  } catch (err) {
+    console.error('[Trades] Failed to fetch trade history from Skywalk API:', err.message);
   }
+  return historyTradesCache || [];
+}
+
+function getTradeItemPrice(priceMap, itemName) {
+  if (!itemName) return 0;
+  const clean = itemName.replace(/^_+|_+$/g, '').trim().toLowerCase();
+  const obj = priceMap.get(clean);
+  if (obj && obj.baseValue) return obj.baseValue;
+
+  for (const [k, v] of priceMap.entries()) {
+    if (k === clean || k.startsWith(clean + '_')) {
+      if (v && v.baseValue) return v.baseValue;
+    }
+  }
+  return 0;
+}
+
+function getItemRenderUrl(catalog, itemName) {
+  if (!catalog || !itemName) return null;
+  const clean = itemName.replace(/^_+|_+$/g, '').trim().toLowerCase();
+  const found = catalog.find(p => (p.name || '').replace(/^_+|_+$/g, '').trim().toLowerCase() === clean);
+  return found ? found.renderUrl : null;
+}
+
+function normalizeTrade(rawTrade, mode, priceMap, catalog) {
+  if (mode === 'history') {
+    const offeredRaw = rawTrade.trade?.offered?.items || [];
+    const wantedRaw = rawTrade.trade?.wanted?.items || [];
+
+    const offered = offeredRaw.map(it => {
+      const name = it.name || 'Unknown';
+      const price = getTradeItemPrice(priceMap, name) || it.value || 0;
+      return {
+        name,
+        quantity: it.quantity || '1',
+        rarity: it.rarity || 'Common',
+        rarityFull: it.rarity || 'Common',
+        price,
+        renderUrl: getItemRenderUrl(catalog, name)
+      };
+    });
+
+    const wanted = wantedRaw.map(it => {
+      const name = it.name || 'Unknown';
+      const price = getTradeItemPrice(priceMap, name) || it.value || 0;
+      return {
+        name,
+        quantity: it.quantity || '1',
+        rarity: it.rarity || 'Common',
+        rarityFull: it.rarity || 'Common',
+        price,
+        renderUrl: getItemRenderUrl(catalog, name)
+      };
+    });
+
+    const offeredTotal = offered.reduce((sum, i) => sum + (i.price * (parseInt(i.quantity, 10) || 1)), 0);
+    const wantedTotal = wanted.reduce((sum, i) => sum + (i.price * (parseInt(i.quantity, 10) || 1)), 0);
+
+    let assessment = 'Fair';
+    let diffText = 'Balanced';
+    if (offeredTotal > 0 && wantedTotal > 0) {
+      const diff = offeredTotal - wantedTotal;
+      const pct = Math.round((Math.abs(diff) / wantedTotal) * 100);
+      if (diff > (wantedTotal * 0.05)) {
+        assessment = 'Overpay';
+        diffText = `+${formatValueShort(diff)} (+${pct}%)`;
+      } else if (diff < -(wantedTotal * 0.05)) {
+        assessment = 'Underpay';
+        diffText = `-${formatValueShort(Math.abs(diff))} (-${pct}%)`;
+      }
+    } else {
+      assessment = 'Special';
+      diffText = 'Unpriced / Custom';
+    }
+
+    return {
+      tradeId: rawTrade.tradeId || 0,
+      type: 'history',
+      offerer: rawTrade.offerer || 'Unknown',
+      accepter: rawTrade.accepter || 'Unknown',
+      updatedAt: rawTrade.updatedAt,
+      offered,
+      wanted,
+      offeredTotal,
+      wantedTotal,
+      assessment,
+      diffText
+    };
+  }
+
+  // Active Trade
+  const offeredRaw = rawTrade.offered || [];
+  const wantedRaw = rawTrade.wanted || [];
+
+  const offered = offeredRaw.map(it => {
+    const name = it.i || 'Unknown';
+    const price = getTradeItemPrice(priceMap, name);
+    return {
+      name,
+      quantity: it.q || '1',
+      rarity: it.r || 'C',
+      rarityFull: it.r || 'Common',
+      price,
+      renderUrl: getItemRenderUrl(catalog, name)
+    };
+  });
+
+  const wanted = wantedRaw.map(it => {
+    const name = it.i || 'Unknown';
+    const price = getTradeItemPrice(priceMap, name);
+    return {
+      name,
+      quantity: it.q || '1',
+      rarity: it.r || 'C',
+      rarityFull: it.r || 'Common',
+      price,
+      renderUrl: getItemRenderUrl(catalog, name)
+    };
+  });
+
+  const offeredTotal = offered.reduce((sum, i) => sum + (i.price * (parseInt(i.quantity, 10) || 1)), 0);
+  const wantedTotal = wanted.reduce((sum, i) => sum + (i.price * (parseInt(i.quantity, 10) || 1)), 0);
+
+  let assessment = 'Fair';
+  let diffText = 'Balanced';
+  if (offeredTotal > 0 && wantedTotal > 0) {
+    const diff = offeredTotal - wantedTotal;
+    const pct = Math.round((Math.abs(diff) / wantedTotal) * 100);
+    if (diff > (wantedTotal * 0.05)) {
+      assessment = 'Overpay';
+      diffText = `+${formatValueShort(diff)} (+${pct}%)`;
+    } else if (diff < -(wantedTotal * 0.05)) {
+      assessment = 'Underpay';
+      diffText = `-${formatValueShort(Math.abs(diff))} (-${pct}%)`;
+    }
+  } else {
+    assessment = 'Special';
+    diffText = 'Unpriced / Custom';
+  }
+
+  return {
+    tradeId: rawTrade.tradeId || 0,
+    type: 'active',
+    userAndTag: rawTrade.userAndTag || 'Unknown',
+    updatedAt: rawTrade.updatedAt,
+    offered,
+    wanted,
+    offeredTotal,
+    wantedTotal,
+    assessment,
+    diffText
+  };
+}
+
+function filterTrades(trades, query, mode) {
+  if (!query) return trades;
+  const q = query.trim().toLowerCase();
+
+  return trades.filter(tr => {
+    if (mode === 'history') {
+      if ((tr.offerer || '').toLowerCase().includes(q)) return true;
+      if ((tr.accepter || '').toLowerCase().includes(q)) return true;
+      const offeredItems = tr.trade?.offered?.items || [];
+      const wantedItems = tr.trade?.wanted?.items || [];
+      if (offeredItems.some(i => (i.name || '').toLowerCase().includes(q))) return true;
+      if (wantedItems.some(i => (i.name || '').toLowerCase().includes(q))) return true;
+      return false;
+    }
+
+    if ((tr.userAndTag || '').toLowerCase().includes(q)) return true;
+    const offered = tr.offered || [];
+    const wanted = tr.wanted || [];
+    if (offered.some(i => (i.i || '').toLowerCase().includes(q))) return true;
+    if (wanted.some(i => (i.i || '').toLowerCase().includes(q))) return true;
+    return false;
+  });
+}
+
+function buildButtons(index, totalCount, mode) {
+  const isHistory = mode === 'history';
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('trade_prev')
+      .setLabel('◀ Prev')
+      .setStyle(ButtonStyle.Primary)
+      .setDisabled(index <= 0),
+    new ButtonBuilder()
+      .setCustomId('trade_next')
+      .setLabel('Next ▶')
+      .setStyle(ButtonStyle.Primary)
+      .setDisabled(index >= totalCount - 1),
+    new ButtonBuilder()
+      .setCustomId('trade_toggle_mode')
+      .setLabel(isHistory ? 'Show Active Offers 🟢' : 'Show Trade History 📜')
+      .setStyle(isHistory ? ButtonStyle.Success : ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setLabel('🌐 View on KirkaHub')
+      .setStyle(ButtonStyle.Link)
+      .setURL('https://kirkahub.vercel.app/trades')
+  );
+  return row;
+}
+
+function buildEmbed(trade, index, totalCount, query, mode) {
+  const isHistory = mode === 'history';
+  const title = isHistory
+    ? `🤝 Completed Trade (${index + 1}/${totalCount})`
+    : `🟢 Active Trade Offer (${index + 1}/${totalCount})`;
+
+  const offeredList = trade.offered.map(i => `• **${i.name}** (x${i.quantity}) — ${i.price > 0 ? `⚡ **${formatValueShort(i.price)}**` : '*Unpriced*'}`).join('\n') || '*(None)*';
+  const wantedList = trade.wanted.map(i => `• **${i.name}** (x${i.quantity}) — ${i.price > 0 ? `⚡ **${formatValueShort(i.price)}**` : '*Unpriced*'}`).join('\n') || '*(None)*';
+
+  const embed = new EmbedBuilder()
+    .setTitle(title)
+    .setColor(trade.assessment === 'Overpay' ? 0x22c55e : (trade.assessment === 'Underpay' ? 0xef4444 : 0x38bdf8))
+    .setDescription(
+      `**Trader:** \`${isHistory ? `${trade.offerer} ➔ ${trade.accepter}` : trade.userAndTag}\`\n` +
+      `**Valuation:** **${trade.assessment}** (${trade.diffText})\n` +
+      `**Total Bolt Value:** ⚡ **${formatValueShort(trade.offeredTotal)}** vs ⚡ **${formatValueShort(trade.wantedTotal)}**\n\n` +
+      `**Items Offered:**\n${offeredList}\n\n` +
+      `**Items Wanted:**\n${wantedList}`
+    )
+    .setImage('attachment://trade.png')
+    .setFooter({
+      text: (query ? `Search: "${query}" • ` : '') + 'Kirka Trades • Use buttons to flip trades'
+    })
+    .setTimestamp();
 
   return embed;
 }
 
-function buildButtons(page, totalPages) {
-  return new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId('prev_trade')
-      .setLabel('? Prev')
-      .setStyle(ButtonStyle.Primary)
-      .setDisabled(page === 0),
-    new ButtonBuilder()
-      .setCustomId('next_trade')
-      .setLabel('Next ?')
-      .setStyle(ButtonStyle.Primary)
-      .setDisabled(page >= totalPages - 1),
-    new ButtonBuilder()
-      .setLabel('?? View Live on KirkaHub')
-      .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app/trades')
-  );
-}
-
 export async function execute(interaction) {
   await interaction.deferReply();
-  const query = interaction.options.getString('skin');
-  if (!query) {
-    return interaction.editReply({ content: '? Please provide a skin name to search trades for.' });
-  }
 
-  const cleanQuery = query.trim().toLowerCase();
-  const [allTrades, priceMap] = await Promise.all([
-    fetchLiveTrades(),
-    getBoltPriceMap()
+  let mode = interaction.options.getString('mode') || 'active';
+  const query = interaction.options.getString('query') || '';
+
+  const [priceMap, catalog] = await Promise.all([
+    getBoltPriceMap(),
+    getPublicCatalog()
   ]);
 
-  const matched = allTrades.filter(trade => {
-    const hasOffered = (trade.offered || []).some(o => (o.i || '').toLowerCase().includes(cleanQuery));
-    const hasWanted = (trade.wanted || []).some(w => (w.i || '').toLowerCase().includes(cleanQuery));
-    return hasOffered || hasWanted;
+  let activeList = null;
+  let historyList = null;
+
+  if (mode === 'history') {
+    historyList = await fetchTradeHistory();
+  } else {
+    activeList = await fetchLiveTrades();
+  }
+
+  let currentPool = mode === 'history' ? historyList : activeList;
+  let filtered = filterTrades(currentPool, query, mode);
+
+  if (filtered.length === 0) {
+    return interaction.editReply({
+      content: `❌ No trades found matching "${query}" in **${mode === 'history' ? 'Trade History' : 'Active Offers'}**.\nTry searching for another skin (e.g. \`Hi-Score\`, \`Shark\`, \`Sinister\`) or switch modes!`
+    });
+  }
+
+  let currentIndex = 0;
+  let normalized = normalizeTrade(filtered[currentIndex], mode, priceMap, catalog);
+  let cardBuf = await renderTradeCard(normalized, { index: currentIndex, totalCount: filtered.length });
+  let attachment = new AttachmentBuilder(cardBuf, { name: 'trade.png' });
+
+  const message = await interaction.editReply({
+    embeds: [buildEmbed(normalized, currentIndex, filtered.length, query, mode)],
+    files: [attachment],
+    components: [buildButtons(currentIndex, filtered.length, mode)]
   });
 
-  const totalPages = Math.max(1, Math.ceil(matched.length / TRADES_PER_PAGE));
-  let currentPage = 0;
-
-  const response = await interaction.editReply({
-    embeds: [buildTradeEmbed(query, matched, currentPage, totalPages, priceMap)],
-    components: matched.length > 0 ? [buildButtons(currentPage, totalPages)] : [
-      new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setLabel('?? View All Trades on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
-      )
-    ]
-  });
-
-  if (totalPages <= 1) return;
-
-  const collector = response.createMessageComponentCollector({
+  const collector = message.createMessageComponentCollector({
     componentType: ComponentType.Button,
     time: 120000
   });
 
   collector.on('collect', async (btn) => {
     if (btn.user.id !== interaction.user.id) {
-      return btn.reply({ content: '? Only the user who ran this command can flip pages.', ephemeral: true });
+      return btn.reply({ content: 'Use your own `/trade` or `.trade` command to browse trades!', ephemeral: true });
     }
 
-    if (btn.customId === 'prev_trade') {
-      currentPage = Math.max(0, currentPage - 1);
-    } else if (btn.customId === 'next_trade') {
-      currentPage = Math.min(totalPages - 1, currentPage + 1);
+    await btn.deferUpdate();
+
+    if (btn.customId === 'trade_prev') {
+      currentIndex = Math.max(0, currentIndex - 1);
+    } else if (btn.customId === 'trade_next') {
+      currentIndex = Math.min(filtered.length - 1, currentIndex + 1);
+    } else if (btn.customId === 'trade_toggle_mode') {
+      mode = mode === 'active' ? 'history' : 'active';
+      if (mode === 'history' && !historyList) {
+        historyList = await fetchTradeHistory();
+      } else if (mode === 'active' && !activeList) {
+        activeList = await fetchLiveTrades();
+      }
+      currentPool = mode === 'history' ? historyList : activeList;
+      filtered = filterTrades(currentPool, query, mode);
+      currentIndex = 0;
+      if (filtered.length === 0) {
+        return interaction.editReply({
+          content: `No trades found for "${query}" in ${mode === 'history' ? 'Trade History' : 'Active Offers'}.`,
+          embeds: [],
+          files: [],
+          components: [buildButtons(0, 0, mode)]
+        });
+      }
     }
 
-    await btn.update({
-      embeds: [buildTradeEmbed(query, matched, currentPage, totalPages, priceMap)],
-      components: [buildButtons(currentPage, totalPages)]
+    normalized = normalizeTrade(filtered[currentIndex], mode, priceMap, catalog);
+    cardBuf = await renderTradeCard(normalized, { index: currentIndex, totalCount: filtered.length });
+    attachment = new AttachmentBuilder(cardBuf, { name: 'trade.png' });
+
+    await interaction.editReply({
+      content: null,
+      embeds: [buildEmbed(normalized, currentIndex, filtered.length, query, mode)],
+      files: [attachment],
+      components: [buildButtons(currentIndex, filtered.length, mode)]
     });
   });
 
   collector.on('end', async () => {
     try {
       const disabledRow = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId('prev_trade').setLabel('? Prev').setStyle(ButtonStyle.Primary).setDisabled(true),
-        new ButtonBuilder().setCustomId('next_trade').setLabel('Next ?').setStyle(ButtonStyle.Primary).setDisabled(true),
-        new ButtonBuilder().setLabel('?? View Live on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
+        new ButtonBuilder().setCustomId('trade_prev').setLabel('◀ Prev').setStyle(ButtonStyle.Primary).setDisabled(true),
+        new ButtonBuilder().setCustomId('trade_next').setLabel('Next ▶').setStyle(ButtonStyle.Primary).setDisabled(true),
+        new ButtonBuilder().setCustomId('trade_closed').setLabel('Session Expired').setStyle(ButtonStyle.Secondary).setDisabled(true),
+        new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
       );
       await interaction.editReply({ components: [disabledRow] });
     } catch {}
   });
 }
 
-export async function executePrefix(message, args) {
-  const query = args.join(' ').trim();
-  if (!query) {
-    return message.reply('? Please specify a skin name to search trades for (e.g. `.trade Hi-Score` or `.trade Shark`).');
+export async function executePrefix(message, args = []) {
+  let mode = 'active';
+  let queryParts = [...args];
+
+  if (queryParts.length > 0) {
+    const first = queryParts[0].toLowerCase();
+    if (first === 'history' || first === 'past' || first === 'completed') {
+      mode = 'history';
+      queryParts.shift();
+    } else if (first === 'active' || first === 'live' || first === 'open') {
+      mode = 'active';
+      queryParts.shift();
+    }
   }
 
-  await message.channel.sendTyping();
-  const cleanQuery = query.toLowerCase();
+  const query = queryParts.join(' ').trim();
 
-  const [allTrades, priceMap] = await Promise.all([
-    fetchLiveTrades(),
-    getBoltPriceMap()
+  await message.channel.sendTyping();
+
+  const [priceMap, catalog] = await Promise.all([
+    getBoltPriceMap(),
+    getPublicCatalog()
   ]);
 
-  const matched = allTrades.filter(trade => {
-    const hasOffered = (trade.offered || []).some(o => (o.i || '').toLowerCase().includes(cleanQuery));
-    const hasWanted = (trade.wanted || []).some(w => (w.i || '').toLowerCase().includes(cleanQuery));
-    return hasOffered || hasWanted;
+  let activeList = null;
+  let historyList = null;
+
+  if (mode === 'history') {
+    historyList = await fetchTradeHistory();
+  } else {
+    activeList = await fetchLiveTrades();
+  }
+
+  let currentPool = mode === 'history' ? historyList : activeList;
+  let filtered = filterTrades(currentPool, query, mode);
+
+  if (filtered.length === 0) {
+    return message.reply(`❌ No trades found matching "${query}" in **${mode === 'history' ? 'Trade History' : 'Active Offers'}**.\nTry searching for another skin (e.g. \`.trade Shark\`, \`.trade Hi-Score\`) or use \`.trade history\`!`);
+  }
+
+  let currentIndex = 0;
+  let normalized = normalizeTrade(filtered[currentIndex], mode, priceMap, catalog);
+  let cardBuf = await renderTradeCard(normalized, { index: currentIndex, totalCount: filtered.length });
+  let attachment = new AttachmentBuilder(cardBuf, { name: 'trade.png' });
+
+  const replyMsg = await message.reply({
+    embeds: [buildEmbed(normalized, currentIndex, filtered.length, query, mode)],
+    files: [attachment],
+    components: [buildButtons(currentIndex, filtered.length, mode)]
   });
 
-  const totalPages = Math.max(1, Math.ceil(matched.length / TRADES_PER_PAGE));
-  let currentPage = 0;
-
-  const response = await message.reply({
-    embeds: [buildTradeEmbed(query, matched, currentPage, totalPages, priceMap)],
-    components: matched.length > 0 ? [buildButtons(currentPage, totalPages)] : [
-      new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setLabel('?? View All Trades on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
-      )
-    ]
-  });
-
-  if (totalPages <= 1) return;
-
-  const collector = response.createMessageComponentCollector({
+  const collector = replyMsg.createMessageComponentCollector({
     componentType: ComponentType.Button,
     time: 120000
   });
 
   collector.on('collect', async (btn) => {
     if (btn.user.id !== message.author.id) {
-      return btn.reply({ content: '? Only the user who ran this command can flip pages.', ephemeral: true });
+      return btn.reply({ content: 'Use your own `.trade` command to browse trades!', ephemeral: true });
     }
 
-    if (btn.customId === 'prev_trade') {
-      currentPage = Math.max(0, currentPage - 1);
-    } else if (btn.customId === 'next_trade') {
-      currentPage = Math.min(totalPages - 1, currentPage + 1);
+    await btn.deferUpdate();
+
+    if (btn.customId === 'trade_prev') {
+      currentIndex = Math.max(0, currentIndex - 1);
+    } else if (btn.customId === 'trade_next') {
+      currentIndex = Math.min(filtered.length - 1, currentIndex + 1);
+    } else if (btn.customId === 'trade_toggle_mode') {
+      mode = mode === 'active' ? 'history' : 'active';
+      if (mode === 'history' && !historyList) {
+        historyList = await fetchTradeHistory();
+      } else if (mode === 'active' && !activeList) {
+        activeList = await fetchLiveTrades();
+      }
+      currentPool = mode === 'history' ? historyList : activeList;
+      filtered = filterTrades(currentPool, query, mode);
+      currentIndex = 0;
+      if (filtered.length === 0) {
+        return replyMsg.edit({
+          content: `No trades found for "${query}" in ${mode === 'history' ? 'Trade History' : 'Active Offers'}.`,
+          embeds: [],
+          files: [],
+          components: [buildButtons(0, 0, mode)]
+        });
+      }
     }
 
-    await btn.update({
-      embeds: [buildTradeEmbed(query, matched, currentPage, totalPages, priceMap)],
-      components: [buildButtons(currentPage, totalPages)]
+    normalized = normalizeTrade(filtered[currentIndex], mode, priceMap, catalog);
+    cardBuf = await renderTradeCard(normalized, { index: currentIndex, totalCount: filtered.length });
+    attachment = new AttachmentBuilder(cardBuf, { name: 'trade.png' });
+
+    await replyMsg.edit({
+      content: null,
+      embeds: [buildEmbed(normalized, currentIndex, filtered.length, query, mode)],
+      files: [attachment],
+      components: [buildButtons(currentIndex, filtered.length, mode)]
     });
   });
 
   collector.on('end', async () => {
     try {
       const disabledRow = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId('prev_trade').setLabel('? Prev').setStyle(ButtonStyle.Primary).setDisabled(true),
-        new ButtonBuilder().setCustomId('next_trade').setLabel('Next ?').setStyle(ButtonStyle.Primary).setDisabled(true),
-        new ButtonBuilder().setLabel('?? View Live on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
+        new ButtonBuilder().setCustomId('trade_prev').setLabel('◀ Prev').setStyle(ButtonStyle.Primary).setDisabled(true),
+        new ButtonBuilder().setCustomId('trade_next').setLabel('Next ▶').setStyle(ButtonStyle.Primary).setDisabled(true),
+        new ButtonBuilder().setCustomId('trade_closed').setLabel('Session Expired').setStyle(ButtonStyle.Secondary).setDisabled(true),
+        new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
       );
-      await response.edit({ components: [disabledRow] });
+      await replyMsg.edit({ components: [disabledRow] });
     } catch {}
   });
 }

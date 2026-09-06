@@ -14,7 +14,6 @@ import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
 import * as tradeCmd from './commands/trade.js';
-import * as richestCmd from './commands/richest.js';
 import * as unboxCmd from './commands/unbox.js';
 
 dotenv.config();
@@ -34,7 +33,6 @@ const commands = [
   questsCmd.data.toJSON(),
   rankedCmd.data.toJSON(),
   tradeCmd.data.toJSON(),
-  richestCmd.data.toJSON(),
   unboxCmd.data.toJSON()
 ];
 

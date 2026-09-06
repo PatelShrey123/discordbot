@@ -28,7 +28,6 @@ import * as botavatarCmd from './commands/botavatar.js';
 import * as questsCmd from './commands/quests.js';
 import * as rankedCmd from './commands/ranked.js';
 import * as tradeCmd from './commands/trade.js';
-import * as richestCmd from './commands/richest.js';
 import * as unboxCmd from './commands/unbox.js';
 
 dotenv.config();
@@ -63,7 +62,6 @@ client.commands.set(botavatarCmd.data.name, botavatarCmd);
 client.commands.set(questsCmd.data.name, questsCmd);
 client.commands.set(rankedCmd.data.name, rankedCmd);
 client.commands.set(tradeCmd.data.name, tradeCmd);
-client.commands.set(richestCmd.data.name, richestCmd);
 client.commands.set(unboxCmd.data.name, unboxCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
@@ -524,14 +522,7 @@ client.on('messageCreate', async (message) => {
     await tradeCmd.executePrefix(message, args);
   }
 
-  // 14. .richest / .wealth
-  else if (lowerContent.startsWith('.richest') || lowerContent.startsWith('.wealth')) {
-    const prefixUsed = lowerContent.startsWith('.richest') ? '.richest' : '.wealth';
-    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
-    await richestCmd.executePrefix(message, args);
-  }
-
-  // 15. .unbox [chest] / .chest [chest]
+  // 14. .unbox [chest] / .chest [chest]
   else if (lowerContent.startsWith('.unbox') || lowerContent.startsWith('.chest')) {
     const prefixUsed = lowerContent.startsWith('.unbox') ? '.unbox' : '.chest';
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
