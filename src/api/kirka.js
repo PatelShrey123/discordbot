@@ -75,7 +75,14 @@ export function cleanItemUrl(url, skinName, isTexture = false) {
   const cleanName = skinName ? skinName.replace(/^_+/, '').trim() : '';
   const fallbackEndpoint = isTexture ? 'skin-texture' : 'skin-render';
 
-  if (!url || typeof url !== 'string' || url.trim() === 'https://kirka.io' || url.trim() === '') {
+  const isPlaceholder = !url || 
+    typeof url !== 'string' || 
+    url.trim() === 'https://kirka.io' || 
+    url.trim() === '' ||
+    url.includes('/assets/img/render') ||
+    url.includes('render-mini');
+
+  if (isPlaceholder) {
     if (cleanName) {
       return `https://api2.kirka.io/api/${fallbackEndpoint}/${encodeURIComponent(cleanName)}`;
     }
@@ -83,6 +90,9 @@ export function cleanItemUrl(url, skinName, isTexture = false) {
   }
 
   let trimmed = url.trim();
+  if (trimmed.startsWith('https://kirka.iodata:')) {
+    return trimmed.substring(16);
+  }
   // Strip duplicate protocol like 'https://kirka.iohttps://api2.kirka.io/...'
   const secondHttp = trimmed.indexOf('http', 8);
   if (secondHttp !== -1) {
@@ -155,20 +165,18 @@ export async function fetchUserProfile(query) {
     if (!profileData) return null;
     const cat = await getPublicCatalog();
     if (profileData.activeBodySkin && profileData.activeBodySkin.name) {
-      const cleanName = profileData.activeBodySkin.name.replace(/^_+/, '').trim().toLowerCase();
-      const matched = cat.find(i => i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanName);
-      if (matched) {
-        profileData.activeBodySkin.textureUrl = matched.textureUrl;
-        profileData.activeBodySkin.renderUrl = matched.renderUrl;
-      }
+      const cleanName = profileData.activeBodySkin.name.replace(/^_+/, '').trim();
+      const cleanLower = cleanName.toLowerCase();
+      const matched = cat.find(i => i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanLower);
+      profileData.activeBodySkin.textureUrl = cleanItemUrl(matched?.textureUrl || profileData.activeBodySkin.textureUrl, cleanName, true);
+      profileData.activeBodySkin.renderUrl = cleanItemUrl(matched?.renderUrl || profileData.activeBodySkin.renderUrl, cleanName, false);
     }
     if (profileData.activeWeapon1Skin && profileData.activeWeapon1Skin.name) {
-      const cleanName = profileData.activeWeapon1Skin.name.replace(/^_+/, '').trim().toLowerCase();
-      const matched = cat.find(i => i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanName);
-      if (matched) {
-        profileData.activeWeapon1Skin.textureUrl = matched.textureUrl;
-        profileData.activeWeapon1Skin.renderUrl = matched.renderUrl;
-      }
+      const cleanName = profileData.activeWeapon1Skin.name.replace(/^_+/, '').trim();
+      const cleanLower = cleanName.toLowerCase();
+      const matched = cat.find(i => i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanLower);
+      profileData.activeWeapon1Skin.textureUrl = cleanItemUrl(matched?.textureUrl || profileData.activeWeapon1Skin.textureUrl, cleanName, true);
+      profileData.activeWeapon1Skin.renderUrl = cleanItemUrl(matched?.renderUrl || profileData.activeWeapon1Skin.renderUrl, cleanName, false);
     }
     return profileData;
   };
@@ -256,15 +264,14 @@ export async function fetchUserInventory(userId) {
       if (Array.isArray(data)) {
         return data.map(invItem => {
           const item = invItem.item || invItem;
-          if (!item.renderUrl && item.name) {
-            const cleanName = item.name.replace(/^_+/, '').trim().toLowerCase();
-            const parentName = (item.parent?.name || '').toLowerCase();
-            const keyCombo = `${cleanName}_${parentName}`;
-            const matchedUrl = itemMap.get(keyCombo) || itemMap.get(cleanName);
-            if (matchedUrl) {
-              item.renderUrl = matchedUrl;
-            }
-          }
+          const cleanName = item.name ? item.name.replace(/^_+/, '').trim() : '';
+          const cleanNameLower = cleanName.toLowerCase();
+          const parentName = (item.parent?.name || '').toLowerCase();
+          const keyCombo = `${cleanNameLower}_${parentName}`;
+          const matchedUrl = itemMap.get(keyCombo) || itemMap.get(cleanNameLower);
+
+          item.renderUrl = cleanItemUrl(matchedUrl || item.renderUrl, cleanName, false);
+          item.textureUrl = cleanItemUrl(item.textureUrl, cleanName, true);
           return invItem;
         });
       }

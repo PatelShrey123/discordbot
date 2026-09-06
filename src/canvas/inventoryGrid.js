@@ -80,21 +80,38 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
   const loadedImages = await Promise.all(
     displayItems.map(async (invItem) => {
       const item = invItem.item || invItem;
-      const imgUrl = item.renderUrl || item.textureUrl;
-      if (imgUrl) {
+      const rawName = item.name ? item.name.replace(/^_+/, '').trim() : '';
+
+      const candidates = [];
+      if (item.renderUrl && !item.renderUrl.includes('render-mini') && !item.renderUrl.includes('/assets/img/render')) {
+        candidates.push(item.renderUrl);
+      }
+      if (rawName) {
+        candidates.push(`https://api2.kirka.io/api/skin-render/${encodeURIComponent(rawName)}`);
+      }
+      if (item.textureUrl) {
+        candidates.push(item.textureUrl);
+      }
+      if (rawName) {
+        candidates.push(`https://api2.kirka.io/api/skin-texture/${encodeURIComponent(rawName)}`);
+      }
+
+      for (const candidate of candidates) {
+        if (!candidate) continue;
         try {
-          const cleanUrl = imgUrl.trim();
+          const cleanUrl = candidate.trim();
           let targetUrl = cleanUrl;
           if (cleanUrl.startsWith('https://kirka.iodata:')) {
-            targetUrl = cleanUrl.substring(16); // strip 'https://kirka.io' (length of 'https://kirka.io' is 16)
+            targetUrl = cleanUrl.substring(16);
           } else if (cleanUrl.startsWith('/data:')) {
             targetUrl = cleanUrl.substring(1);
           } else if (cleanUrl.startsWith('/')) {
             targetUrl = `https://kirka.io${cleanUrl}`;
           }
-          return await getCachedImage(targetUrl);
-        } catch (err) {
-          return null;
+          const img = await getCachedImage(targetUrl);
+          if (img) return img;
+        } catch {
+          // Continue to next candidate
         }
       }
       return null;
