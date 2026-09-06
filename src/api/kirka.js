@@ -1,7 +1,15 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const KIRKA_API_KEY = process.env.KIRKA_API_KEY || '01d50491829d6991b64f116b1f34b70924889a2f99a7ea81820fe8a3323da060';
 const BASE_URL = 'https://api.kirka.io/api';
 
 let publicItemMap = null;
+let publicCatalog = null;
 
 const getHeaders = () => ({
   'Content-Type': 'application/json',
@@ -11,58 +19,89 @@ const getHeaders = () => ({
 });
 
 /**
- * Fetch and cache public item catalog for render URLs
+ * Load bundled catalog fallback from local JSON file
  */
-export async function getPublicItemMap() {
-  if (publicItemMap) return publicItemMap;
-
-  const map = new Map();
+export function getBundledCatalogFallback() {
   try {
-    const res = await fetch(`${BASE_URL}/inventory/items`, { headers: getHeaders() });
-    if (res.ok) {
-      const items = await res.json();
-      if (Array.isArray(items)) {
-        items.forEach(item => {
-          if (item && item.name) {
-            const cleanName = item.name.replace(/^_+/, '').trim().toLowerCase();
-            const parentName = (item.parent?.name || '').toLowerCase();
-            const keyCombo = `${cleanName}_${parentName}`;
-
-            if (item.renderUrl) {
-              map.set(keyCombo, item.renderUrl);
-              if (!map.has(cleanName)) {
-                map.set(cleanName, item.renderUrl);
-              }
-            }
-          }
-        });
-        console.log(`[PublicItems] Loaded ${map.size} item render URLs.`);
+    const filePath = path.join(__dirname, '..', 'data', 'catalogFallback.json');
+    if (fs.existsSync(filePath)) {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
       }
     }
   } catch (err) {
-    console.error('Failed to fetch public items map:', err.message);
+    console.warn('[CatalogFallback] Failed to read local catalogFallback.json:', err.message);
+  }
+  return [];
+}
+
+/**
+ * Fetch and cache public item catalog for render URLs
+ */
+export async function getPublicItemMap() {
+  if (publicItemMap && publicItemMap.size > 0) return publicItemMap;
+
+  const catalog = await getPublicCatalog();
+  const map = new Map();
+
+  if (Array.isArray(catalog)) {
+    catalog.forEach(item => {
+      if (item && item.name) {
+        const cleanName = item.name.replace(/^_+/, '').trim().toLowerCase();
+        const parentName = (item.parent?.name || '').toLowerCase();
+        const keyCombo = `${cleanName}_${parentName}`;
+
+        if (item.renderUrl) {
+          map.set(keyCombo, item.renderUrl);
+          if (!map.has(cleanName)) {
+            map.set(cleanName, item.renderUrl);
+          }
+        }
+      }
+    });
+    console.log(`[PublicItems] Loaded ${map.size} item render URLs.`);
   }
 
   publicItemMap = map;
   return map;
 }
 
-let publicCatalog = null;
-
 export async function getPublicCatalog() {
-  if (publicCatalog) return publicCatalog;
+  if (publicCatalog && publicCatalog.length > 0) return publicCatalog;
+
+  // 1. Try fetching from live Kirka API with 7-second timeout
   try {
-    const res = await fetch(`${BASE_URL}/inventory/items`, { headers: getHeaders() });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 7000);
+
+    const res = await fetch(`${BASE_URL}/inventory/items`, {
+      headers: getHeaders(),
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+
     if (res.ok) {
       const items = await res.json();
-      if (Array.isArray(items)) {
+      if (Array.isArray(items) && items.length > 0) {
         publicCatalog = items;
         return items;
       }
+    } else {
+      console.warn(`[KirkaAPI] Catalog fetch returned HTTP ${res.status}`);
     }
   } catch (err) {
-    console.error('Failed to fetch public catalog:', err.message);
+    console.warn('[KirkaAPI] Failed to fetch live public catalog from Kirka API:', err.message);
   }
+
+  // 2. Guaranteed local fallback so bot NEVER crashes or fails to unbox
+  const fallback = getBundledCatalogFallback();
+  if (fallback && fallback.length > 0) {
+    console.log(`[KirkaAPI] Switched to bundled catalog fallback (${fallback.length} items loaded).`);
+    publicCatalog = fallback;
+    return fallback;
+  }
+
   return [];
 }
 

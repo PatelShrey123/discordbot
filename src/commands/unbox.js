@@ -1,5 +1,5 @@
-﻿import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
-import { getPublicCatalog } from '../api/kirka.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
+import { getPublicCatalog, getBundledCatalogFallback } from '../api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong, formatValueShort } from '../api/boltPrices.js';
 
 export const CHESTS = {
@@ -183,10 +183,14 @@ export async function execute(interaction) {
   let chestKey = interaction.options.getString('chest')?.toLowerCase() || 'wood';
   if (!CHESTS[chestKey]) chestKey = 'wood';
 
-  const [catalog, priceMap] = await Promise.all([
+  let [catalog, priceMap] = await Promise.all([
     getPublicCatalog(),
     getBoltPriceMap()
   ]);
+
+  if (!catalog || catalog.length === 0) {
+    catalog = getBundledCatalogFallback();
+  }
 
   if (!catalog || catalog.length === 0) {
     return interaction.editReply({ content: '❌ Failed to load Kirka catalog items. Please try again in a moment.' });
@@ -257,10 +261,14 @@ export async function executePrefix(message, args) {
     }
   }
 
-  const [catalog, priceMap] = await Promise.all([
+  let [catalog, priceMap] = await Promise.all([
     getPublicCatalog(),
     getBoltPriceMap()
   ]);
+
+  if (!catalog || catalog.length === 0) {
+    catalog = getBundledCatalogFallback();
+  }
 
   if (!catalog || catalog.length === 0) {
     return message.reply('❌ Failed to load Kirka catalog items. Please try again in a moment.');
