@@ -71,7 +71,7 @@ export function isPlaceholderUrl(url) {
   if (!url || typeof url !== 'string') return true;
   const t = url.trim();
   if (t === '' || t === 'https://kirka.io' || t === 'https://kirka.io/' || t === '/render') return true;
-  if (t.includes('render-mini.0ec8ea84') || t.includes('render-mini.67fdc7ae')) return true;
+  if (t.includes('render-mini.0ec8ea84')) return true;
   if (t.includes('render.0e1d4800') || t.includes('render.d8456ef7')) return true;
   if (t.includes('__questions__')) return true;
   return false;
