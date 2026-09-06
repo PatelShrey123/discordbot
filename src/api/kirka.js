@@ -67,39 +67,43 @@ export async function getPublicItemMap() {
   return map;
 }
 
+export function isPlaceholderUrl(url) {
+  if (!url || typeof url !== 'string') return true;
+  const t = url.trim();
+  if (t === '' || t === 'https://kirka.io' || t === 'https://kirka.io/' || t === '/render') return true;
+  if (t.includes('render-mini.0ec8ea84') || t.includes('render-mini.67fdc7ae')) return true;
+  if (t.includes('render.0e1d4800') || t.includes('render.d8456ef7')) return true;
+  if (t.includes('__questions__')) return true;
+  return false;
+}
+
 /**
  * Clean malformed URLs (such as https://kirka.iohttps://api2.kirka.io/... or bare https://kirka.io)
- * and provide live api2.kirka.io redirects.
+ * and provide live api2.kirka.io fallback only when the old API lacks a real render.
  */
 export function cleanItemUrl(url, skinName, isTexture = false) {
   const cleanName = skinName ? skinName.replace(/^_+/, '').trim() : '';
   const fallbackEndpoint = isTexture ? 'skin-texture' : 'skin-render';
 
-  const isPlaceholder = !url || 
-    typeof url !== 'string' || 
-    url.trim() === 'https://kirka.io' || 
-    url.trim() === '' ||
-    url.includes('/assets/img/render') ||
-    url.includes('render-mini');
-
-  if (isPlaceholder) {
-    if (cleanName) {
-      return `https://api2.kirka.io/api/${fallbackEndpoint}/${encodeURIComponent(cleanName)}`;
+  // 1. If old API has a valid render/texture URL, prioritize and clean it
+  if (url && typeof url === 'string' && !isPlaceholderUrl(url)) {
+    let trimmed = url.trim();
+    if (trimmed.startsWith('https://kirka.iodata:')) {
+      return trimmed.substring(16);
     }
-    return null;
+    const secondHttp = trimmed.indexOf('http', 8);
+    if (secondHttp !== -1) {
+      trimmed = trimmed.substring(secondHttp);
+    }
+    return trimmed;
   }
 
-  let trimmed = url.trim();
-  if (trimmed.startsWith('https://kirka.iodata:')) {
-    return trimmed.substring(16);
-  }
-  // Strip duplicate protocol like 'https://kirka.iohttps://api2.kirka.io/...'
-  const secondHttp = trimmed.indexOf('http', 8);
-  if (secondHttp !== -1) {
-    trimmed = trimmed.substring(secondHttp);
+  // 2. Only if old API doesn't have it (or it was a placeholder): query live api2.kirka.io
+  if (cleanName) {
+    return `https://api2.kirka.io/api/${fallbackEndpoint}/${encodeURIComponent(cleanName)}`;
   }
 
-  return trimmed;
+  return null;
 }
 
 function sanitizeCatalog(items) {
