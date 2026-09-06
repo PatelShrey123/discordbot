@@ -30,6 +30,7 @@ import * as rankedCmd from './commands/ranked.js';
 import * as tradeCmd from './commands/trade.js';
 import * as unboxCmd from './commands/unbox.js';
 import * as weaponCmd from './commands/weapon.js';
+import * as serversCmd from './commands/servers.js';
 import * as helpCmd from './commands/help.js';
 
 dotenv.config();
@@ -67,6 +68,7 @@ client.commands.set(rankedCmd.data.name, rankedCmd);
 client.commands.set(tradeCmd.data.name, tradeCmd);
 client.commands.set(unboxCmd.data.name, unboxCmd);
 client.commands.set(weaponCmd.data.name, weaponCmd);
+client.commands.set(serversCmd.data.name, serversCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -114,6 +116,30 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', async (interaction) => {
+  // Handle server browser regional switch buttons
+  if (interaction.isButton() && interaction.customId.startsWith('server_reg_')) {
+    const regId = interaction.customId.replace('server_reg_', '');
+    await interaction.deferUpdate();
+    try {
+      const { fetchLiveRooms } = await import('./api/servers.js');
+      const { renderServerBrowserCard } = await import('./canvas/serverBrowserCard.js');
+      const { createRegionButtons } = await import('./commands/servers.js');
+
+      const data = await fetchLiveRooms(regId);
+      const cardBuffer = await renderServerBrowserCard(data);
+      const attachment = new AttachmentBuilder(cardBuffer, { name: 'server-browser.png' });
+      const components = createRegionButtons(data.region.id);
+
+      await interaction.editReply({
+        files: [attachment],
+        components
+      });
+    } catch (err) {
+      console.error('[ServersButton] Error:', err);
+    }
+    return;
+  }
+
   if (!interaction.isChatInputCommand()) return;
 
   const command = client.commands.get(interaction.commandName);
@@ -567,6 +593,26 @@ client.on('messageCreate', async (message) => {
 
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
     await helpCmd.executePrefix(message, args);
+  }
+
+  // 17. .servers / .rooms / .lobbies / .games [region]
+  else if (
+    lowerContent === '.servers' ||
+    lowerContent.startsWith('.servers ') ||
+    lowerContent === '.rooms' ||
+    lowerContent.startsWith('.rooms ') ||
+    lowerContent === '.lobbies' ||
+    lowerContent.startsWith('.lobbies ') ||
+    lowerContent === '.games' ||
+    lowerContent.startsWith('.games ')
+  ) {
+    let prefixUsed = '.servers';
+    if (lowerContent.startsWith('.rooms')) prefixUsed = '.rooms';
+    else if (lowerContent.startsWith('.lobbies')) prefixUsed = '.lobbies';
+    else if (lowerContent.startsWith('.games')) prefixUsed = '.games';
+
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await serversCmd.executePrefix(message, args);
   }
 
 });
