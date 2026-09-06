@@ -24,6 +24,19 @@ const RARITY_COLORS = {
 
 const ITEMS_PER_PAGE = 10;
 
+function getCleanThumbnailUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  let clean = url.trim();
+  // Fix double URL from Kirka API: "https://kirka.iohttps://api2.kirka.io/..."
+  if (clean.includes('https://api2.kirka.io')) {
+    clean = clean.substring(clean.indexOf('https://api2.kirka.io'));
+  } else if (clean.startsWith('/')) {
+    clean = `https://kirka.io${clean}`;
+  }
+  if (!clean.startsWith('http://') && !clean.startsWith('https://')) return null;
+  return clean;
+}
+
 /**
  * Builds the monospace table for a specific page of owners
  */
@@ -79,8 +92,9 @@ export async function execute(interaction) {
           text: `Page ${page + 1} of ${totalPages} • Cached/Total: ${cachedTotalCopies}/${totalOwned}\nCached data may be inaccurate`
         });
 
-      if (item?.renderUrl) {
-        embed.setThumbnail(item.renderUrl);
+      const thumbUrl = getCleanThumbnailUrl(item?.renderUrl);
+      if (thumbUrl) {
+        embed.setThumbnail(thumbUrl);
       }
 
       return embed;
@@ -180,8 +194,9 @@ export async function executePrefix(message, args) {
           text: `Page ${page + 1} of ${totalPages} • Cached/Total: ${cachedTotalCopies}/${totalOwned}\nCached data may be inaccurate`
         });
 
-      if (item?.renderUrl) {
-        embed.setThumbnail(item.renderUrl);
+      const thumbUrl = getCleanThumbnailUrl(item?.renderUrl);
+      if (thumbUrl) {
+        embed.setThumbnail(thumbUrl);
       }
 
       return embed;

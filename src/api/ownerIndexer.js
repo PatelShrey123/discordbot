@@ -1,32 +1,48 @@
-import pg from 'pg';
 import dotenv from 'dotenv';
 import { getPublicCatalog, fetchUserInventory } from './kirka.js';
 
 dotenv.config();
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Shrey%4013569@db.bxebfeyqchjukibgfeqs.supabase.co:5432/postgres';
-const pool = new pg.Pool({ connectionString });
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://bxebfeyqchjukibgfeqs.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_I5SYfP4fDrzFP3_bPcXg9A_sUuuuWD2';
+
+const headers = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': `Bearer ${SUPABASE_KEY}`,
+  'Content-Type': 'application/json'
+};
 
 /**
  * Indexes a player's inventory items into the skin_owners table permanently.
+ * Skips default starter weapons to keep database storage tiny (<1% of Supabase free limit).
  */
 export async function indexPlayerInventory(player, inventory) {
   if (!player || !player.id || !Array.isArray(inventory) || inventory.length === 0) return;
 
-  const client = await pool.connect();
   try {
-    // Check if player is linked
-    const linkedCheck = await client.query(
-      'SELECT 1 FROM linked_accounts WHERE kirka_id = $1 OR short_id ILIKE $2 LIMIT 1;',
-      [player.id, player.shortId || '']
-    );
-    const isLinked = linkedCheck.rows.length > 0;
+    // 1. Check if player has linked their Discord account
+    let isLinked = false;
+    try {
+      const linkCheckUrl = `${SUPABASE_URL}/rest/v1/linked_accounts?or=(kirka_id.eq.${encodeURIComponent(player.id)},short_id.ilike.${encodeURIComponent(player.shortId || '')})&select=id&limit=1`;
+      const linkRes = await fetch(linkCheckUrl, { headers });
+      if (linkRes.ok) {
+        const rows = await linkRes.json();
+        isLinked = Array.isArray(rows) && rows.length > 0;
+      }
+    } catch {
+      // Continue with isLinked = false on lookup error
+    }
 
-    // Group items in inventory by skin_id
+    // 2. Group items in inventory by skin_id
     const itemCounts = new Map();
     for (const entry of inventory) {
       const item = entry.item || entry;
       if (!item || !item.id || !item.name) continue;
+
+      // Filter out base common weapons (e.g. Shark, Vita with 2.9M copies) to prevent DB clutter
+      const rarity = (item.rarity || '').toUpperCase();
+      const totalOwned = item.totalOwned || 0;
+      if (rarity === 'COMMON' && totalOwned > 10000) continue;
 
       const skinId = item.id;
       const skinName = item.name.replace(/^_+/, '').trim();
@@ -38,25 +54,38 @@ export async function indexPlayerInventory(player, inventory) {
       itemCounts.get(skinId).amount += amount;
     }
 
-    // Upsert into skin_owners
+    if (itemCounts.size === 0) return;
+
+    // 3. Prepare rows for batch upsert
+    const rowsToUpsert = [];
     for (const { skinId, skinName, amount } of itemCounts.values()) {
-      await client.query(
-        `INSERT INTO skin_owners (skin_id, skin_name, player_id, player_name, player_short_id, amount, is_linked, last_updated)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
-         ON CONFLICT (skin_id, player_id) 
-         DO UPDATE SET 
-           amount = EXCLUDED.amount,
-           player_name = EXCLUDED.player_name,
-           player_short_id = EXCLUDED.player_short_id,
-           is_linked = EXCLUDED.is_linked,
-           last_updated = NOW();`,
-        [skinId, skinName, player.id, player.name || 'Unknown', player.shortId || '', amount, isLinked]
-      );
+      rowsToUpsert.push({
+        skin_id: skinId,
+        skin_name: skinName,
+        player_id: player.id,
+        player_name: player.name || 'Unknown',
+        player_short_id: player.shortId || '',
+        amount,
+        is_linked: isLinked,
+        last_updated: new Date().toISOString()
+      });
+    }
+
+    // 4. Upsert in batches of 50 via Supabase REST API
+    const batchSize = 50;
+    for (let i = 0; i < rowsToUpsert.length; i += batchSize) {
+      const batch = rowsToUpsert.slice(i, i + batchSize);
+      await fetch(`${SUPABASE_URL}/rest/v1/skin_owners`, {
+        method: 'POST',
+        headers: {
+          ...headers,
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify(batch)
+      });
     }
   } catch (err) {
-    console.warn(`[OwnerIndexer] Error indexing inventory for ${player.name}:`, err.message);
-  } finally {
-    client.release();
+    console.warn(`[OwnerIndexer] Error indexing inventory for ${player?.name}:`, err.message);
   }
 }
 
@@ -64,31 +93,31 @@ export async function indexPlayerInventory(player, inventory) {
  * Retrieves all tracked owners for a specific skin from the database.
  */
 export async function getSkinOwners(skinNameOrId) {
-  const client = await pool.connect();
+  const cleanQuery = skinNameOrId.trim();
+
+  // 1. Resolve exact skin from official catalog
+  const catalog = await getPublicCatalog();
+  const matchedItem = catalog.find(i => 
+    (i.id === cleanQuery) || 
+    (i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanQuery.toLowerCase())
+  );
+
+  const targetSkinId = matchedItem ? matchedItem.id : cleanQuery;
+  const targetSkinName = matchedItem ? matchedItem.name.replace(/^_+/, '').trim() : cleanQuery;
+  const totalOwned = matchedItem ? (matchedItem.totalOwned || 0) : 0;
+
+  // 2. Query skin_owners from Supabase REST API
   try {
-    const cleanQuery = skinNameOrId.trim();
+    const queryUrl = `${SUPABASE_URL}/rest/v1/skin_owners?or=(skin_id.eq.${encodeURIComponent(targetSkinId)},skin_name.ilike.${encodeURIComponent(targetSkinName)})&order=amount.desc,player_name.asc`;
+    const res = await fetch(queryUrl, { headers });
+    
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Supabase REST Error HTTP ${res.status}: ${errText}`);
+    }
 
-    // 1. Resolve exact skin from official catalog
-    const catalog = await getPublicCatalog();
-    const matchedItem = catalog.find(i => 
-      (i.id === cleanQuery) || 
-      (i.name && i.name.replace(/^_+/, '').trim().toLowerCase() === cleanQuery.toLowerCase())
-    );
-
-    const targetSkinId = matchedItem ? matchedItem.id : cleanQuery;
-    const targetSkinName = matchedItem ? matchedItem.name.replace(/^_+/, '').trim() : cleanQuery;
-    const totalOwned = matchedItem ? (matchedItem.totalOwned || 0) : 0;
-
-    // 2. Query skin_owners from database
-    const res = await client.query(
-      `SELECT player_name, player_short_id, amount, is_linked, last_updated 
-       FROM skin_owners 
-       WHERE skin_id = $1 OR LOWER(skin_name) = LOWER($2)
-       ORDER BY amount DESC, player_name ASC;`,
-      [targetSkinId, targetSkinName]
-    );
-
-    const owners = res.rows.map(r => ({
+    const rows = await res.json();
+    const owners = (Array.isArray(rows) ? rows : []).map(r => ({
       name: r.player_name,
       shortId: r.player_short_id,
       count: r.amount,
@@ -105,10 +134,8 @@ export async function getSkinOwners(skinNameOrId) {
       owners
     };
   } catch (err) {
-    console.error('[OwnerIndexer] Error fetching skin owners:', err.message);
+    console.error('[OwnerIndexer] Error fetching skin owners from REST API:', err.message);
     throw err;
-  } finally {
-    client.release();
   }
 }
 
@@ -128,8 +155,7 @@ export async function seedTopPlayers() {
     const data = await res.json();
     const players = data.results || data || [];
 
-    // Crawl top 40 players in chunks of 5
-    for (let i = 0; i < Math.min(players.length, 40); i++) {
+    for (let i = 0; i < Math.min(players.length, 30); i++) {
       const p = players[i];
       if (!p.userId) continue;
 
@@ -139,11 +165,10 @@ export async function seedTopPlayers() {
           await indexPlayerInventory({ id: p.userId, name: p.name, shortId: '' }, inv);
         }
       } catch {
-        // Continue silently on individual player rate-limits
+        // Ignore single player rate-limits
       }
 
-      // Small delay between requests to be friendly to Kirka API
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
     console.log('✅ [OwnerIndexer] Finished background indexing top players!');
   } catch (err) {
