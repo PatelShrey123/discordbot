@@ -10,7 +10,7 @@ import {
 import { fetchUserProfile, fetchUserInventory } from '../api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong } from '../api/boltPrices.js';
 import { renderInventoryGridPage } from '../canvas/inventoryGrid.js';
-import { getLinkedAccount } from '../api/db.js';
+import { getLinkedAccount, resolveKirkaTarget } from '../api/db.js';
 
 export const data = new SlashCommandBuilder()
   .setName('inventory')
@@ -19,23 +19,19 @@ export const data = new SlashCommandBuilder()
   .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('user')
-      .setDescription('Kirka username or player ID')
+      .setDescription('Kirka username, player ID, or @DiscordUser')
       .setRequired(false)
   );
 
 export async function execute(interaction) {
   await interaction.deferReply();
   
-  let query = interaction.options.getString('user');
-  if (!query) {
-    const linked = await getLinkedAccount(interaction.user.id);
-    if (!linked) {
-      return interaction.editReply({
-        content: `❌ You haven't linked a Kirka account yet. Use \`/link\` to bind your profile, or specify a user (e.g. \`/inventory user:CrackedYOU\`).`
-      });
-    }
-    query = linked.shortId;
+  const rawInput = interaction.options.getString('user');
+  const target = await resolveKirkaTarget(rawInput, { interaction });
+  if (target.error) {
+    return interaction.editReply({ content: target.error });
   }
+  const query = target.query;
 
   // 1. Fetch Profile & Inventory
   let profile;
@@ -218,19 +214,26 @@ export async function execute(interaction) {
 }
 
 export async function executePrefix(message, args) {
-  let query = args.join(' ').trim();
-  if (!query) {
-    const linked = await getLinkedAccount(message.author.id);
-    if (!linked) {
-      return message.reply(`❌ You haven't linked a Kirka account yet. Use \`.link\` to bind your profile, or search for a player: \`.inv CrackedYOU\`.`);
-    }
-    query = linked.shortId;
+  const rawInput = args.join(' ').trim();
+  const target = await resolveKirkaTarget(rawInput, { message });
+  if (target.error) {
+    return message.reply(target.error);
   }
+  const query = target.query;
 
   // 1. Fetch Profile & Inventory
-  const profile = await fetchUserProfile(query);
+  let profile;
+  try {
+    profile = await fetchUserProfile(query);
+  } catch (err) {
+    if (err.message.includes('Outage')) {
+      return message.reply(`⚠️ **Kirka.io API Outage**: The Kirka profile database is currently experiencing issues. Please try again later!`);
+    }
+  }
+
   if (!profile) {
-    return message.reply(`❌ Could not find a Kirka player matching **${query}**.`);
+    const errorTarget = target.isMention ? `<@${target.targetDiscordId}> (${target.linked?.kirka_username || query})` : `**${query}**`;
+    return message.reply(`❌ Could not find a Kirka player matching ${errorTarget}.`);
   }
 
   const inventory = await fetchUserInventory(profile.id);

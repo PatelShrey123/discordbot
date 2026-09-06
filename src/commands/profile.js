@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, AttachmentBuilder } from 'discord.js';
 import { fetchUserProfile } from '../api/kirka.js';
 import { renderProfileCard } from '../canvas/profileCard.js';
-import { getUserBackground, getLinkedAccount, getDiscordLinkedToKirka } from '../api/db.js';
+import { getUserBackground, getLinkedAccount, getDiscordLinkedToKirka, resolveKirkaTarget } from '../api/db.js';
 
 export const data = new SlashCommandBuilder()
   .setName('profile')
@@ -10,23 +10,19 @@ export const data = new SlashCommandBuilder()
   .setContexts(0, 1, 2)
   .addStringOption(option =>
     option.setName('user')
-      .setDescription('Kirka username or player ID')
+      .setDescription('Kirka username, player ID, or @DiscordUser')
       .setRequired(false)
   );
 
 export async function execute(interaction) {
   await interaction.deferReply();
   
-  let query = interaction.options.getString('user');
-  if (!query) {
-    const linked = await getLinkedAccount(interaction.user.id);
-    if (!linked) {
-      return interaction.editReply({
-        content: `❌ You haven't linked a Kirka account yet. Use \`/link\` to bind your profile, or specify a user (e.g. \`/profile user:CrackedYOU\`).`
-      });
-    }
-    query = linked.shortId;
+  const rawInput = interaction.options.getString('user');
+  const target = await resolveKirkaTarget(rawInput, { interaction });
+  if (target.error) {
+    return interaction.editReply({ content: target.error });
   }
+  const query = target.query;
 
   let profile;
   try {
@@ -40,8 +36,9 @@ export async function execute(interaction) {
   }
 
   if (!profile) {
+    const errorTarget = target.isMention ? `<@${target.targetDiscordId}> (${target.linked?.kirka_username || query})` : `**${query}**`;
     return interaction.editReply({
-      content: `❌ Could not find a Kirka player matching **${query}**. Please check the username or ID and try again.`
+      content: `❌ Could not find a Kirka player matching ${errorTarget}. Please check the username or ID and try again.`
     });
   }
 

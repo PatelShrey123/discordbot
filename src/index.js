@@ -7,7 +7,7 @@ import dns from 'dns';
 import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard, getAllItemData, fetchUserProfile, fetchUserInventory, fetchClan } from './api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong } from './api/boltPrices.js';
-import { initDb, getUserBackground, getLinkedAccount, getDiscordLinkedToKirka, setUserBackground } from './api/db.js';
+import { initDb, getUserBackground, getLinkedAccount, getDiscordLinkedToKirka, setUserBackground, resolveKirkaTarget } from './api/db.js';
 import { startChatListener, getWebSocketStatus, pendingLinks } from './utils/chatListener.js';
 import { createSkinEmbed } from './commands/skin.js';
 import { renderProfileCard } from './canvas/profileCard.js';
@@ -188,25 +188,24 @@ client.on('messageCreate', async (message) => {
     }
   }
 
-  // 2. .profile [username/id]
+  // 2. .profile [username/id/@mention]
   else if (lowerContent.startsWith('.profile')) {
-    let query = content.substring(8).trim();
+    const rawQuery = content.substring(8).trim();
     
     await message.channel.sendTyping();
-    console.log(`[MessageReceived] Matched .profile! Query: "${query}"`);
+    console.log(`[MessageReceived] Matched .profile! Query: "${rawQuery}"`);
 
-    if (!query) {
-      const linked = await getLinkedAccount(message.author.id);
-      if (!linked) {
-        return message.reply(`❌ You haven't linked a Kirka account yet. Use \`/link\` to bind your profile, or search for a player: \`.profile CrackedYOU\`.`);
-      }
-      query = linked.shortId;
+    const target = await resolveKirkaTarget(rawQuery, { message });
+    if (target.error) {
+      return message.reply(target.error);
     }
+    const query = target.query;
 
     try {
       const profile = await fetchUserProfile(query);
       if (!profile) {
-        return message.reply(`❌ Could not find a Kirka player matching **${query}**.`);
+        const errorTarget = target.isMention ? `<@${target.targetDiscordId}> (${target.linked?.kirka_username || query})` : `**${query}**`;
+        return message.reply(`❌ Could not find a Kirka player matching ${errorTarget}.`);
       }
 
       const customBg = await getUserBackground(profile.id);

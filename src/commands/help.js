@@ -35,7 +35,8 @@ export function buildHelpEmbed(category = 'home') {
         `• **Option C (Slash):** Run \`/h image:[upload]\` or \`/h url:[link]\`.\n\n` +
         `> 💡 **Permanent Cloud Storage:** Your background is converted to permanent data storage in our Supabase database — **it will never expire or reset** when servers restart!\n\n` +
         `### 📋 Profile Commands:\n` +
-        `• \`.profile [user]\` — Render your HD esports player card with 3D skins, clan tag, and K/D.\n` +
+        `• \`.profile [@DiscordUser/user]\` — Render your HD esports player card with 3D skins, clan tag, and K/D. Mention anyone to see their linked profile!\n` +
+        `• \`.inv [@DiscordUser/user]\` — View a player's inventory grid & Bolt valuation. Mention anyone to see their inventory!\n` +
         `• \`.h [image/url]\` — Set or update your custom profile card background.\n` +
         `• \`.link <user>\` — Securely link your Discord account to your Kirka profile.\n` +
         `• \`.unlink\` — Disconnect your linked profile.`
