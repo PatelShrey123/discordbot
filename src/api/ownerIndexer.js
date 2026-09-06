@@ -23,7 +23,10 @@ export async function indexPlayerInventory(player, inventory) {
     // 1. Check if player has linked their Discord account
     let isLinked = false;
     try {
-      const linkCheckUrl = `${SUPABASE_URL}/rest/v1/linked_accounts?or=(kirka_id.eq.${encodeURIComponent(player.id)},short_id.ilike.${encodeURIComponent(player.shortId || '')})&select=id&limit=1`;
+      let linkCheckUrl = `${SUPABASE_URL}/rest/v1/linked_accounts?kirka_id=eq.${encodeURIComponent(player.id)}&select=discord_id&limit=1`;
+      if (player.shortId) {
+        linkCheckUrl = `${SUPABASE_URL}/rest/v1/linked_accounts?or=(kirka_id.eq.${encodeURIComponent(player.id)},short_id.ilike.${encodeURIComponent(player.shortId)})&select=discord_id&limit=1`;
+      }
       const linkRes = await fetch(linkCheckUrl, { headers });
       if (linkRes.ok) {
         const rows = await linkRes.json();
@@ -145,18 +148,28 @@ export async function getSkinOwners(skinNameOrId) {
 export async function seedTopPlayers() {
   console.log('🔄 [OwnerIndexer] Starting background indexing of top leaderboard players...');
   try {
-    const res = await fetch('https://api.kirka.io/api/leaderboard/solo', {
-      headers: {
-        'ApiKey': process.env.KIRKA_API_KEY || '01d50491829d6991b64f116b1f34b70924889a2f99a7ea81820fe8a3323da060'
-      }
-    });
+    const allPlayers = [];
+    // Crawl first 4 pages of solo leaderboard (up to 80 top players)
+    for (let page = 1; page <= 4; page++) {
+      try {
+        const res = await fetch(`https://api.kirka.io/api/leaderboard/solo?limit=20&page=${page}`, {
+          headers: {
+            'ApiKey': process.env.KIRKA_API_KEY || '01d50491829d6991b64f116b1f34b70924889a2f99a7ea81820fe8a3323da060'
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const list = data.results || data || [];
+          if (Array.isArray(list)) allPlayers.push(...list);
+        }
+      } catch {}
+      await new Promise(r => setTimeout(r, 300));
+    }
 
-    if (!res.ok) return;
-    const data = await res.json();
-    const players = data.results || data || [];
+    console.log(`[OwnerIndexer] Discovered ${allPlayers.length} leaderboard candidates to index.`);
 
-    for (let i = 0; i < Math.min(players.length, 30); i++) {
-      const p = players[i];
+    for (let i = 0; i < allPlayers.length; i++) {
+      const p = allPlayers[i];
       if (!p.userId) continue;
 
       try {
@@ -165,10 +178,10 @@ export async function seedTopPlayers() {
           await indexPlayerInventory({ id: p.userId, name: p.name, shortId: '' }, inv);
         }
       } catch {
-        // Ignore single player rate-limits
+        // Continue silently on individual rate limits
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 400));
     }
     console.log('✅ [OwnerIndexer] Finished background indexing top players!');
   } catch (err) {
