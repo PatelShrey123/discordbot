@@ -30,6 +30,7 @@ import * as rankedCmd from './commands/ranked.js';
 import * as tradeCmd from './commands/trade.js';
 import * as unboxCmd from './commands/unbox.js';
 import * as weaponCmd from './commands/weapon.js';
+import * as helpCmd from './commands/help.js';
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ const client = new Client({
 
 console.log('🔊 [Startup] Step 1: Registering commands collection...');
 client.commands = new Collection();
+client.commands.set(helpCmd.data.name, helpCmd);
 client.commands.set(profileCmd.data.name, profileCmd);
 client.commands.set(inventoryCmd.data.name, inventoryCmd);
 client.commands.set(clanCmd.data.name, clanCmd);
@@ -549,6 +551,26 @@ client.on('messageCreate', async (message) => {
 
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
     await weaponCmd.executePrefix(message, args);
+  }
+
+  // 16. .help / .commands / .guide / .info
+  else if (
+    lowerContent === '.help' ||
+    lowerContent.startsWith('.help ') ||
+    lowerContent === '.commands' ||
+    lowerContent.startsWith('.commands ') ||
+    lowerContent === '.guide' ||
+    lowerContent.startsWith('.guide ') ||
+    lowerContent === '.info' ||
+    lowerContent.startsWith('.info ')
+  ) {
+    let prefixUsed = '.help';
+    if (lowerContent.startsWith('.commands')) prefixUsed = '.commands';
+    else if (lowerContent.startsWith('.guide')) prefixUsed = '.guide';
+    else if (lowerContent.startsWith('.info')) prefixUsed = '.info';
+
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await helpCmd.executePrefix(message, args);
   }
 
 });

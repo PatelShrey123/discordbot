@@ -16,10 +16,12 @@ import * as rankedCmd from './commands/ranked.js';
 import * as tradeCmd from './commands/trade.js';
 import * as unboxCmd from './commands/unbox.js';
 import * as weaponCmd from './commands/weapon.js';
+import * as helpCmd from './commands/help.js';
 
 dotenv.config();
 
 const commands = [
+  helpCmd.data.toJSON(),
   profileCmd.data.toJSON(),
   inventoryCmd.data.toJSON(),
   clanCmd.data.toJSON(),
