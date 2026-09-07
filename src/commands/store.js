@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, AttachmentBuilder } from 'discord.js';
 import { getParsedStore, getSkinRenderUrl } from '../api/store.js';
+import { renderLimitedDropsBanner } from '../canvas/storeBanner.js';
 
 export const data = new SlashCommandBuilder()
   .setName('store')
@@ -16,7 +17,7 @@ export const data = new SlashCommandBuilder()
       )
   );
 
-export function buildStoreEmbed(storeData, viewFilter = 'all') {
+export async function buildStorePayload(storeData, viewFilter = 'all') {
   const embed = new EmbedBuilder()
     .setColor('#38bdf8')
     .setTitle('🏬 Kirka.io Live Store & Limited Edition Drops')
@@ -32,19 +33,28 @@ export function buildStoreEmbed(storeData, viewFilter = 'all') {
   const showBundles = viewFilter === 'all' || viewFilter === 'bundles';
   const showDaily = viewFilter === 'all';
 
+  const files = [];
+
   // 1. Limited Edition Drops
   if (showLimited) {
     if (storeData.limitedDrops && storeData.limitedDrops.length > 0) {
-      const limitedLines = storeData.limitedDrops.map(item => {
+      // Sort: lowest remaining units first so most urgent drops (e.g. BRIGHTSTAR 5/25) appear #1, then Capy (12/25)
+      storeData.limitedDrops.sort((a, b) => (a.remainingUnits ?? 999) - (b.remainingUnits ?? 999));
+
+      const limitedLines = storeData.limitedDrops.map((item, idx) => {
         const stockStatus = item.isSoldOut
           ? '🛑 **SOLD OUT**'
           : `🔥 **${item.remainingUnits} / ${item.totalUnits} UNITS LEFT**`;
         
-        const countdown = item.endsAt
+        // Only show countdown if it actually expires in the near future (< 30 days) to avoid perpetual "in 4 years"
+        const msLeft = item.endsAt ? new Date(item.endsAt).getTime() - Date.now() : 0;
+        const showCountdown = msLeft > 0 && msLeft < 30 * 24 * 60 * 60 * 1000;
+        const countdown = showCountdown
           ? ` • <t:${Math.floor(new Date(item.endsAt).getTime() / 1000)}:R>`
           : '';
 
-        return `• **${item.name}** (${item.weapon}) — ${stockStatus}\n  💎 **${item.priceDiamonds.toLocaleString()} Diamonds**${countdown}`;
+        const icon = item.type === 'CHARACTER' ? '🐾' : '🗡️';
+        return `${idx + 1}. ${icon} **${item.name}** (${item.weapon}) — ${stockStatus}\n   💎 **${item.priceDiamonds.toLocaleString()} Diamonds**${countdown}`;
       }).join('\n\n');
 
       embed.addFields({
@@ -52,10 +62,21 @@ export function buildStoreEmbed(storeData, viewFilter = 'all') {
         value: limitedLines
       });
 
-      // Set image to the most exclusive limited skin available
-      const topLimited = storeData.limitedDrops.find(d => !d.isSoldOut) || storeData.limitedDrops[0];
-      if (topLimited && topLimited.renderUrl) {
-        embed.setImage(topLimited.renderUrl);
+      // Generate side-by-side composite canvas image for ALL N limited items
+      try {
+        const bannerBuffer = await renderLimitedDropsBanner(storeData.limitedDrops);
+        if (bannerBuffer) {
+          const attachment = new AttachmentBuilder(bannerBuffer, { name: 'limited-drops-banner.png' });
+          files.push(attachment);
+          embed.setImage('attachment://limited-drops-banner.png');
+        }
+      } catch (bannerErr) {
+        console.warn('[StoreCommand] Failed to generate limited drops banner:', bannerErr.message);
+        // Fallback to top item image
+        const topLimited = storeData.limitedDrops[0];
+        if (topLimited && topLimited.renderUrl) {
+          embed.setImage(topLimited.renderUrl);
+        }
       }
     } else {
       embed.addFields({
@@ -84,7 +105,6 @@ export function buildStoreEmbed(storeData, viewFilter = 'all') {
 
   // 3. Daily Shop Rotation
   if (showDaily && storeData.dailyShop && storeData.dailyShop.length > 0) {
-    // Deduplicate daily shop items by name
     const seen = new Set();
     const uniqueDaily = [];
     for (const it of storeData.dailyShop) {
@@ -123,7 +143,7 @@ export function buildStoreEmbed(storeData, viewFilter = 'all') {
     text: 'KirkaHub Store Tracker • Type .storeupdate to get pinged on new drops!'
   });
 
-  return embed;
+  return { embed, files };
 }
 
 export function createStoreButtons() {
@@ -149,11 +169,12 @@ export async function execute(interaction) {
 
   try {
     const storeData = await getParsedStore();
-    const embed = buildStoreEmbed(storeData, view);
+    const { embed, files } = await buildStorePayload(storeData, view);
     const components = [createStoreButtons()];
 
     await interaction.editReply({
       embeds: [embed],
+      files,
       components
     });
   } catch (err) {
@@ -169,11 +190,12 @@ export async function executePrefix(message, args) {
 
   try {
     const storeData = await getParsedStore();
-    const embed = buildStoreEmbed(storeData, view);
+    const { embed, files } = await buildStorePayload(storeData, view);
     const components = [createStoreButtons()];
 
     await message.reply({
       embeds: [embed],
+      files,
       components
     });
   } catch (err) {

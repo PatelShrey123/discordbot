@@ -158,11 +158,12 @@ client.on('interactionCreate', async (interaction) => {
     await interaction.deferUpdate();
     try {
       const { getParsedStore } = await import('./api/store.js');
-      const { buildStoreEmbed, createStoreButtons } = await import('./commands/store.js');
+      const { buildStorePayload, createStoreButtons } = await import('./commands/store.js');
       const storeData = await getParsedStore();
-      const embed = buildStoreEmbed(storeData, 'all');
+      const { embed, files } = await buildStorePayload(storeData, 'all');
       await interaction.editReply({
         embeds: [embed],
+        files,
         components: [createStoreButtons()]
       });
     } catch (err) {
