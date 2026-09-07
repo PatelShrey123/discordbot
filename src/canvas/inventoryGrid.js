@@ -87,14 +87,20 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
       // 1. Prioritize old API renderUrl if valid and not a placeholder
       if (item.renderUrl && !isPlaceholderUrl(item.renderUrl)) {
         candidates.push(item.renderUrl);
+        if (item.renderUrl.includes('/v') && item.renderUrl.endsWith('.webp')) {
+          candidates.push(item.renderUrl.replace(/\/v\d+\.webp$/, ''));
+        }
       }
-      // 2. Fall back to api2.kirka.io skin-render (for skins where old API lacks a render, e.g. Hi-Score, Sterling, Purp)
+      // 2. Fall back to api2.kirka.io skin-render (for skins where old API lacks a render, e.g. Hi-Score, Sterling, Purp, Honeybear, BRIGHTSTAR)
       if (rawName) {
         candidates.push(`https://api2.kirka.io/api/skin-render/${encodeURIComponent(rawName)}`);
       }
       // 3. Fall back to textureUrl from old API (e.g. Punishment base64 or character textures)
       if (item.textureUrl && !isPlaceholderUrl(item.textureUrl)) {
         candidates.push(item.textureUrl);
+        if (item.textureUrl.includes('/v') && item.textureUrl.endsWith('.webp')) {
+          candidates.push(item.textureUrl.replace(/\/v\d+\.webp$/, ''));
+        }
       }
       // 4. Fall back to api2 skin-texture
       if (rawName) {
@@ -119,7 +125,13 @@ export async function renderInventoryGridPage({ items, pageItems, priceMap, page
           // Continue to next candidate
         }
       }
-      return null;
+      // 5. Final fallback: local silhouette so card is never left completely blank
+      try {
+        const fallbackPath = join(__dirname, '../../assets/render-mini.webp');
+        return await getCachedImage(fallbackPath);
+      } catch {
+        return null;
+      }
     })
   );
 
