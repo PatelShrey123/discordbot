@@ -31,7 +31,10 @@ import * as tradeCmd from './commands/trade.js';
 import * as unboxCmd from './commands/unbox.js';
 import * as weaponCmd from './commands/weapon.js';
 import * as serversCmd from './commands/servers.js';
+import * as storeCmd from './commands/store.js';
+import * as storeupdateCmd from './commands/storeupdate.js';
 import * as helpCmd from './commands/help.js';
+import { startStoreNotifier } from './utils/storeNotifier.js';
 
 dotenv.config();
 
@@ -69,6 +72,8 @@ client.commands.set(tradeCmd.data.name, tradeCmd);
 client.commands.set(unboxCmd.data.name, unboxCmd);
 client.commands.set(weaponCmd.data.name, weaponCmd);
 client.commands.set(serversCmd.data.name, serversCmd);
+client.commands.set(storeCmd.data.name, storeCmd);
+client.commands.set(storeupdateCmd.data.name, storeupdateCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -90,6 +95,14 @@ client.once('ready', async () => {
     console.log('✅ [Startup] Step 5: Chat WebSocket Listener connected.');
   } catch (err) {
     console.error('❌ [Startup] Step 5: Chat WebSocket connection failed:', err);
+  }
+
+  console.log('🔔 [Startup] Step 5.5: Starting Store & Drop Notification Poller...');
+  try {
+    startStoreNotifier(client);
+    console.log('✅ [Startup] Step 5.5: Store & Drop Notifier started.');
+  } catch (err) {
+    console.error('❌ [Startup] Step 5.5: Store Notifier failed to start:', err);
   }
 
   console.log('🔥 [Startup] Step 6: Warming up API caches (Google Sheets, Kirka Catalog, Leaderboard, AllItemData)...');
@@ -136,6 +149,53 @@ client.on('interactionCreate', async (interaction) => {
       });
     } catch (err) {
       console.error('[ServersButton] Error:', err);
+    }
+    return;
+  }
+
+  // Handle store buttons
+  if (interaction.isButton() && interaction.customId === 'store_refresh') {
+    await interaction.deferUpdate();
+    try {
+      const { getParsedStore } = await import('./api/store.js');
+      const { buildStoreEmbed, createStoreButtons } = await import('./commands/store.js');
+      const storeData = await getParsedStore();
+      const embed = buildStoreEmbed(storeData, 'all');
+      await interaction.editReply({
+        embeds: [embed],
+        components: [createStoreButtons()]
+      });
+    } catch (err) {
+      console.error('[StoreButton] Refresh error:', err);
+    }
+    return;
+  }
+
+  if (interaction.isButton() && interaction.customId === 'store_sub_toggle') {
+    await interaction.deferReply({ flags: 64 });
+    try {
+      const { isUserSubscribed, subscribeUser, unsubscribeUser } = await import('./utils/storeNotifier.js');
+      const { buildSubscriptionEmbed, buildSubscriptionButtons } = await import('./commands/storeupdate.js');
+      const userId = interaction.user.id;
+      const isSubbed = isUserSubscribed(userId);
+
+      if (isSubbed) {
+        unsubscribeUser(userId);
+      } else {
+        subscribeUser(userId, interaction.channelId, interaction.guildId);
+      }
+
+      const newState = !isSubbed;
+      const embed = buildSubscriptionEmbed(newState, interaction.channelId, interaction.user.username);
+      const row = buildSubscriptionButtons(newState);
+
+      await interaction.editReply({
+        embeds: [embed],
+        components: [row]
+      });
+    } catch (err) {
+      console.error('[StoreButton] Sub toggle error:', err);
+      await interaction.editReply('⚠️ Failed to update subscription status.');
     }
     return;
   }
@@ -648,6 +708,40 @@ client.on('messageCreate', async (message) => {
 
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
     await serversCmd.executePrefix(message, args);
+  }
+
+  // 18. .store / .shop / .bundles [view]
+  else if (
+    lowerContent === '.store' ||
+    lowerContent.startsWith('.store ') ||
+    lowerContent === '.shop' ||
+    lowerContent.startsWith('.shop ') ||
+    lowerContent === '.bundles' ||
+    lowerContent.startsWith('.bundles ')
+  ) {
+    let prefixUsed = '.store';
+    if (lowerContent.startsWith('.shop')) prefixUsed = '.shop';
+    else if (lowerContent.startsWith('.bundles')) prefixUsed = '.bundles';
+
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await storeCmd.executePrefix(message, args);
+  }
+
+  // 19. .storeupdate / .storesub / .notifystore [on/off]
+  else if (
+    lowerContent === '.storeupdate' ||
+    lowerContent.startsWith('.storeupdate ') ||
+    lowerContent === '.storesub' ||
+    lowerContent.startsWith('.storesub ') ||
+    lowerContent === '.notifystore' ||
+    lowerContent.startsWith('.notifystore ')
+  ) {
+    let prefixUsed = '.storeupdate';
+    if (lowerContent.startsWith('.storesub')) prefixUsed = '.storesub';
+    else if (lowerContent.startsWith('.notifystore')) prefixUsed = '.notifystore';
+
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await storeupdateCmd.executePrefix(message, args);
   }
 
 });

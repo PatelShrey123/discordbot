@@ -57,6 +57,8 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.trade <skin>\` — Search active listings for a specific skin (e.g. \`.trade Hi-Score\`, \`.trade Shark\`, \`.trade Sinister\`).\n` +
         `• \`.trade history [skin]\` — Search completed and accepted trade history deals.\n` +
         `• \`.skin <name>\` — Inspect any skin in the game with its live market value in Bolts, rarity, and Kirka 3D preview link.\n` +
+        `• \`.store [view]\` — View live in-game store bundles, weapon skins, and limited stock counters (e.g. Capybara 12/25 left) with renders.\n` +
+        `• \`.storeupdate\` — Subscribe to real-time pings whenever a new limited drop occurs or the store rotates.\n` +
         `• \`.inv [user]\` — Render an ultra-sharp 2X HD inventory grid card showing a player\'s owned items and total inventory valuation in Bolts!\n\n` +
         `> 💡 **One-Click Switcher:** When viewing trades, use the \`[Show Trade History 📜]\` and \`[Show Active Offers 🟢]\` buttons to toggle modes without retyping!`
       )

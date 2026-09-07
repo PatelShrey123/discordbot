@@ -17,6 +17,8 @@ import * as tradeCmd from './commands/trade.js';
 import * as unboxCmd from './commands/unbox.js';
 import * as weaponCmd from './commands/weapon.js';
 import * as serversCmd from './commands/servers.js';
+import * as storeCmd from './commands/store.js';
+import * as storeupdateCmd from './commands/storeupdate.js';
 import * as helpCmd from './commands/help.js';
 
 dotenv.config();
@@ -39,7 +41,9 @@ const commands = [
   tradeCmd.data.toJSON(),
   unboxCmd.data.toJSON(),
   weaponCmd.data.toJSON(),
-  serversCmd.data.toJSON()
+  serversCmd.data.toJSON(),
+  storeCmd.data.toJSON(),
+  storeupdateCmd.data.toJSON()
 ];
 
 export async function registerCommands() {
