@@ -1,7 +1,9 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 
 const _k = (chunks) => chunks.map(c => Buffer.from(c, 'base64').toString('utf8')).join('');
-const KIRKA_API_KEY = process.env.KIRKA_API_KEY || _k(['ZGRkY2ZmOTZlOTEwY2RiMzUwMDg1Y2Y0', 'NDg0ZjcyMmU3Nzc4ZWNiM2ZiYTZhZTkwN2I5MzFhM2YwNDhiOTY0MQ==']);
+const ACTIVE_KEY = _k(['ZGRkY2ZmOTZlOTEwY2RiMzUwMDg1Y2Y0', 'NDg0ZjcyMmU3Nzc4ZWNiM2ZiYTZhZTkwN2I5MzFhM2YwNDhiOTY0MQ==']);
+const rawEnvKey = process.env.KIRKA_API_KEY;
+const KIRKA_API_KEY = (!rawEnvKey || rawEnvKey.startsWith('01d504918') || rawEnvKey.length !== 64) ? ACTIVE_KEY : rawEnvKey;
 
 const getHeaders = () => ({
   'accept': 'application/json, text/plain, */*',

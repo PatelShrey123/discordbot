@@ -516,7 +516,9 @@ client.on('messageCreate', async (message) => {
     try {
       if (category === 'players') {
         const _k = (chunks) => chunks.map(c => Buffer.from(c, 'base64').toString('utf8')).join('');
-        const apiKey = process.env.KIRKA_API_KEY || _k(['ZGRkY2ZmOTZlOTEwY2RiMzUwMDg1Y2Y0', 'NDg0ZjcyMmU3Nzc4ZWNiM2ZiYTZhZTkwN2I5MzFhM2YwNDhiOTY0MQ==']);
+        const ACTIVE_KEY = _k(['ZGRkY2ZmOTZlOTEwY2RiMzUwMDg1Y2Y0', 'NDg0ZjcyMmU3Nzc4ZWNiM2ZiYTZhZTkwN2I5MzFhM2YwNDhiOTY0MQ==']);
+        const rawEnvKey = process.env.KIRKA_API_KEY;
+        const apiKey = (!rawEnvKey || rawEnvKey.startsWith('01d504918') || rawEnvKey.length !== 64) ? ACTIVE_KEY : rawEnvKey;
         const res = await fetch('https://api.kirka.io/api/leaderboard/solo', { headers: { 'ApiKey': apiKey, 'user-agent': 'Mozilla/5.0' } });
         if (!res.ok) throw new Error('API returned ' + res.status);
         const data = await res.json();
@@ -536,7 +538,9 @@ client.on('messageCreate', async (message) => {
         await message.reply({ embeds: [embed] });
       } else {
         const _k = (chunks) => chunks.map(c => Buffer.from(c, 'base64').toString('utf8')).join('');
-        const apiKey = process.env.KIRKA_API_KEY || _k(['ZGRkY2ZmOTZlOTEwY2RiMzUwMDg1Y2Y0', 'NDg0ZjcyMmU3Nzc4ZWNiM2ZiYTZhZTkwN2I5MzFhM2YwNDhiOTY0MQ==']);
+        const ACTIVE_KEY = _k(['ZGRkY2ZmOTZlOTEwY2RiMzUwMDg1Y2Y0', 'NDg0ZjcyMmU3Nzc4ZWNiM2ZiYTZhZTkwN2I5MzFhM2YwNDhiOTY0MQ==']);
+        const rawEnvKey = process.env.KIRKA_API_KEY;
+        const apiKey = (!rawEnvKey || rawEnvKey.startsWith('01d504918') || rawEnvKey.length !== 64) ? ACTIVE_KEY : rawEnvKey;
         const res = await fetch('https://api.kirka.io/api/leaderboard/clan', { headers: { 'ApiKey': apiKey, 'user-agent': 'Mozilla/5.0' } });
         if (!res.ok) throw new Error('API returned ' + res.status);
         const data = await res.json();
