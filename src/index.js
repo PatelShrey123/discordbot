@@ -514,6 +514,7 @@ client.on('messageCreate', async (message) => {
     console.log(`[MessageReceived] Matched .leaderboard! Category: "${category}"`);
 
     try {
+      if (category === 'players') {
         const _k = (chunks) => chunks.map(c => Buffer.from(c, 'base64').toString('utf8')).join('');
         const apiKey = process.env.KIRKA_API_KEY || _k(['ZGRkY2ZmOTZlOTEwY2RiMzUwMDg1Y2Y0', 'NDg0ZjcyMmU3Nzc4ZWNiM2ZiYTZhZTkwN2I5MzFhM2YwNDhiOTY0MQ==']);
         const res = await fetch('https://api.kirka.io/api/leaderboard/solo', { headers: { 'ApiKey': apiKey, 'user-agent': 'Mozilla/5.0' } });
