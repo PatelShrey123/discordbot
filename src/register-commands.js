@@ -19,6 +19,7 @@ import * as weaponCmd from './commands/weapon.js';
 import * as serversCmd from './commands/servers.js';
 import * as storeCmd from './commands/store.js';
 import * as storeupdateCmd from './commands/storeupdate.js';
+import * as eventsCmd from './commands/events.js';
 import * as helpCmd from './commands/help.js';
 
 dotenv.config();
@@ -43,7 +44,8 @@ const commands = [
   weaponCmd.data.toJSON(),
   serversCmd.data.toJSON(),
   storeCmd.data.toJSON(),
-  storeupdateCmd.data.toJSON()
+  storeupdateCmd.data.toJSON(),
+  eventsCmd.data.toJSON()
 ];
 
 export async function registerCommands() {

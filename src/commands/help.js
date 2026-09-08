@@ -97,7 +97,10 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.clan <tag>\` — Generate a visual roster card with member stats, level, and war points.\n` +
         `• \`.ranked [category]\` — View the top competitive Kirka players in Solo, Ranked, or 1v1.\n` +
         `• \`.leaderboard\` — Inspect top global players by kills, wins, and level.\n` +
-        `• \`.quests\` — View live daily and weekly in-game Kirka quests and diamond rewards.\n\n` +
+        `• \`.quests\` — View live daily and weekly in-game Kirka quests and diamond rewards.\n` +
+        `• \`.events [query]\` — View 2026 Event Quests, requirements, and live skin circulation.\n` +
+        `• \`.cw [number]\` — View Clan Wars rewards (Top 3 • Top 8 • Top 39) with live Bolt values & owners.\n` +
+        `• \`.seasons [query]\` — View Ranked Seasons and special event shops.\n\n` +
         `### 🌐 Live Server Browser (\`.servers\`):\n` +
         `• \`.servers [region]\` — View active rooms and matches in \`india\`, \`asia\`, \`eu\`, \`na\`, or \`sa\`.\n` +
         `• Renders real Kirka map background screenshots for every room, player counts (\`1/8\`), and interactive region switch buttons!`
@@ -122,8 +125,8 @@ export function buildHelpEmbed(category = 'home') {
       `• **🎒 Inventory & Skins:** \`.inv [user]\`, \`.skin <name>\`\n` +
       `• **🔄 Live Trading:** \`.trade [skin]\`, \`.trade history [skin]\`\n` +
       `• **🔫 Weapons & TTK:** \`.weapon <gun>\`, \`.compare <gun1> <gun2>\`, \`.weapons\`\n` +
-      `• **🎲 Chests & Quests:** \`.unbox [chest]\`, \`.quests\`\n` +
-      `• **🏆 Clans & Ranked:** \`.clan <tag>\`, \`.ranked\`, \`.leaderboard\`\n` +
+      `• **🎲 Chests & Quests:** \`.unbox [chest]\`, \`.quests\`, \`.events\`\n` +
+      `• **🏆 Clans & Ranked:** \`.clan <tag>\`, \`.cw [num]\`, \`.seasons\`, \`.ranked\`, \`.leaderboard\`\n` +
       `• **🌐 Live Server Browser:** \`.servers [region]\`, \`.rooms\` (India, Asia, EU, NA, SA)\n\n` +
       `> 💡 **Tip:** Every command supports both slash (\`/command\`) and prefix (\`.command\`) triggers! Click any button below for a detailed walkthrough.`
     )

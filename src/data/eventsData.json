@@ -1,0 +1,6598 @@
+{
+  "stores": [
+    {
+      "title": "ORIGINAL",
+      "items": [
+        {
+          "name": "Kod",
+          "rarity": "Legendary",
+          "value": "330,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 163
+        },
+        {
+          "name": "LOL",
+          "rarity": "Epic",
+          "value": "575,000,000",
+          "req": "80x 💎",
+          "type": "Character",
+          "owners": 90
+        },
+        {
+          "name": "Nyan Cat",
+          "rarity": "Legendary",
+          "value": "450,000,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 70
+        },
+        {
+          "name": "Crazy",
+          "rarity": "Legendary",
+          "value": "550,000,000",
+          "req": "150x 💎",
+          "type": "AR-9",
+          "owners": 31
+        },
+        {
+          "name": "Toxic",
+          "rarity": "Epic",
+          "value": "325,000,000",
+          "req": "80x 💎",
+          "type": "Weatie",
+          "owners": 23
+        }
+      ]
+    },
+    {
+      "title": "2021 Christmas",
+      "items": [
+        {
+          "name": "Gingerman",
+          "rarity": "Legendary",
+          "value": "2,000,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 44
+        },
+        {
+          "name": "Grinch",
+          "rarity": "Epic",
+          "value": "550,000,000",
+          "req": "80x 💎",
+          "type": "Character",
+          "owners": 55
+        },
+        {
+          "name": "Candy",
+          "rarity": "Legendary",
+          "value": "320,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 36
+        },
+        {
+          "name": "Gift",
+          "rarity": "Epic",
+          "value": "600,000,000",
+          "req": "80x 💎",
+          "type": "VITA",
+          "owners": 27
+        },
+        {
+          "name": "Cane",
+          "rarity": "Epic",
+          "value": "60,000,000",
+          "req": "80x 💎",
+          "type": "Bayonet",
+          "owners": 125
+        }
+      ]
+    },
+    {
+      "title": "2022 EASTER",
+      "items": [
+        {
+          "name": "Chocolate",
+          "rarity": "Legendary",
+          "value": "390,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 47
+        },
+        {
+          "name": "Bunny",
+          "rarity": "Epic",
+          "value": "150,000,000",
+          "req": "80x 💎",
+          "type": "Character",
+          "owners": 167
+        },
+        {
+          "name": "Ostern",
+          "rarity": "Legendary",
+          "value": "350,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 26
+        },
+        {
+          "name": "Easter",
+          "rarity": "Legendary",
+          "value": "110,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 36
+        },
+        {
+          "name": "Paques",
+          "rarity": "Epic",
+          "value": "200,000,000",
+          "req": "80x 💎",
+          "type": "VITA",
+          "owners": 46
+        }
+      ]
+    },
+    {
+      "title": "Maze Store",
+      "items": [
+        {
+          "name": "Lor",
+          "rarity": "Legendary",
+          "value": "140,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 226
+        },
+        {
+          "name": "Maze",
+          "rarity": "Epic",
+          "value": "50,000,000",
+          "req": "80x 💎",
+          "type": "Character",
+          "owners": 285
+        },
+        {
+          "name": "P-40",
+          "rarity": "Legendary",
+          "value": "55,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 78
+        },
+        {
+          "name": "Labyrinth",
+          "rarity": "Legendary",
+          "value": "200,000,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 77
+        }
+      ]
+    },
+    {
+      "title": "Samurai Store",
+      "items": [
+        {
+          "name": "Sensei",
+          "rarity": "Legendary",
+          "value": "550,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 46
+        },
+        {
+          "name": "Hideyoshi",
+          "rarity": "Epic",
+          "value": "110,000,000",
+          "req": "80x 💎",
+          "type": "Character",
+          "owners": 126
+        },
+        {
+          "name": "Zen",
+          "rarity": "Legendary",
+          "value": "200,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 58
+        },
+        {
+          "name": "Bushido",
+          "rarity": "Legendary",
+          "value": "800,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 20
+        },
+        {
+          "name": "Samurai",
+          "rarity": "Epic",
+          "value": "375,000,000",
+          "req": "80x 💎",
+          "type": "VITA",
+          "owners": 60
+        }
+      ]
+    },
+    {
+      "title": "2022 Halloween",
+      "items": [
+        {
+          "name": "Boo",
+          "rarity": "Legendary",
+          "value": "70,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 146
+        },
+        {
+          "name": "Skel",
+          "rarity": "Epic",
+          "value": "25,000,000",
+          "req": "90x 💎",
+          "type": "Character",
+          "owners": 263
+        },
+        {
+          "name": "Kin",
+          "rarity": "Legendary",
+          "value": "20,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 109
+        },
+        {
+          "name": "Widow",
+          "rarity": "Epic",
+          "value": "18,000,000",
+          "req": "90x 💎",
+          "type": "Shark",
+          "owners": 134
+        }
+      ]
+    },
+    {
+      "title": "2022 Christmas",
+      "items": [
+        {
+          "name": "Santa Claus",
+          "rarity": "Legendary",
+          "value": "25,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 203
+        },
+        {
+          "name": "Peppermint",
+          "rarity": "Legendary",
+          "value": "32,500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 206
+        },
+        {
+          "name": "Sweater",
+          "rarity": "Legendary",
+          "value": "40,000,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 72
+        },
+        {
+          "name": "Yule",
+          "rarity": "Legendary",
+          "value": "25,500,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 56
+        },
+        {
+          "name": "Wrapping",
+          "rarity": "Legendary",
+          "value": "14,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 134
+        }
+      ]
+    },
+    {
+      "title": "Valentine",
+      "items": [
+        {
+          "name": "Hearts",
+          "rarity": "Mythical",
+          "value": "3,800,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 554
+        },
+        {
+          "name": "Teddy",
+          "rarity": "Legendary",
+          "value": "1,600,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 1431
+        },
+        {
+          "name": "Heartbeat",
+          "rarity": "Mythical",
+          "value": "6,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 108
+        },
+        {
+          "name": "Infarction",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 174
+        }
+      ]
+    },
+    {
+      "title": "Saint Patrick",
+      "items": [
+        {
+          "name": "Sprout",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 255
+        },
+        {
+          "name": "Fortunado",
+          "rarity": "Legendary",
+          "value": "1,000,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 775
+        },
+        {
+          "name": "Billion",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 179
+        },
+        {
+          "name": "Lucky",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 210
+        }
+      ]
+    },
+    {
+      "title": "2023 Easter",
+      "items": [
+        {
+          "name": "Basketcase",
+          "rarity": "Mythical",
+          "value": "4,500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 162
+        },
+        {
+          "name": "Choco",
+          "rarity": "Legendary",
+          "value": "900,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 932
+        },
+        {
+          "name": "Egg Hunt",
+          "rarity": "Mythical",
+          "value": "6,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 119
+        },
+        {
+          "name": "Sunday",
+          "rarity": "Mythical",
+          "value": "6,500,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 105
+        }
+      ]
+    },
+    {
+      "title": "Mother's Day",
+      "items": [
+        {
+          "name": "Gaia",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 251
+        },
+        {
+          "name": "Fleur",
+          "rarity": "Legendary",
+          "value": "1,000,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 949
+        },
+        {
+          "name": "Flower",
+          "rarity": "Mythical",
+          "value": "4,500,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 118
+        },
+        {
+          "name": "Glitter",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 220
+        }
+      ]
+    },
+    {
+      "title": "2023 Summer",
+      "items": [
+        {
+          "name": "Chillin",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 487
+        },
+        {
+          "name": "Arc",
+          "rarity": "Legendary",
+          "value": "375,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 1836
+        },
+        {
+          "name": "Splush",
+          "rarity": "Mythical",
+          "value": "1,700,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 202
+        },
+        {
+          "name": "Firecracker",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 250
+        }
+      ]
+    },
+    {
+      "title": "Back To School",
+      "items": [
+        {
+          "name": "Color",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 343
+        },
+        {
+          "name": "Write",
+          "rarity": "Legendary",
+          "value": "1,200,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 717
+        },
+        {
+          "name": "Back To School",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 125
+        },
+        {
+          "name": "Pencil",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 130
+        }
+      ]
+    },
+    {
+      "title": "2023 Halloween",
+      "items": [
+        {
+          "name": "Shroud",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 1489
+        },
+        {
+          "name": "Reaper",
+          "rarity": "Legendary",
+          "value": "200,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 3589
+        },
+        {
+          "name": "Stitches",
+          "rarity": "Mythical",
+          "value": "400,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 488
+        },
+        {
+          "name": "Undead",
+          "rarity": "Mythical",
+          "value": "400,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 588
+        }
+      ]
+    },
+    {
+      "title": "2023 Christmas",
+      "items": [
+        {
+          "name": "Mistletoe",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 429
+        },
+        {
+          "name": "Icey",
+          "rarity": "Legendary",
+          "value": "350,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 1899
+        },
+        {
+          "name": "Decorations",
+          "rarity": "Mythical",
+          "value": "450,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 272
+        },
+        {
+          "name": "Icing",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 352
+        }
+      ]
+    },
+    {
+      "title": "Eclipse",
+      "items": [
+        {
+          "name": "Cinder",
+          "rarity": "Mythical",
+          "value": "850,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 610
+        },
+        {
+          "name": "Eclipse",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 490
+        },
+        {
+          "name": "Solar",
+          "rarity": "Legendary",
+          "value": "300,000",
+          "req": "60x 💎",
+          "type": "Shark",
+          "owners": 1155
+        },
+        {
+          "name": "Moon",
+          "rarity": "Legendary",
+          "value": "450,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 1107
+        }
+      ]
+    },
+    {
+      "title": "Spring",
+      "items": [
+        {
+          "name": "Nature",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 288
+        },
+        {
+          "name": "Ornaments",
+          "rarity": "Mythical",
+          "value": "450,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 409
+        },
+        {
+          "name": "Petal",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "60x 💎",
+          "type": "Shark",
+          "owners": 376
+        },
+        {
+          "name": "Vine",
+          "rarity": "Legendary",
+          "value": "900,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 876
+        }
+      ]
+    },
+    {
+      "title": "Random",
+      "items": [
+        {
+          "name": "Artificial",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 451
+        },
+        {
+          "name": "Heather",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 385
+        },
+        {
+          "name": "Azure",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "60x 💎",
+          "type": "Shark",
+          "owners": 642
+        },
+        {
+          "name": "Veiled",
+          "rarity": "Legendary",
+          "value": "200,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 1465
+        }
+      ]
+    },
+    {
+      "title": "2024 Summer",
+      "items": [
+        {
+          "name": "LMAO",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 403
+        },
+        {
+          "name": "Sandwich",
+          "rarity": "Mythical",
+          "value": "300,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 764
+        },
+        {
+          "name": "Streaks",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 180
+        },
+        {
+          "name": "Spectrum",
+          "rarity": "Mythical",
+          "value": "400,000",
+          "req": "90x 💎",
+          "type": "MAC-10",
+          "owners": 326
+        }
+      ]
+    },
+    {
+      "title": "2024 Halloween",
+      "items": [
+        {
+          "name": "Foolish",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 229
+        },
+        {
+          "name": "Citrouille",
+          "rarity": "Legendary",
+          "value": "175,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 640
+        },
+        {
+          "name": "Bone",
+          "rarity": "Mythical",
+          "value": "25,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 79
+        },
+        {
+          "name": "Smile",
+          "rarity": "Mythical",
+          "value": "300,000",
+          "req": "90x 💎",
+          "type": "VITA",
+          "owners": 724
+        }
+      ]
+    },
+    {
+      "title": "1st Ranked Season",
+      "items": [
+        {
+          "name": "V0id",
+          "rarity": "Mythical",
+          "value": "12,000,000",
+          "req": "1500 KLO & 150x 💎",
+          "type": "Character",
+          "owners": 243
+        },
+        {
+          "name": "Gluerf",
+          "rarity": "Legendary",
+          "value": "200,000",
+          "req": "50 KLO & 60x 💎",
+          "type": "Character",
+          "owners": 660
+        },
+        {
+          "name": "Imperial",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "1300 KLO & 150x 💎",
+          "type": "SCAR",
+          "owners": 197
+        },
+        {
+          "name": "Monarch",
+          "rarity": "Mythical",
+          "value": "3,500,000",
+          "req": "500 KLO & 150x 💎",
+          "type": "Shark",
+          "owners": 265
+        },
+        {
+          "name": "Twilight",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "150 KLO & 150x 💎",
+          "type": "Bayonet",
+          "owners": 431
+        }
+      ]
+    },
+    {
+      "title": "Costumes",
+      "items": [
+        {
+          "name": "Clownabeth",
+          "rarity": "Mythical",
+          "value": "12,000,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 172
+        },
+        {
+          "name": "Jaymeson",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 616
+        },
+        {
+          "name": "Tyrant",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 101
+        },
+        {
+          "name": "Alucard",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "150x 💎",
+          "type": "Tomahawk",
+          "owners": 696
+        }
+      ]
+    },
+    {
+      "title": "2025",
+      "items": [
+        {
+          "name": "Fruchtebrot",
+          "rarity": "Legendary",
+          "value": "200,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 591
+        },
+        {
+          "name": "2025",
+          "rarity": "Mythical",
+          "value": "450,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 246
+        },
+        {
+          "name": "2025 VITA",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 146
+        },
+        {
+          "name": "2025 Shark",
+          "rarity": "Mythical",
+          "value": "1,200,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 102
+        },
+        {
+          "name": "2025 Bayonet",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 108
+        }
+      ]
+    },
+    {
+      "title": "2nd Ranked Season",
+      "items": [
+        {
+          "name": "Beast",
+          "rarity": "Mythical",
+          "value": "1,000,000,000",
+          "req": "3000 KLO & 150x 💎",
+          "type": "Character",
+          "owners": 9
+        },
+        {
+          "name": "Sketch",
+          "rarity": "Legendary",
+          "value": "450,000,000",
+          "req": "2000 KLO & 60x 💎",
+          "type": "Character",
+          "owners": 18
+        },
+        {
+          "name": "Fallen",
+          "rarity": "Mythical",
+          "value": "22,500,000",
+          "req": "1000 KLO & 150x 💎",
+          "type": "VITA",
+          "owners": 62
+        },
+        {
+          "name": "Bloo",
+          "rarity": "Mythical",
+          "value": "4,500,000",
+          "req": "250 KLO & 150x 💎",
+          "type": "Bayonet",
+          "owners": 87
+        },
+        {
+          "name": "Tag",
+          "rarity": "Mythical",
+          "value": "7,000,000",
+          "req": "500 KLO & 150x 💎",
+          "type": "MAC-10",
+          "owners": 62
+        }
+      ]
+    },
+    {
+      "title": "Random #2",
+      "items": [
+        {
+          "name": "Slime",
+          "rarity": "Mythical",
+          "value": "450,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 863
+        },
+        {
+          "name": "Burger",
+          "rarity": "Legendary",
+          "value": "225,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 4569
+        },
+        {
+          "name": "Nyan Shark",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 1583
+        },
+        {
+          "name": "Love Bites",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 1465
+        }
+      ]
+    },
+    {
+      "title": "2025 Saint Patrick",
+      "items": [
+        {
+          "name": "Sprig",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 219
+        },
+        {
+          "name": "Lucy",
+          "rarity": "Legendary",
+          "value": "200,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 458
+        },
+        {
+          "name": "Fortunate",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 509
+        },
+        {
+          "name": "Charmed",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 383
+        }
+      ]
+    },
+    {
+      "title": "2025 Easter",
+      "items": [
+        {
+          "name": "Nib",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 357
+        },
+        {
+          "name": "Bad Bunny",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 643
+        },
+        {
+          "name": "Ganache",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "150x 💎",
+          "type": "Revolver",
+          "owners": 152
+        },
+        {
+          "name": "Rabbit",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 187
+        },
+        {
+          "name": "Eggs",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 206
+        }
+      ]
+    },
+    {
+      "title": "Random #3",
+      "items": [
+        {
+          "name": "Techno",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 1776
+        },
+        {
+          "name": "Momo",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 2704
+        },
+        {
+          "name": "Underwater",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "AR-9",
+          "owners": 2184
+        },
+        {
+          "name": "Diane",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "150x 💎",
+          "type": "Shark",
+          "owners": 2494
+        },
+        {
+          "name": "Koi",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 2085
+        }
+      ]
+    },
+    {
+      "title": "2025 Summer",
+      "items": [
+        {
+          "name": "Ceru",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 508
+        },
+        {
+          "name": "Melon",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 573
+        },
+        {
+          "name": "Fudge",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 185
+        },
+        {
+          "name": "Clover",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "MAC-10",
+          "owners": 144
+        },
+        {
+          "name": "Nerida",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 316
+        }
+      ]
+    },
+    {
+      "title": "2025 Halloween",
+      "items": [
+        {
+          "name": "Jamyers",
+          "rarity": "Mythical",
+          "value": "650,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 205
+        },
+        {
+          "name": "Guts",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 898
+        },
+        {
+          "name": "Spoooky",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 515
+        },
+        {
+          "name": "Lashes",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "50x 💎",
+          "type": "Bayonet",
+          "owners": 3266
+        }
+      ]
+    },
+    {
+      "title": "2025 Christmas",
+      "items": [
+        {
+          "name": "Pengu",
+          "rarity": "Mythical",
+          "value": "900,000",
+          "req": "250x💎",
+          "type": "Character",
+          "owners": 193
+        },
+        {
+          "name": "Reindeer",
+          "rarity": "Legendary",
+          "value": "200,000",
+          "req": "60x💎",
+          "type": "Character",
+          "owners": 367
+        },
+        {
+          "name": "Wrap",
+          "rarity": "Legendary",
+          "value": "225,000",
+          "req": "150x💎",
+          "type": "VITA",
+          "owners": 559
+        },
+        {
+          "name": "Magic",
+          "rarity": "Mythical",
+          "value": "650,000",
+          "req": "150x💎",
+          "type": "Shark",
+          "owners": 215
+        }
+      ]
+    },
+    {
+      "title": "3rd Ranked Season",
+      "items": [
+        {
+          "name": "Goat",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "3000 SRP & 150x 💎",
+          "type": "Character",
+          "owners": 12
+        },
+        {
+          "name": "Warlord",
+          "rarity": "Mythical",
+          "value": "10,500,000",
+          "req": "1500 SRP & 150x 💎",
+          "type": "Character",
+          "owners": 100
+        },
+        {
+          "name": "Immortal",
+          "rarity": "Mythical",
+          "value": "250,000,000",
+          "req": "2500 SRP & 150x 💎",
+          "type": "Bayonet",
+          "owners": 23
+        },
+        {
+          "name": "Wicked",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "2000 SRP & 150x 💎",
+          "type": "VITA",
+          "owners": 35
+        },
+        {
+          "name": "Bound",
+          "rarity": "Mythical",
+          "value": "3,500,000",
+          "req": "750 SRP & 150x 💎",
+          "type": "AR-9",
+          "owners": 151
+        }
+      ]
+    },
+    {
+      "title": "2026",
+      "items": [
+        {
+          "name": "Dynasty",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x💎",
+          "type": "Character",
+          "owners": 568
+        },
+        {
+          "name": "2026",
+          "rarity": "Mythical",
+          "value": "450,000",
+          "req": "100x💎",
+          "type": "Character",
+          "owners": 674
+        },
+        {
+          "name": "2026 Vita",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "150x💎",
+          "type": "VITA",
+          "owners": 362
+        },
+        {
+          "name": "2026 Bayonet",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "150x💎",
+          "type": "Bayonet",
+          "owners": 317
+        }
+      ]
+    },
+    {
+      "title": "Panda Shop",
+      "items": [
+        {
+          "name": "Panda",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 1189
+        },
+        {
+          "name": "Reed",
+          "rarity": "Legendary",
+          "value": "125,000",
+          "req": "60x 💎",
+          "type": "Character",
+          "owners": 1799
+        },
+        {
+          "name": "Bamboo",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 667
+        },
+        {
+          "name": "Punji",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "150x 💎",
+          "type": "Bayonet",
+          "owners": 563
+        }
+      ]
+    },
+    {
+      "title": "4th Ranked Season",
+      "items": [
+        {
+          "name": "Marage",
+          "rarity": "Mythical",
+          "value": "150,000,000",
+          "req": "3000 SRP & 150x 💎",
+          "type": "Character",
+          "owners": 22
+        },
+        {
+          "name": "Sizzle",
+          "rarity": "Mythical",
+          "value": "12,000,000",
+          "req": "1500 SRP & 150x 💎",
+          "type": "Character",
+          "owners": 78
+        },
+        {
+          "name": "Silver Bullet",
+          "rarity": "Mythical",
+          "value": "85,000,000",
+          "req": "2500 SRP &150x 💎",
+          "type": "VITA",
+          "owners": 36
+        },
+        {
+          "name": "Target",
+          "rarity": "Mythical",
+          "value": "3,500,000",
+          "req": "1000 SRP & 150x 💎",
+          "type": "Revolver",
+          "owners": 113
+        },
+        {
+          "name": "Chromium",
+          "rarity": "Mythical",
+          "value": "33,000,000",
+          "req": "2000 SRP & 150x 💎",
+          "type": "Bayonet",
+          "owners": 67
+        }
+      ]
+    },
+    {
+      "title": "Easter 2025",
+      "items": [
+        {
+          "name": "Onesie",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Chick",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Carrot Blaster",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "1000x💎",
+          "type": "Revolver",
+          "owners": 15
+        },
+        {
+          "name": "Bubblepop",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "1000x💎",
+          "type": "Bayonet",
+          "owners": 26
+        }
+      ]
+    },
+    {
+      "title": "Spring 2025",
+      "items": [
+        {
+          "name": "Pollen",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Golem",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Gardener",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Bayonet",
+          "owners": 25
+        },
+        {
+          "name": "Garden",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "LAR",
+          "owners": 24
+        }
+      ]
+    },
+    {
+      "title": "5th Ranked Season",
+      "items": [
+        {
+          "name": "Pearl",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "2250 SRP & 150x💎",
+          "type": "Character",
+          "owners": 11
+        },
+        {
+          "name": "Fangs",
+          "rarity": "Mythical",
+          "value": "400,000,000",
+          "req": "1750 SRP & 150x💎",
+          "type": "Character",
+          "owners": 15
+        },
+        {
+          "name": "Canvas",
+          "rarity": "Mythical",
+          "value": "65,000,000",
+          "req": "750 SRP & 150x💎",
+          "type": "AR-9",
+          "owners": 51
+        },
+        {
+          "name": "Salvaged",
+          "rarity": "Mythical",
+          "value": "25,000,000",
+          "req": "1250 SRP & 150x💎",
+          "type": "Shark",
+          "owners": 48
+        },
+        {
+          "name": "Rift",
+          "rarity": "Mythical",
+          "value": "6,000,000",
+          "req": "500 SRP & 150x💎",
+          "type": "Bayonet",
+          "owners": 75
+        }
+      ]
+    },
+    {
+      "title": "Fallout",
+      "items": [
+        {
+          "name": "Sylvia",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 512
+        },
+        {
+          "name": "Wanderer",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 741
+        },
+        {
+          "name": "Fallout",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "150x 💎",
+          "type": "VITA",
+          "owners": 586
+        },
+        {
+          "name": "Reactor",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "150x 💎",
+          "type": "Tomahawk",
+          "owners": 2386
+        }
+      ]
+    },
+    {
+      "title": "6th Ranked Season",
+      "items": [
+        {
+          "name": "Carvings",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "3000 SRP & 150x💎",
+          "type": "Character",
+          "owners": 43
+        },
+        {
+          "name": "Pharaoh",
+          "rarity": "Mythical",
+          "value": "45,000,000",
+          "req": "2500 SRP & 150x💎",
+          "type": "Character",
+          "owners": 40
+        },
+        {
+          "name": "Solitude",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "2000 SRP & 150x💎",
+          "type": "AR-9",
+          "owners": 74
+        },
+        {
+          "name": "Prism",
+          "rarity": "Mythical",
+          "value": "12,500,000",
+          "req": "1500 SRP & 150x💎",
+          "type": "Bayonet",
+          "owners": 94
+        },
+        {
+          "name": "Zephyr",
+          "rarity": "Mythical",
+          "value": "4,000,000",
+          "req": "1000 SRP & 150x💎",
+          "type": "MAC-10",
+          "owners": 82
+        }
+      ]
+    },
+    {
+      "title": "Jungle",
+      "items": [
+        {
+          "name": "Fraboon",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "150x 💎",
+          "type": "Character",
+          "owners": 339
+        },
+        {
+          "name": "Cheetah",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "90x 💎",
+          "type": "Character",
+          "owners": 354
+        },
+        {
+          "name": "Snake",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "150x 💎",
+          "type": "Tomahawk",
+          "owners": 475
+        },
+        {
+          "name": "Banar",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "90x 💎",
+          "type": "LAR",
+          "owners": 254
+        }
+      ]
+    }
+  ],
+  "clanwars": [
+    {
+      "title": "0th Clan War",
+      "items": [
+        {
+          "name": "Gold",
+          "rarity": "Legendary",
+          "value": "1,550,000,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 45
+        },
+        {
+          "name": "Curry",
+          "rarity": "Epic",
+          "value": "200,000,000",
+          "req": "Top 8",
+          "type": "Weatie",
+          "owners": 41
+        },
+        {
+          "name": "Admiral",
+          "rarity": "Rare",
+          "value": "1,000,000",
+          "req": "Top 39",
+          "type": "AR-9",
+          "owners": 2102
+        }
+      ]
+    },
+    {
+      "title": "1st Clan War",
+      "items": [
+        {
+          "name": "Retrowave",
+          "rarity": "Legendary",
+          "value": "20,000,000",
+          "req": "Top 3",
+          "type": "MAC-10",
+          "owners": 472
+        },
+        {
+          "name": "Lightning",
+          "rarity": "Epic",
+          "value": "9,500,000",
+          "req": "Top 8",
+          "type": "AR-9",
+          "owners": 1041
+        },
+        {
+          "name": "Kyoto",
+          "rarity": "Rare",
+          "value": "1,500,000",
+          "req": "Top 39",
+          "type": "LAR",
+          "owners": 2061
+        }
+      ]
+    },
+    {
+      "title": "2nd Clan War",
+      "items": [
+        {
+          "name": "Metallic Rainbow",
+          "rarity": "Legendary",
+          "value": "10,000",
+          "req": "Top 3/Chest",
+          "type": "VITA",
+          "owners": 42086
+        },
+        {
+          "name": "Galaxy",
+          "rarity": "Epic",
+          "value": "1,000",
+          "req": "Top 8/Chest",
+          "type": "LAR",
+          "owners": 277343
+        },
+        {
+          "name": "Lemon",
+          "rarity": "Rare",
+          "value": "250",
+          "req": "Top 39/Chest",
+          "type": "MAC-10",
+          "owners": 503287
+        }
+      ]
+    },
+    {
+      "title": "3rd Clan War",
+      "items": [
+        {
+          "name": "Beach",
+          "rarity": "Legendary",
+          "value": "6,250,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 245
+        },
+        {
+          "name": "Bay",
+          "rarity": "Legendary",
+          "value": "3,500,000",
+          "req": "Top 8",
+          "type": "Shark",
+          "owners": 659
+        },
+        {
+          "name": "Tide",
+          "rarity": "Legendary",
+          "value": "3,000,000",
+          "req": "Top 39",
+          "type": "SCAR",
+          "owners": 2008
+        }
+      ]
+    },
+    {
+      "title": "4th Clan War",
+      "items": [
+        {
+          "name": "Rogue",
+          "rarity": "Legendary",
+          "value": "3,000,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 252
+        },
+        {
+          "name": "PCB",
+          "rarity": "Legendary",
+          "value": "3,000,000",
+          "req": "Top 8",
+          "type": "M60",
+          "owners": 472
+        },
+        {
+          "name": "Alien",
+          "rarity": "Legendary",
+          "value": "600,000",
+          "req": "Top 39",
+          "type": "Weatie",
+          "owners": 2028
+        }
+      ]
+    },
+    {
+      "title": "5th Clan War",
+      "items": [
+        {
+          "name": "Sunset",
+          "rarity": "Legendary",
+          "value": "4,500,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 278
+        },
+        {
+          "name": "MemeStar",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 8",
+          "type": "LAR",
+          "owners": 613
+        },
+        {
+          "name": "Admiral",
+          "rarity": "Rare",
+          "value": "1,000,000",
+          "req": "Top 39",
+          "type": "AR-9",
+          "owners": 2102
+        }
+      ]
+    },
+    {
+      "title": "6th Clan War",
+      "items": [
+        {
+          "name": "Machinery",
+          "rarity": "Legendary",
+          "value": "1,500,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 239
+        },
+        {
+          "name": "Tank",
+          "rarity": "Legendary",
+          "value": "5,500,000",
+          "req": "Top 8",
+          "type": "M60",
+          "owners": 596
+        },
+        {
+          "name": "Black Metal 2.0",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 39",
+          "type": "LAR",
+          "owners": 2570
+        }
+      ]
+    },
+    {
+      "title": "7th Clan War",
+      "items": [
+        {
+          "name": "Globe",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 270
+        },
+        {
+          "name": "Scarlet",
+          "rarity": "Legendary",
+          "value": "7,000,000",
+          "req": "Top 8",
+          "type": "SCAR",
+          "owners": 667
+        },
+        {
+          "name": "Cloudy",
+          "rarity": "Legendary",
+          "value": "1,800,000",
+          "req": "Top 39",
+          "type": "AR-9",
+          "owners": 2516
+        }
+      ]
+    },
+    {
+      "title": "8th Clan War",
+      "items": [
+        {
+          "name": "Tradition",
+          "rarity": "Legendary",
+          "value": "2,200,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 284
+        },
+        {
+          "name": "Festive",
+          "rarity": "Legendary",
+          "value": "750,000",
+          "req": "Top 8",
+          "type": "Revolver",
+          "owners": 664
+        },
+        {
+          "name": "Celebrate",
+          "rarity": "Legendary",
+          "value": "1,000,000",
+          "req": "Top 39",
+          "type": "Shark",
+          "owners": 2838
+        }
+      ]
+    },
+    {
+      "title": "9th Clan War",
+      "items": [
+        {
+          "name": "Red Reaper",
+          "rarity": "Legendary",
+          "value": "3,000,000",
+          "req": "Top 3",
+          "type": "MAC-10",
+          "owners": 256
+        },
+        {
+          "name": "Republica",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 8",
+          "type": "M60",
+          "owners": 599
+        },
+        {
+          "name": "Proton Beam",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "Top 39",
+          "type": "LAR",
+          "owners": 2535
+        }
+      ]
+    },
+    {
+      "title": "10th Clan War",
+      "items": [
+        {
+          "name": "Noble",
+          "rarity": "Legendary",
+          "value": "10,000,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 303
+        },
+        {
+          "name": "Mossy",
+          "rarity": "Legendary",
+          "value": "750,000",
+          "req": "Top 8",
+          "type": "Shark",
+          "owners": 712
+        },
+        {
+          "name": "Shard",
+          "rarity": "Legendary",
+          "value": "500,000",
+          "req": "Top 39",
+          "type": "Bayonet",
+          "owners": 2743
+        }
+      ]
+    },
+    {
+      "title": "11th Clan War",
+      "items": [
+        {
+          "name": "Andromeda",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "MAC-10",
+          "owners": 303
+        },
+        {
+          "name": "Orbit",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "Top 8",
+          "type": "LAR",
+          "owners": 740
+        },
+        {
+          "name": "Alien Hazard",
+          "rarity": "Legendary",
+          "value": "200,000",
+          "req": "Top 39",
+          "type": "Revolver",
+          "owners": 2867
+        }
+      ]
+    },
+    {
+      "title": "12th Clan War",
+      "items": [
+        {
+          "name": "Savage",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "MAC-10",
+          "owners": 295
+        },
+        {
+          "name": "Empress",
+          "rarity": "Legendary",
+          "value": "3,500,000",
+          "req": "Top 8",
+          "type": "VITA",
+          "owners": 677
+        },
+        {
+          "name": "Glance",
+          "rarity": "Legendary",
+          "value": "3,500,000",
+          "req": "Top 39",
+          "type": "Bayonet",
+          "owners": 2790
+        }
+      ]
+    },
+    {
+      "title": "13th Clan War",
+      "items": [
+        {
+          "name": "Spooky",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 274
+        },
+        {
+          "name": "Sleepy",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "Top 8",
+          "type": "VITA",
+          "owners": 654
+        },
+        {
+          "name": "Schaedel",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "Top 39",
+          "type": "MAC-10",
+          "owners": 2574
+        }
+      ]
+    },
+    {
+      "title": "14th Clan War",
+      "items": [
+        {
+          "name": "Megalodon",
+          "rarity": "Legendary",
+          "value": "2,500,000",
+          "req": "Top 3",
+          "type": "Shark",
+          "owners": 267
+        },
+        {
+          "name": "Godzilla",
+          "rarity": "Legendary",
+          "value": "2,500,000",
+          "req": "Top 8",
+          "type": "AR-9",
+          "owners": 675
+        },
+        {
+          "name": "Thief",
+          "rarity": "Legendary",
+          "value": "500,000",
+          "req": "Top 39",
+          "type": "VITA",
+          "owners": 2607
+        }
+      ]
+    },
+    {
+      "title": "15th Clan War",
+      "items": [
+        {
+          "name": "Chromatic",
+          "rarity": "Legendary",
+          "value": "950,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 266
+        },
+        {
+          "name": "Demon",
+          "rarity": "Legendary",
+          "value": "2,200,000",
+          "req": "Top 8",
+          "type": "SCAR",
+          "owners": 669
+        },
+        {
+          "name": "Watermelon",
+          "rarity": "Legendary",
+          "value": "125,000",
+          "req": "Top 39",
+          "type": "Revolver",
+          "owners": 2444
+        }
+      ]
+    },
+    {
+      "title": "16th Clan War",
+      "items": [
+        {
+          "name": "Howl",
+          "rarity": "Legendary",
+          "value": "35,000,000",
+          "req": "Top 3",
+          "type": "LAR",
+          "owners": 294
+        },
+        {
+          "name": "Cyborg",
+          "rarity": "Legendary",
+          "value": "600,000",
+          "req": "Top 8",
+          "type": "VITA",
+          "owners": 686
+        },
+        {
+          "name": "Hell let loose",
+          "rarity": "Legendary",
+          "value": "250,000",
+          "req": "Top 39",
+          "type": "M60",
+          "owners": 2655
+        }
+      ]
+    },
+    {
+      "title": "17th & 18th Clan War",
+      "items": [
+        {
+          "name": "Meteor",
+          "rarity": "Mythical",
+          "value": "400,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 543
+        },
+        {
+          "name": "Waves",
+          "rarity": "Legendary",
+          "value": "600,000",
+          "req": "Top 8",
+          "type": "SCAR",
+          "owners": 1334
+        },
+        {
+          "name": "Eruption",
+          "rarity": "Legendary",
+          "value": "150,000",
+          "req": "Top 39",
+          "type": "Bayonet",
+          "owners": 5403
+        }
+      ]
+    },
+    {
+      "title": "19th Clan War",
+      "items": [
+        {
+          "name": "Vapor",
+          "rarity": "Legendary",
+          "value": "4,500,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 288
+        },
+        {
+          "name": "Taurus",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 8",
+          "type": "Shark",
+          "owners": 688
+        },
+        {
+          "name": "CheckUV",
+          "rarity": "Legendary",
+          "value": "100,000",
+          "req": "Top 39",
+          "type": "VITA",
+          "owners": 2483
+        }
+      ]
+    },
+    {
+      "title": "20th & 21st Clan War",
+      "items": [
+        {
+          "name": "Slayer",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 571
+        },
+        {
+          "name": "Chroma",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "Top 8",
+          "type": "LAR",
+          "owners": 1312
+        },
+        {
+          "name": "Nova",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Top 39",
+          "type": "SCAR",
+          "owners": 5008
+        }
+      ]
+    },
+    {
+      "title": "22nd-29th Clan War",
+      "items": [
+        {
+          "name": "Xx",
+          "rarity": "Mythical",
+          "value": "250,000",
+          "req": "Top 3",
+          "type": "Character",
+          "owners": 1993
+        },
+        {
+          "name": "Astra",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "Top 8",
+          "type": "VITA",
+          "owners": 4584
+        },
+        {
+          "name": "Turtle",
+          "rarity": "Mythical",
+          "value": "350,000",
+          "req": "Top 39",
+          "type": "Bayonet",
+          "owners": 18310
+        }
+      ]
+    },
+    {
+      "title": "30th Clan War",
+      "items": [
+        {
+          "name": "Polychrome",
+          "rarity": "Legendary",
+          "value": "6,000,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 271
+        },
+        {
+          "name": "Scarey",
+          "rarity": "Epic",
+          "value": "1,000,000",
+          "req": "Top 8",
+          "type": "SCAR",
+          "owners": 662
+        },
+        {
+          "name": "Vampire",
+          "rarity": "Legendary",
+          "value": "120,000",
+          "req": "Top 39",
+          "type": "Bayonet",
+          "owners": 2578
+        }
+      ]
+    },
+    {
+      "title": "31st & 32nd Clan War",
+      "items": [
+        {
+          "name": "Landoh",
+          "rarity": "Legendary",
+          "value": "80,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 537
+        },
+        {
+          "name": "Pool Blaster",
+          "rarity": "Legendary",
+          "value": "30,000",
+          "req": "Top 8",
+          "type": "MAC-10",
+          "owners": 1303
+        },
+        {
+          "name": "Swirl",
+          "rarity": "Epic",
+          "value": "10,000",
+          "req": "Top 39",
+          "type": "Revolver",
+          "owners": 4341
+        }
+      ]
+    },
+    {
+      "title": "33rd & 34th Clan War",
+      "items": [
+        {
+          "name": "Gilded",
+          "rarity": "Legendary",
+          "value": "500,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 561
+        },
+        {
+          "name": "Crystalized",
+          "rarity": "Mythical",
+          "value": "80,000",
+          "req": "Top 8",
+          "type": "Revolver",
+          "owners": 1191
+        },
+        {
+          "name": "Diablo",
+          "rarity": "Legendary",
+          "value": "25,000",
+          "req": "Top 39",
+          "type": "M60",
+          "owners": 4789
+        }
+      ]
+    },
+    {
+      "title": "35th Clan War",
+      "items": [
+        {
+          "name": "Vocaloid",
+          "rarity": "Legendary",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "SCAR",
+          "owners": 561
+        },
+        {
+          "name": "Rar",
+          "rarity": "Legendary",
+          "value": "175,000",
+          "req": "Top 8",
+          "type": "LAR",
+          "owners": 1334
+        },
+        {
+          "name": "Volcaic",
+          "rarity": "Legendary",
+          "value": "80,000",
+          "req": "Top 39",
+          "type": "Revolver",
+          "owners": 4945
+        }
+      ]
+    },
+    {
+      "title": "36th Clan War",
+      "items": [
+        {
+          "name": "Liberty",
+          "rarity": "Legendary",
+          "value": "2,500,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 272
+        },
+        {
+          "name": "Lis",
+          "rarity": "Mythical",
+          "value": "250,000",
+          "req": "Top 8",
+          "type": "Revolver",
+          "owners": 642
+        },
+        {
+          "name": "Kraken",
+          "rarity": "Legendary",
+          "value": "150,000",
+          "req": "Top 39",
+          "type": "Shark",
+          "owners": 2609
+        }
+      ]
+    },
+    {
+      "title": "37th Clan War",
+      "items": [
+        {
+          "name": "Korunami",
+          "rarity": "Mythical",
+          "value": "240,000",
+          "req": "Top 3",
+          "type": "LAR",
+          "owners": 1086
+        },
+        {
+          "name": "Spooder",
+          "rarity": "Mythical",
+          "value": "120,000",
+          "req": "Top 8",
+          "type": "Shark",
+          "owners": 2631
+        },
+        {
+          "name": "Alighted",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "Top 39",
+          "type": "Bayonet",
+          "owners": 9081
+        }
+      ]
+    },
+    {
+      "title": "38th Clan War",
+      "items": [
+        {
+          "name": "Abstraction",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 816
+        },
+        {
+          "name": "Astronova",
+          "rarity": "Mythical",
+          "value": "200,000",
+          "req": "Top 8",
+          "type": "LAR",
+          "owners": 6938
+        },
+        {
+          "name": "All Spark",
+          "rarity": "Mythical",
+          "value": "250,000",
+          "req": "Top 39",
+          "type": "Revolver",
+          "owners": 1833
+        }
+      ]
+    },
+    {
+      "title": "39th Clan War",
+      "items": [
+        {
+          "name": "Flarefang",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 298
+        },
+        {
+          "name": "Shotdead",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "Top 8",
+          "type": "VITA",
+          "owners": 717
+        },
+        {
+          "name": "Fever",
+          "rarity": "Mythical",
+          "value": "250,000",
+          "req": "Top 39",
+          "type": "SCAR",
+          "owners": 2447
+        }
+      ]
+    },
+    {
+      "title": "40th Clan War",
+      "items": [
+        {
+          "name": "Ice Breaker",
+          "rarity": "Mythical",
+          "value": "900,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 271
+        },
+        {
+          "name": "Chromaflame",
+          "rarity": "Mythical",
+          "value": "450,000",
+          "req": "Top 8",
+          "type": "LAR",
+          "owners": 690
+        },
+        {
+          "name": "Distortion",
+          "rarity": "Mythical",
+          "value": "175,000",
+          "req": "Top 39",
+          "type": "MAC-10",
+          "owners": 2339
+        }
+      ]
+    },
+    {
+      "title": "41st Clan War",
+      "items": [
+        {
+          "name": "Anarch",
+          "rarity": "Mythical",
+          "value": "900,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 257
+        },
+        {
+          "name": "Dragon Shark",
+          "rarity": "Mythical",
+          "value": "650,000",
+          "req": "Top 8",
+          "type": "Shark",
+          "owners": 585
+        },
+        {
+          "name": "Ticketeer",
+          "rarity": "Mythical",
+          "value": "230,000",
+          "req": "Top 39",
+          "type": "SCAR",
+          "owners": 2320
+        }
+      ]
+    },
+    {
+      "title": "42nd Clan War",
+      "items": [
+        {
+          "name": "CV01",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 286
+        },
+        {
+          "name": "Oblivion",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Top 8",
+          "type": "SCAR",
+          "owners": 654
+        },
+        {
+          "name": "Moonlight",
+          "rarity": "Mythical",
+          "value": "200,000",
+          "req": "Top 39",
+          "type": "MAC-10",
+          "owners": 2459
+        }
+      ]
+    },
+    {
+      "title": "43rd Clan War",
+      "items": [
+        {
+          "name": "Arachne",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 259
+        },
+        {
+          "name": "Scorcher",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Top 8",
+          "type": "Shark",
+          "owners": 634
+        },
+        {
+          "name": "CYB3R",
+          "rarity": "Mythical",
+          "value": "350,000",
+          "req": "Top 39",
+          "type": "Bayonet",
+          "owners": 2374
+        }
+      ]
+    },
+    {
+      "title": "44th Clan War",
+      "items": [
+        {
+          "name": "Tiburon",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 270
+        },
+        {
+          "name": "Ortus",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Top 8",
+          "type": "Revolver",
+          "owners": 684
+        },
+        {
+          "name": "Forbidden",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Top 39",
+          "type": "AR-9",
+          "owners": 2369
+        }
+      ]
+    },
+    {
+      "title": "45th Clan War",
+      "items": [
+        {
+          "name": "Pyrite",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 249
+        },
+        {
+          "name": "Sketched",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Top 8",
+          "type": "SCAR",
+          "owners": 668
+        },
+        {
+          "name": "Uncanny",
+          "rarity": "Mythical",
+          "value": "400,000",
+          "req": "Top 39",
+          "type": "MAC-10",
+          "owners": 2591
+        }
+      ]
+    },
+    {
+      "title": "46th Clan War",
+      "items": [
+        {
+          "name": "Fractal",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Top 3",
+          "type": "VITA",
+          "owners": 288
+        },
+        {
+          "name": "Prismatic",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Top 8",
+          "type": "Bayonet",
+          "owners": 644
+        },
+        {
+          "name": "Prisma",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Top 39",
+          "type": "MAC-10",
+          "owners": 1955
+        }
+      ]
+    },
+    {
+      "title": "47th Clan War",
+      "items": [
+        {
+          "name": "Fumes",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 273
+        },
+        {
+          "name": "Subnautic",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Top 8",
+          "type": "VITA",
+          "owners": 664
+        },
+        {
+          "name": "Neo2",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Top 39",
+          "type": "SCAR",
+          "owners": 2227
+        }
+      ]
+    },
+    {
+      "title": "48th Clan War",
+      "items": [
+        {
+          "name": "Fusion",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "Top 3",
+          "type": "Bayonet",
+          "owners": 275
+        },
+        {
+          "name": "Corundum",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Top 8",
+          "type": "MAC-10",
+          "owners": 584
+        },
+        {
+          "name": "Watercolor",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Top 39",
+          "type": "VITA",
+          "owners": 1647
+        }
+      ]
+    }
+  ],
+  "limited": [
+    {
+      "title": "Twitch Drops",
+      "items": [
+        {
+          "name": "Cookie",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 290
+        },
+        {
+          "name": "Trippy",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 342
+        },
+        {
+          "name": "Fanny",
+          "rarity": "Mythical",
+          "value": "5,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 217
+        },
+        {
+          "name": "Janett",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 216
+        },
+        {
+          "name": "Yule Cat",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 219
+        },
+        {
+          "name": "Shiver",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 213
+        },
+        {
+          "name": "Knightfall",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 282
+        },
+        {
+          "name": "Skulduggery",
+          "rarity": "Mythical",
+          "value": "3,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 290
+        },
+        {
+          "name": "Vortex",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 233
+        },
+        {
+          "name": "Snows",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 164
+        },
+        {
+          "name": "Technette",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 198
+        },
+        {
+          "name": "Cryonic",
+          "rarity": "Mythical",
+          "value": "3,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 183
+        },
+        {
+          "name": "Sunbeam",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 186
+        },
+        {
+          "name": "Basket",
+          "rarity": "Mythical",
+          "value": "6,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 123
+        },
+        {
+          "name": "Ashley",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 213
+        },
+        {
+          "name": "Borg",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 176
+        },
+        {
+          "name": "Abyss",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 253
+        },
+        {
+          "name": "Error",
+          "rarity": "Mythical",
+          "value": "4,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 147
+        },
+        {
+          "name": "Rose",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 203
+        },
+        {
+          "name": "Sinister",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 311
+        },
+        {
+          "name": "Endless",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 299
+        },
+        {
+          "name": "Bloom",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 193
+        },
+        {
+          "name": "Phantom",
+          "rarity": "Mythical",
+          "value": "4,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 168
+        },
+        {
+          "name": "Pebbles",
+          "rarity": "Mythical",
+          "value": "10,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 105
+        },
+        {
+          "name": "Headless",
+          "rarity": "Mythical",
+          "value": "1,200,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 231
+        },
+        {
+          "name": "Starship",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 280
+        },
+        {
+          "name": "Angel",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 351
+        },
+        {
+          "name": "Elf",
+          "rarity": "Mythical",
+          "value": "650,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 235
+        },
+        {
+          "name": "Dragon",
+          "rarity": "Mythical",
+          "value": "750,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 238
+        },
+        {
+          "name": "Baldwin",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 235
+        },
+        {
+          "name": "TTV",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 251
+        },
+        {
+          "name": "Rubies",
+          "rarity": "Mythical",
+          "value": "4,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 243
+        },
+        {
+          "name": "Milkyway",
+          "rarity": "Mythical",
+          "value": "650,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 227
+        },
+        {
+          "name": "Cyclop",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 266
+        },
+        {
+          "name": "Supermother",
+          "rarity": "Mythical",
+          "value": "3,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 249
+        },
+        {
+          "name": "Royalchamp",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 289
+        },
+        {
+          "name": "Hallowkod",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 326
+        },
+        {
+          "name": "Bok",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 383
+        },
+        {
+          "name": "Ember",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 236
+        },
+        {
+          "name": "Gem Stone",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 221
+        },
+        {
+          "name": "Punishment",
+          "rarity": "Mythical",
+          "value": "1,700,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 279
+        },
+        {
+          "name": "Sunshine",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 185
+        },
+        {
+          "name": "Twitch",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 138
+        },
+        {
+          "name": "Vibes",
+          "rarity": "Mythical",
+          "value": "3,200,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 104
+        },
+        {
+          "name": "Vionix",
+          "rarity": "Mythical",
+          "value": "1,300,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 203
+        },
+        {
+          "name": "Pibble",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 107
+        },
+        {
+          "name": "Jazzin",
+          "rarity": "Mythical",
+          "value": "5,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 120
+        },
+        {
+          "name": "Corrupt",
+          "rarity": "Mythical",
+          "value": "4,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 105
+        },
+        {
+          "name": "Gwen",
+          "rarity": "Mythical",
+          "value": "5,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 93
+        },
+        {
+          "name": "Gold Coins",
+          "rarity": "Legendary",
+          "value": "2,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Bayonet",
+          "owners": 159
+        },
+        {
+          "name": "NutCracker",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 131
+        },
+        {
+          "name": "Bansee",
+          "rarity": "Mythical",
+          "value": "7,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "VITA",
+          "owners": 135
+        },
+        {
+          "name": "Mabel",
+          "rarity": "Mythical",
+          "value": "5,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 106
+        },
+        {
+          "name": "Jarritos",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 123
+        },
+        {
+          "name": "Boba",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 142
+        },
+        {
+          "name": "Crispy",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "Watch KirkaComp 1hr",
+          "type": "Character",
+          "owners": 229
+        },
+        {
+          "name": "Jolly",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 126
+        },
+        {
+          "name": "Watcher",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 118
+        },
+        {
+          "name": "Spore",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "Watch 15 hours Kirka",
+          "type": "Character",
+          "owners": 104
+        }
+      ]
+    },
+    {
+      "title": "Streamer Specific/Purchased Drops",
+      "items": [
+        {
+          "name": "Alice",
+          "rarity": "Mythical",
+          "value": "600,000,000",
+          "req": "Watch 15 hours Venatrix",
+          "type": "Character",
+          "owners": 11
+        },
+        {
+          "name": "Arcade",
+          "rarity": "Mythical",
+          "value": "80,000,000",
+          "req": "Watch 15 hours Gecko",
+          "type": "VITA",
+          "owners": 116
+        },
+        {
+          "name": "Maid",
+          "rarity": "Mythical",
+          "value": "12,000,000",
+          "req": "Watch 15 hours MikeyO",
+          "type": "Character",
+          "owners": 140
+        },
+        {
+          "name": "Flowers",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "Sub to Kirka Twitch Stream",
+          "type": "Character",
+          "owners": 54
+        },
+        {
+          "name": "Constellations",
+          "rarity": "Mythical",
+          "value": "27,000,000",
+          "req": "15 hours or 2 subs Gecko",
+          "type": "Bayonet",
+          "owners": 59
+        },
+        {
+          "name": "Saint Patrick",
+          "rarity": "Legendary",
+          "value": "60,000,000",
+          "req": "15 hours watching mods",
+          "type": "Shark",
+          "owners": 42
+        },
+        {
+          "name": "Bullseye",
+          "rarity": "Mythical",
+          "value": "60,000,000",
+          "req": "2 Subs on Twitch",
+          "type": "Character",
+          "owners": 30
+        },
+        {
+          "name": "Cryptex",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "15 hrs Gecko/Boingoo",
+          "type": "Bayonet",
+          "owners": 43
+        },
+        {
+          "name": "Onryo",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "15 hours watching mods",
+          "type": "Character",
+          "owners": 43
+        },
+        {
+          "name": "Wax Paper",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "Watch 15 hours Gecko",
+          "type": "SCAR",
+          "owners": 36
+        },
+        {
+          "name": "Sweetie",
+          "rarity": "Mythical",
+          "value": "60,000,000",
+          "req": "Watch 15 hours Gecko",
+          "type": "Weatie",
+          "owners": 31
+        },
+        {
+          "name": "Sterling",
+          "rarity": "Mythical",
+          "value": "8,500,000",
+          "req": "Watch CC's 15 hours",
+          "type": "Shark",
+          "owners": 146
+        },
+        {
+          "name": "Hi-score",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "Watch 15 hours Gecko",
+          "type": "Shark",
+          "owners": 59
+        },
+        {
+          "name": "Cipher",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "Watch 10 hours Gecko",
+          "type": "Revolver",
+          "owners": 72
+        }
+      ]
+    },
+    {
+      "title": "Limited Skin Items",
+      "items": [
+        {
+          "name": "Snowglobe",
+          "rarity": "Mythical",
+          "value": "33,333,333",
+          "req": "850x 💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Chilly",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "850x💎",
+          "type": "Character",
+          "owners": 48
+        },
+        {
+          "name": "Anon",
+          "rarity": "Mythical",
+          "value": "14,999,999",
+          "req": "850x💎",
+          "type": "Character",
+          "owners": 49
+        },
+        {
+          "name": "Stargaze",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "1500x💎",
+          "type": "Character",
+          "owners": 11
+        },
+        {
+          "name": "Orion",
+          "rarity": "Mythical",
+          "value": "100,000,000",
+          "req": "1500x💎",
+          "type": "Character",
+          "owners": 15
+        },
+        {
+          "name": "Yuki",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "850x💎",
+          "type": "Character",
+          "owners": 49
+        },
+        {
+          "name": "Lord",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "850x💎",
+          "type": "Character",
+          "owners": 52
+        },
+        {
+          "name": "Jenni",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "850x💎",
+          "type": "Character",
+          "owners": 20
+        },
+        {
+          "name": "Chunkbug",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "850x💎",
+          "type": "Character",
+          "owners": 32
+        },
+        {
+          "name": "Illusionist",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 12
+        },
+        {
+          "name": "Pinata",
+          "rarity": "Mythical",
+          "value": "130,000,000",
+          "req": "4000x💎",
+          "type": "Character",
+          "owners": 13
+        },
+        {
+          "name": "Rainbows",
+          "rarity": "Mythical",
+          "value": "80,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 20
+        },
+        {
+          "name": "Shank",
+          "rarity": "Mythical",
+          "value": "250,000,000",
+          "req": "850x💎",
+          "type": "Bayonet",
+          "owners": 6
+        },
+        {
+          "name": "Jingles",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "850x💎",
+          "type": "VITA",
+          "owners": 27
+        },
+        {
+          "name": "Moody",
+          "rarity": "Mythical",
+          "value": "100,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 24
+        },
+        {
+          "name": "Polka",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 23
+        },
+        {
+          "name": "Pepe",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 2
+        },
+        {
+          "name": "Stargirl",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 24
+        },
+        {
+          "name": "Rider",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 23
+        },
+        {
+          "name": "Lost",
+          "rarity": "Mythical",
+          "value": "400,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 8
+        },
+        {
+          "name": "Keith",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Dipolar",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Zigglezorp",
+          "rarity": "Mythical",
+          "value": "120,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 13
+        },
+        {
+          "name": "Gonzo",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 15
+        },
+        {
+          "name": "Frau",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "Business Cat",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Bones",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "Box",
+          "rarity": "Mythical",
+          "value": "10,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Mushroom",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 15
+        },
+        {
+          "name": "Cozy James",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Lion",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Singularity",
+          "rarity": "Mythical",
+          "value": "250,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Darkweb",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Qod",
+          "rarity": "Mythical",
+          "value": "100,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Vera",
+          "rarity": "Mythical",
+          "value": "60,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 16
+        },
+        {
+          "name": "Nokken",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 10
+        },
+        {
+          "name": "Honeyboo",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "Paypay",
+          "rarity": "Mythical",
+          "value": "100,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Skillz",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Caramel",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 22
+        },
+        {
+          "name": "Slay",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Wolfy",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 24
+        },
+        {
+          "name": "Kitsune",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "Gore",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Astatine",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Biker",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 21
+        },
+        {
+          "name": "Dragonic",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Huney",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 19
+        },
+        {
+          "name": "Gentleman",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Daunt",
+          "rarity": "Mythical",
+          "value": "150,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 12
+        },
+        {
+          "name": "Employed",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 12
+        },
+        {
+          "name": "Ophelia",
+          "rarity": "Mythical",
+          "value": "200,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 16
+        },
+        {
+          "name": "Moltorath",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "Gazer",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "Flowerpower",
+          "rarity": "Mythical",
+          "value": "165,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 6
+        },
+        {
+          "name": "Goblin",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Onesi",
+          "rarity": "Mythical",
+          "value": "60,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 10
+        },
+        {
+          "name": "Cocktail",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Hans",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Daynight",
+          "rarity": "Mythical",
+          "value": "100,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 11
+        },
+        {
+          "name": "Cloud",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 20
+        },
+        {
+          "name": "Matchalatte",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 12
+        },
+        {
+          "name": "Pandora",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "May",
+          "rarity": "Mythical",
+          "value": "200,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 8
+        },
+        {
+          "name": "Wraith",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 13
+        },
+        {
+          "name": "Emperor",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Sculpture",
+          "rarity": "Mythical",
+          "value": "100,000,000",
+          "req": "850x💎",
+          "type": "Character",
+          "owners": 16
+        },
+        {
+          "name": "Entity",
+          "rarity": "Mythical",
+          "value": "80,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Prince",
+          "rarity": "Mythical",
+          "value": "100,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Jess",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Catcat",
+          "rarity": "Mythical",
+          "value": "90,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 10
+        },
+        {
+          "name": "Grayscale",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Purp",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Amelia",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Blaze",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Lock",
+          "rarity": "Mythical",
+          "value": "110,000,000",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Gummybear",
+          "rarity": "Mythical",
+          "value": "25,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Hellcat",
+          "rarity": "Mythical",
+          "value": "45,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "Nullity",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 12
+        },
+        {
+          "name": "Badlander",
+          "rarity": "Mythical",
+          "value": "120,000,000",
+          "req": "2000x💎",
+          "type": "Weatie",
+          "owners": 13
+        },
+        {
+          "name": "Space",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 20
+        },
+        {
+          "name": "N30n",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "1000x💎",
+          "type": "Bayonet",
+          "owners": 26
+        },
+        {
+          "name": "Finite",
+          "rarity": "Mythical",
+          "value": "110,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Eleanor",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 18
+        },
+        {
+          "name": "Regent",
+          "rarity": "Mythical",
+          "value": "150,000,000",
+          "req": "2000x💎",
+          "type": "AR-9",
+          "owners": 26
+        },
+        {
+          "name": "Amethysta",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 22
+        },
+        {
+          "name": "Lynx",
+          "rarity": "Mythical",
+          "value": "130,000,000",
+          "req": "2000x💎",
+          "type": "LAR",
+          "owners": 11
+        },
+        {
+          "name": "Agrath",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "1000x💎",
+          "type": "Character",
+          "owners": 25
+        },
+        {
+          "name": "BRIGHTSTAR",
+          "rarity": "Mythical",
+          "value": "80,000,000",
+          "req": "2000x💎",
+          "type": "Bayonet",
+          "owners": 21
+        },
+        {
+          "name": "Capy",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "2000x💎",
+          "type": "Character",
+          "owners": 14
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "title": "1st Event",
+      "items": [
+        {
+          "name": "Rebel",
+          "rarity": "Legendary",
+          "value": "20,000,000",
+          "req": "1k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 80
+        },
+        {
+          "name": "Cheesy",
+          "rarity": "Legendary",
+          "value": "25,000,000",
+          "req": "2.5k Shark Kills",
+          "type": "Shark",
+          "owners": 66
+        },
+        {
+          "name": "Wave Dot",
+          "rarity": "Mythical",
+          "value": "170,000,000",
+          "req": "10k Revolver Kills",
+          "type": "Revolver",
+          "owners": 40
+        }
+      ]
+    },
+    {
+      "title": "2nd Event",
+      "items": [
+        {
+          "name": "Loved",
+          "rarity": "Mythical",
+          "value": "25,000,000",
+          "req": "1k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 87
+        },
+        {
+          "name": "Hearted",
+          "rarity": "Mythical",
+          "value": "25,000,000",
+          "req": "2.5k Shark Kills",
+          "type": "Shark",
+          "owners": 79
+        },
+        {
+          "name": "Rosed",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "3.5k VITA Kills",
+          "type": "VITA",
+          "owners": 225
+        }
+      ]
+    },
+    {
+      "title": "3rd Event",
+      "items": [
+        {
+          "name": "Spring",
+          "rarity": "Mythical",
+          "value": "8,000,000",
+          "req": "1k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 261
+        },
+        {
+          "name": "Orchid",
+          "rarity": "Mythical",
+          "value": "8,500,000",
+          "req": "3k Shark Kills",
+          "type": "Shark",
+          "owners": 146
+        },
+        {
+          "name": "Cherry",
+          "rarity": "Mythical",
+          "value": "1,000,000,000",
+          "req": "1k Bayonet H/S",
+          "type": "Tomahawk",
+          "owners": 31
+        }
+      ]
+    },
+    {
+      "title": "4th Event",
+      "items": [
+        {
+          "name": "Placate",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "1k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 494
+        },
+        {
+          "name": "Playdate",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "2.5k Shark Kills",
+          "type": "Shark",
+          "owners": 54
+        },
+        {
+          "name": "Playmate",
+          "rarity": "Mythical",
+          "value": "12,000,000",
+          "req": "5k VITA Kills",
+          "type": "VITA",
+          "owners": 95
+        }
+      ]
+    },
+    {
+      "title": "5th Event",
+      "items": [
+        {
+          "name": "Caring",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "1k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 571
+        },
+        {
+          "name": "Born",
+          "rarity": "Mythical",
+          "value": "350,000,000",
+          "req": "5k M-60 Kills",
+          "type": "M60",
+          "owners": 25
+        },
+        {
+          "name": "Mommy",
+          "rarity": "Legendary",
+          "value": "250,000,000",
+          "req": "10k AR-9 Kills",
+          "type": "AR-9",
+          "owners": 45
+        }
+      ]
+    },
+    {
+      "title": "6th Event",
+      "items": [
+        {
+          "name": "Splash",
+          "rarity": "Mythical",
+          "value": "25,000,000",
+          "req": "2.5k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 62
+        },
+        {
+          "name": "Waveform",
+          "rarity": "Epic",
+          "value": "110,000,000",
+          "req": "5k Shark Kills",
+          "type": "Shark",
+          "owners": 28
+        },
+        {
+          "name": "Soak",
+          "rarity": "Mythical",
+          "value": "400,000,000",
+          "req": "10k Revolver Kills",
+          "type": "Revolver",
+          "owners": 22
+        }
+      ]
+    },
+    {
+      "title": "7th Event",
+      "items": [
+        {
+          "name": "Saurus",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "15k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 20
+        },
+        {
+          "name": "Apollo",
+          "rarity": "Mythical",
+          "value": "360,000,000",
+          "req": "20k Scar Kills",
+          "type": "SCAR",
+          "owners": 48
+        },
+        {
+          "name": "Lunar",
+          "rarity": "Mythical",
+          "value": "1,000,000,000",
+          "req": "25k VITA Kills",
+          "type": "VITA",
+          "owners": 25
+        }
+      ]
+    },
+    {
+      "title": "8th Event",
+      "items": [
+        {
+          "name": "Archverse",
+          "rarity": "Mythical",
+          "value": "35,000,000",
+          "req": "100 SAD Wins",
+          "type": "Bayonet",
+          "owners": 218
+        },
+        {
+          "name": "Landscape",
+          "rarity": "Mythical",
+          "value": "11,000,000",
+          "req": "250 PAR Wins",
+          "type": "Character",
+          "owners": 92
+        },
+        {
+          "name": "Cassiope",
+          "rarity": "Mythical",
+          "value": "72,000,000",
+          "req": "500 Mid-air 360 Kills",
+          "type": "VITA",
+          "owners": 95
+        }
+      ]
+    },
+    {
+      "title": "9th Event",
+      "items": [
+        {
+          "name": "Reflections",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "2.5k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 337
+        },
+        {
+          "name": "Quilliam",
+          "rarity": "Mythical",
+          "value": "65,000,000",
+          "req": "10k VITA Kills",
+          "type": "VITA",
+          "owners": 121
+        },
+        {
+          "name": "Monk",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "500 PAR Wins",
+          "type": "Character",
+          "owners": 71
+        }
+      ]
+    },
+    {
+      "title": "10th Event",
+      "items": [
+        {
+          "name": "Flaming",
+          "rarity": "Mythical",
+          "value": "125,000,000",
+          "req": "10k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 49
+        },
+        {
+          "name": "Mirror",
+          "rarity": "Mythical",
+          "value": "65,000,000",
+          "req": "20k VITA Kills",
+          "type": "VITA",
+          "owners": 61
+        },
+        {
+          "name": "Queen",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "30k Kills",
+          "type": "Character",
+          "owners": 115
+        }
+      ]
+    },
+    {
+      "title": "11th Event",
+      "items": [
+        {
+          "name": "Hypnotic",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "2.5k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 458
+        },
+        {
+          "name": "Ambrosia",
+          "rarity": "Mythical",
+          "value": "4,500,000",
+          "req": "5k Shark Kills",
+          "type": "Shark",
+          "owners": 98
+        },
+        {
+          "name": "Metro",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "10k AR-9 Kills",
+          "type": "AR-9",
+          "owners": 110
+        }
+      ]
+    },
+    {
+      "title": "12th Event",
+      "items": [
+        {
+          "name": "Alpha",
+          "rarity": "Mythical",
+          "value": "550,000",
+          "req": "1K Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 406
+        },
+        {
+          "name": "Hellbent",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "2.5K Shark Kills",
+          "type": "Shark",
+          "owners": 230
+        },
+        {
+          "name": "Fragile",
+          "rarity": "Mythical",
+          "value": "5,000,000",
+          "req": "10K VITA Kills",
+          "type": "VITA",
+          "owners": 152
+        }
+      ]
+    },
+    {
+      "title": "13th Event",
+      "items": [
+        {
+          "name": "Ritual",
+          "rarity": "Mythical",
+          "value": "200,000",
+          "req": "1k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 786
+        },
+        {
+          "name": "Aries",
+          "rarity": "Mythical",
+          "value": "65,000,000",
+          "req": "2.5k Shark Kills",
+          "type": "Shark",
+          "owners": 206
+        },
+        {
+          "name": "Astral",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "10k AR-9 Kills",
+          "type": "AR-9",
+          "owners": 104
+        }
+      ]
+    },
+    {
+      "title": "13th Event",
+      "items": [
+        {
+          "name": "Faded",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "5k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 40
+        },
+        {
+          "name": "Black Flame",
+          "rarity": "Mythical",
+          "value": "13,000,000",
+          "req": "5k Revolver Kills",
+          "type": "Revolver",
+          "owners": 69
+        },
+        {
+          "name": "Catalyst",
+          "rarity": "Mythical",
+          "value": "5,000,000",
+          "req": "5k MAC-10 Kills",
+          "type": "MAC-10",
+          "owners": 81
+        }
+      ]
+    },
+    {
+      "title": "14th Event",
+      "items": [
+        {
+          "name": "Electra",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "5k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 60
+        },
+        {
+          "name": "Regal",
+          "rarity": "Mythical",
+          "value": "90,000,000",
+          "req": "10k Shark Kills",
+          "type": "Shark",
+          "owners": 23
+        },
+        {
+          "name": "Ukiyo",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "15k Vita Headshots",
+          "type": "VITA",
+          "owners": 58
+        }
+      ]
+    },
+    {
+      "title": "15th Event",
+      "items": [
+        {
+          "name": "Hot Rod",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "2.5k Melee Kills",
+          "type": "Bayonet",
+          "owners": 158
+        },
+        {
+          "name": "Ramses",
+          "rarity": "Mythical",
+          "value": "1,200,000",
+          "req": "5k LAR Kills",
+          "type": "LAR",
+          "owners": 186
+        },
+        {
+          "name": "Anarchy",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "7.5k Mid-Air Kills",
+          "type": "VITA",
+          "owners": 85
+        }
+      ]
+    },
+    {
+      "title": "16th Event",
+      "items": [
+        {
+          "name": "Tagged",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "5k Revolver Kills",
+          "type": "Revolver",
+          "owners": 31
+        },
+        {
+          "name": "Starstruck",
+          "rarity": "Mythical",
+          "value": "200,000,000",
+          "req": "7.5k Shark Headshots",
+          "type": "Shark",
+          "owners": 20
+        },
+        {
+          "name": "Rampage",
+          "rarity": "Mythical",
+          "value": "450,000,000",
+          "req": "25k M60 Kills",
+          "type": "M60",
+          "owners": 13
+        }
+      ]
+    },
+    {
+      "title": "17th Event",
+      "items": [
+        {
+          "name": "Ultraviolet",
+          "rarity": "Mythical",
+          "value": "145,000,000",
+          "req": "25k scar kills",
+          "type": "SCAR",
+          "owners": 39
+        },
+        {
+          "name": "Vintage",
+          "rarity": "Mythical",
+          "value": "1,700,000",
+          "req": "5k mid-air kills",
+          "type": "VITA",
+          "owners": 227
+        },
+        {
+          "name": "Radioactive",
+          "rarity": "Legendary",
+          "value": "30,000,000",
+          "req": "7.5k bayonet headshots",
+          "type": "Bayonet",
+          "owners": 33
+        }
+      ]
+    },
+    {
+      "title": "18th Event",
+      "items": [
+        {
+          "name": "Xed",
+          "rarity": "Mythical",
+          "value": "6,000,000",
+          "req": "750 played games",
+          "type": "Character",
+          "owners": 100
+        },
+        {
+          "name": "Polygon",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "65,000 kills",
+          "type": "Bayonet",
+          "owners": 306
+        }
+      ]
+    },
+    {
+      "title": "19th Event",
+      "items": [
+        {
+          "name": "Ghoul",
+          "rarity": "Mythical",
+          "value": "11,000,000",
+          "req": "500 Games Played",
+          "type": "Character",
+          "owners": 96
+        },
+        {
+          "name": "Heavy",
+          "rarity": "Mythical",
+          "value": "10,000,000",
+          "req": "25000 LAR Kills",
+          "type": "LAR",
+          "owners": 91
+        },
+        {
+          "name": "Static",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "15000 Vita Headshots",
+          "type": "VITA",
+          "owners": 166
+        }
+      ]
+    },
+    {
+      "title": "20th Event",
+      "items": [
+        {
+          "name": "Shinji",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "1000 wins",
+          "type": "Character",
+          "owners": 39
+        },
+        {
+          "name": "R32",
+          "rarity": "Mythical",
+          "value": "80,000,000",
+          "req": "32k shark headshots",
+          "type": "Shark",
+          "owners": 22
+        },
+        {
+          "name": "Vibrant",
+          "rarity": "Mythical",
+          "value": "200,000,000",
+          "req": "5 million score",
+          "type": "Bayonet",
+          "owners": 16
+        }
+      ]
+    },
+    {
+      "title": "21st Event",
+      "items": [
+        {
+          "name": "Mage",
+          "rarity": "Mythical",
+          "value": "200,000,000",
+          "req": "3,500,000 score",
+          "type": "Character",
+          "owners": 13
+        },
+        {
+          "name": "Helendus",
+          "rarity": "Mythical",
+          "value": "140,000,000",
+          "req": "50,000 vita headshots",
+          "type": "VITA",
+          "owners": 20
+        },
+        {
+          "name": "Lustre",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "2,500 bayonet kills",
+          "type": "Bayonet",
+          "owners": 447
+        }
+      ]
+    },
+    {
+      "title": "22nd Event",
+      "items": [
+        {
+          "name": "Dreamscape",
+          "rarity": "Mythical",
+          "value": "50,000,000",
+          "req": "50k Lar Kills",
+          "type": "LAR",
+          "owners": 28
+        },
+        {
+          "name": "Elysian",
+          "rarity": "Mythical",
+          "value": "60,000,000",
+          "req": "25k Shark Kills",
+          "type": "Shark",
+          "owners": 29
+        }
+      ]
+    },
+    {
+      "title": "23rd Event",
+      "items": [
+        {
+          "name": "Verde",
+          "rarity": "Mythical",
+          "value": "120,000,000",
+          "req": "40k Bayonet Kills",
+          "type": "Bayonet",
+          "owners": 16
+        },
+        {
+          "name": "Splanch",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "55k Vita Kills",
+          "type": "VITA",
+          "owners": 40
+        },
+        {
+          "name": "Synergy",
+          "rarity": "Mythical",
+          "value": "175,000,000",
+          "req": "70k LAR Kills",
+          "type": "LAR",
+          "owners": 19
+        }
+      ]
+    },
+    {
+      "title": "24th Event",
+      "items": [
+        {
+          "name": "Stingray",
+          "rarity": "Mythical",
+          "value": "30,000,000",
+          "req": "30k Tomahawk Kills",
+          "type": "Tomahawk",
+          "owners": 59
+        },
+        {
+          "name": "Delicate",
+          "rarity": "Mythical",
+          "value": "70,000,000",
+          "req": "45k M60 Kills",
+          "type": "M60",
+          "owners": 33
+        },
+        {
+          "name": "Whispers",
+          "rarity": "Mythical",
+          "value": "120,000,000",
+          "req": "60k HS Scar Kills",
+          "type": "SCAR",
+          "owners": 39
+        }
+      ]
+    },
+    {
+      "title": "25th Event",
+      "items": [
+        {
+          "name": "Cosmic Bliss",
+          "rarity": "Mythical",
+          "value": "25,000,000",
+          "req": "20k rev headshots",
+          "type": "Revolver",
+          "owners": 43
+        },
+        {
+          "name": "Peakers",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "30,000 kills with vita",
+          "type": "VITA",
+          "owners": 54
+        },
+        {
+          "name": "Feathered",
+          "rarity": "Mythical",
+          "value": "40,000,000",
+          "req": "35,000 kills with LAR",
+          "type": "LAR",
+          "owners": 35
+        }
+      ]
+    },
+    {
+      "title": "26th Event",
+      "items": [
+        {
+          "name": "Fathom",
+          "rarity": "Mythical",
+          "value": "57,500,000",
+          "req": "25k Shark HS",
+          "type": "Shark",
+          "owners": 25
+        },
+        {
+          "name": "Firestorm",
+          "rarity": "Mythical",
+          "value": "52,000,000",
+          "req": "45k Mac-10 Kills",
+          "type": "MAC-10",
+          "owners": 27
+        },
+        {
+          "name": "Equalizer",
+          "rarity": "Mythical",
+          "value": "60,000,000",
+          "req": "65k Scar Kills",
+          "type": "SCAR",
+          "owners": 68
+        }
+      ]
+    },
+    {
+      "title": "27th Event",
+      "items": [
+        {
+          "name": "Night Sky",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "50k Vita HS",
+          "type": "VITA",
+          "owners": 1
+        },
+        {
+          "name": "Runic Death",
+          "rarity": "Legendary",
+          "value": "TBD",
+          "req": "15k Bayonet HS",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Apexial",
+          "rarity": "Legendary",
+          "value": "TBD",
+          "req": "25k Ar-9 HS",
+          "type": "AR-9",
+          "owners": 2
+        }
+      ]
+    },
+    {
+      "title": "2024 Christmas Advent Calendar",
+      "items": [
+        {
+          "name": "Mindframe",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "10,297 MAC-10 Score",
+          "type": "MAC-10",
+          "owners": 898
+        },
+        {
+          "name": "Ice Cold",
+          "rarity": "Mythical",
+          "value": "4,500,000",
+          "req": "484 Shark H/S",
+          "type": "Shark",
+          "owners": 307
+        },
+        {
+          "name": "Krampus",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "27,545 Score",
+          "type": "Character",
+          "owners": 676
+        },
+        {
+          "name": "Grinchette",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "2,500 Score",
+          "type": "Character",
+          "owners": 1511
+        }
+      ]
+    },
+    {
+      "title": "Summer Daily Streak",
+      "items": [
+        {
+          "name": "Atlantis",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "20 Daily Streak",
+          "type": "VITA",
+          "owners": 26
+        },
+        {
+          "name": "Floatie",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "17 Daily Streak",
+          "type": "Character",
+          "owners": 33
+        },
+        {
+          "name": "Bright",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "14 Daily Streak",
+          "type": "SCAR",
+          "owners": 60
+        },
+        {
+          "name": "Sirene",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "12 Daily Streak",
+          "type": "Character",
+          "owners": 81
+        },
+        {
+          "name": "Vacation",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "9 Daily Streak",
+          "type": "Character",
+          "owners": 162
+        },
+        {
+          "name": "Surfer",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "6 Daily Streak",
+          "type": "Character",
+          "owners": 420
+        },
+        {
+          "name": "Stranded",
+          "rarity": "Mythical",
+          "value": "TBD",
+          "req": "3 Daily Streak",
+          "type": "Character",
+          "owners": 1752
+        }
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "title": "Golden/Ice/Wood",
+      "items": [
+        {
+          "name": "Antique",
+          "rarity": "Paranormal",
+          "value": "22,000,000",
+          "req": "All Chests",
+          "type": "Bayonet",
+          "owners": 79
+        },
+        {
+          "name": "Blackhole",
+          "rarity": "Paranormal",
+          "value": "25,000,000",
+          "req": "All Chests",
+          "type": "Bayonet",
+          "owners": 91
+        },
+        {
+          "name": "Psychedelic",
+          "rarity": "Paranormal",
+          "value": "30,000,000",
+          "req": "Spawned",
+          "type": "Bayonet",
+          "owners": 49
+        },
+        {
+          "name": "Gloop",
+          "rarity": "Paranormal",
+          "value": "25,000,000",
+          "req": "All chests",
+          "type": "Shark",
+          "owners": 54
+        },
+        {
+          "name": "2026 Shark",
+          "rarity": "Paranormal",
+          "value": "25,000,000",
+          "req": "All Chests",
+          "type": "Shark",
+          "owners": 45
+        },
+        {
+          "name": "Wiggleworp",
+          "rarity": "Paranormal",
+          "value": "30,000,000",
+          "req": "All Chests",
+          "type": "VITA",
+          "owners": 42
+        },
+        {
+          "name": "Damascus",
+          "rarity": "Mythical",
+          "value": "1,100,000",
+          "req": "All chests",
+          "type": "Tomahawk",
+          "owners": 682
+        },
+        {
+          "name": "Capricorn",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "All chests",
+          "type": "Tomahawk",
+          "owners": 584
+        },
+        {
+          "name": "Jade",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2328
+        },
+        {
+          "name": "Or",
+          "rarity": "Mythical",
+          "value": "300,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2870
+        },
+        {
+          "name": "2024",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2343
+        },
+        {
+          "name": "Honey",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2303
+        },
+        {
+          "name": "Drake",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2310
+        },
+        {
+          "name": "Retro",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2924
+        },
+        {
+          "name": "Engravement",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2647
+        },
+        {
+          "name": "Cornfield",
+          "rarity": "Mythical",
+          "value": "400,000",
+          "req": "All chests",
+          "type": "Bayonet",
+          "owners": 2553
+        },
+        {
+          "name": "Cosmos",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "All chests",
+          "type": "VITA",
+          "owners": 2920
+        },
+        {
+          "name": "Majestic",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "All chests",
+          "type": "Shark",
+          "owners": 3002
+        },
+        {
+          "name": "1337",
+          "rarity": "Mythical",
+          "value": "300,000",
+          "req": "All chests",
+          "type": "Shark",
+          "owners": 2693
+        },
+        {
+          "name": "Hologram",
+          "rarity": "Mythical",
+          "value": "400,000",
+          "req": "All chests",
+          "type": "Revolver",
+          "owners": 2979
+        },
+        {
+          "name": "Ivoire",
+          "rarity": "Mythical",
+          "value": "250,000",
+          "req": "All chests",
+          "type": "Revolver",
+          "owners": 2765
+        },
+        {
+          "name": "Pulse",
+          "rarity": "Mythical",
+          "value": "250,000",
+          "req": "All chests",
+          "type": "Revolver",
+          "owners": 2761
+        },
+        {
+          "name": "Infernal",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "All chests",
+          "type": "AR-9",
+          "owners": 1623
+        },
+        {
+          "name": "Rub1x",
+          "rarity": "Mythical",
+          "value": "600,000",
+          "req": "All chests",
+          "type": "MAC-10",
+          "owners": 2188
+        }
+      ]
+    },
+    {
+      "title": "Packs",
+      "items": [
+        {
+          "name": "Adora",
+          "rarity": "Paranormal",
+          "value": "40,000,000",
+          "req": "Girls Band",
+          "type": "Character",
+          "owners": 40
+        },
+        {
+          "name": "Geode",
+          "rarity": "Paranormal",
+          "value": "40,000,000",
+          "req": "Periodic Pack",
+          "type": "Character",
+          "owners": 26
+        },
+        {
+          "name": "Nyan Dog",
+          "rarity": "Paranormal",
+          "value": "40,000,000",
+          "req": "Party Pack",
+          "type": "Character",
+          "owners": 30
+        },
+        {
+          "name": "Hazmat",
+          "rarity": "Paranormal",
+          "value": "35,000,000",
+          "req": "Soldiers Pack",
+          "type": "Character",
+          "owners": 48
+        },
+        {
+          "name": "Frozen",
+          "rarity": "Paranormal",
+          "value": "30,000,000",
+          "req": "Cold Pack",
+          "type": "Character",
+          "owners": 29
+        },
+        {
+          "name": "Melody",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "Girls Band Pack",
+          "type": "Character",
+          "owners": 466
+        },
+        {
+          "name": "Uranium",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "Periodic Pack",
+          "type": "Character",
+          "owners": 433
+        },
+        {
+          "name": "Pastel",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "Party Pack",
+          "type": "Character",
+          "owners": 394
+        },
+        {
+          "name": "Ghillie",
+          "rarity": "Mythical",
+          "value": "3,000,000",
+          "req": "Soldiers Pack",
+          "type": "Character",
+          "owners": 608
+        },
+        {
+          "name": "Polar",
+          "rarity": "Mythical",
+          "value": "3,500,000",
+          "req": "Cold Pack",
+          "type": "Character",
+          "owners": 392
+        }
+      ]
+    },
+    {
+      "title": "Halloween",
+      "items": [
+        {
+          "name": "Halloween",
+          "rarity": "Common",
+          "value": "5,000",
+          "req": "Shop",
+          "type": "Chest",
+          "owners": 346623
+        },
+        {
+          "name": "Slasher",
+          "rarity": "Paranormal",
+          "value": "8,000,000",
+          "req": "Halloween Chest",
+          "type": "Character",
+          "owners": 204
+        },
+        {
+          "name": "Hellizabeth",
+          "rarity": "Mythical",
+          "value": "200,000",
+          "req": "Halloween Chest",
+          "type": "Character",
+          "owners": 2901
+        },
+        {
+          "name": "Lilith",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "Halloween Chest",
+          "type": "Character",
+          "owners": 2890
+        },
+        {
+          "name": "Puppet",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "Halloween Chest",
+          "type": "Character",
+          "owners": 2849
+        },
+        {
+          "name": "Skeletain",
+          "rarity": "Mythical",
+          "value": "200,000",
+          "req": "Halloween Chest",
+          "type": "Character",
+          "owners": 2883
+        },
+        {
+          "name": "Superjames",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "Halloween Chest",
+          "type": "Character",
+          "owners": 2820
+        },
+        {
+          "name": "Xray James",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "Halloween Chest",
+          "type": "Character",
+          "owners": 2880
+        }
+      ]
+    },
+    {
+      "title": "Christmas",
+      "items": [
+        {
+          "name": "Christmas",
+          "rarity": "Mythical",
+          "value": "1,500",
+          "req": "Shop",
+          "type": "Chest",
+          "owners": 1576616
+        },
+        {
+          "name": "Ripped Santa",
+          "rarity": "Paranormal",
+          "value": "120,000,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 13
+        },
+        {
+          "name": "Gifted",
+          "rarity": "Paranormal",
+          "value": "120,000,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 10
+        },
+        {
+          "name": "Pooh",
+          "rarity": "Paranormal",
+          "value": "85,000,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 14
+        },
+        {
+          "name": "Elves",
+          "rarity": "Paranormal",
+          "value": "430,000,000",
+          "req": "Christmas Chest",
+          "type": "VITA",
+          "owners": 5
+        },
+        {
+          "name": "Black Santa",
+          "rarity": "Paranormal",
+          "value": "57,000,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 19
+        },
+        {
+          "name": "Marilwyd",
+          "rarity": "Mythical",
+          "value": "100,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 947
+        },
+        {
+          "name": "Wintermint",
+          "rarity": "Mythical",
+          "value": "50,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 929
+        },
+        {
+          "name": "Gingy",
+          "rarity": "Mythical",
+          "value": "125,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 969
+        },
+        {
+          "name": "Decor",
+          "rarity": "Mythical",
+          "value": "100,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 984
+        },
+        {
+          "name": "Eve",
+          "rarity": "Mythical",
+          "value": "200,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 1015
+        },
+        {
+          "name": "Pajama Unc",
+          "rarity": "Mythical",
+          "value": "100,000",
+          "req": "Christmas Chest",
+          "type": "Character",
+          "owners": 795
+        }
+      ]
+    }
+  ],
+  "bundles": [
+    {
+      "title": "Blast Bundle",
+      "items": [
+        {
+          "name": "Blast",
+          "rarity": "Mythical",
+          "value": "200,000",
+          "req": "Blast Set Compenation",
+          "type": "Character",
+          "owners": 2210
+        },
+        {
+          "name": "Blast AR-9",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Blast 850x 💎",
+          "type": "AR-9",
+          "owners": 715
+        },
+        {
+          "name": "Blast Bayonet",
+          "rarity": "Mythical",
+          "value": "1,200,000",
+          "req": "Blast 850x 💎",
+          "type": "Bayonet",
+          "owners": 721
+        },
+        {
+          "name": "Blast LAR",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Blast 850x 💎",
+          "type": "LAR",
+          "owners": 720
+        },
+        {
+          "name": "Blast M60",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Blast 850x 💎",
+          "type": "M60",
+          "owners": 722
+        },
+        {
+          "name": "Blast MAC-10",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Blast 850x 💎",
+          "type": "MAC-10",
+          "owners": 718
+        },
+        {
+          "name": "Blast Revolver",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Blast 850x 💎",
+          "type": "Revolver",
+          "owners": 688
+        },
+        {
+          "name": "Blast SCAR",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Blast 850x 💎",
+          "type": "SCAR",
+          "owners": 696
+        },
+        {
+          "name": "Blast Shark",
+          "rarity": "Mythical",
+          "value": "1,200,000",
+          "req": "Blast 850x 💎",
+          "type": "Shark",
+          "owners": 686
+        },
+        {
+          "name": "Blast Tomahawk",
+          "rarity": "Mythical",
+          "value": "1,700,000",
+          "req": "Blast 850x 💎",
+          "type": "Tomahawk",
+          "owners": 728
+        },
+        {
+          "name": "Blast VITA",
+          "rarity": "Mythical",
+          "value": "1,200,000",
+          "req": "Blast 850x 💎",
+          "type": "VITA",
+          "owners": 725
+        },
+        {
+          "name": "Blast Weatie",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Blast 850x 💎",
+          "type": "Weatie",
+          "owners": 718
+        }
+      ]
+    },
+    {
+      "title": "Cyber Bundle",
+      "items": [
+        {
+          "name": "Cyber AR-9",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Cyber 850x 💎",
+          "type": "AR-9",
+          "owners": 255
+        },
+        {
+          "name": "Cyber Bayonet",
+          "rarity": "Mythical",
+          "value": "1,200,000",
+          "req": "Cyber 850x 💎",
+          "type": "Bayonet",
+          "owners": 257
+        },
+        {
+          "name": "Cyber LAR",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Cyber 850x 💎",
+          "type": "LAR",
+          "owners": 257
+        },
+        {
+          "name": "Cyber M60",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "Cyber 850x 💎",
+          "type": "M60",
+          "owners": 255
+        },
+        {
+          "name": "Cyber MAC-10",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Cyber 850x 💎",
+          "type": "MAC-10",
+          "owners": 255
+        },
+        {
+          "name": "Cyber Revolver",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Cyber 850x 💎",
+          "type": "Revolver",
+          "owners": 258
+        },
+        {
+          "name": "Cyber SCAR",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Cyber 850x 💎",
+          "type": "SCAR",
+          "owners": 258
+        },
+        {
+          "name": "Cyber Shark",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Cyber 850x 💎",
+          "type": "Shark",
+          "owners": 256
+        },
+        {
+          "name": "Cyber Tomahawk",
+          "rarity": "Mythical",
+          "value": "1,700,000",
+          "req": "Cyber 850x 💎",
+          "type": "Tomahawk",
+          "owners": 259
+        },
+        {
+          "name": "Cyber VITA",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Cyber 850x 💎",
+          "type": "VITA",
+          "owners": 258
+        },
+        {
+          "name": "Cyber Weatie",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Cyber 850x 💎",
+          "type": "Weatie",
+          "owners": 255
+        }
+      ]
+    },
+    {
+      "title": "Dragonic Bundle",
+      "items": [
+        {
+          "name": "Blessed",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Dragonic 850x 💎",
+          "type": "Character",
+          "owners": 339
+        },
+        {
+          "name": "Dragonic AR-9",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Dragonic 850x 💎",
+          "type": "AR-9",
+          "owners": 331
+        },
+        {
+          "name": "Dragonic Bayonet",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Dragonic 850x 💎",
+          "type": "Bayonet",
+          "owners": 339
+        },
+        {
+          "name": "Dragonic LAR",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "Dragonic 850x 💎",
+          "type": "LAR",
+          "owners": 329
+        },
+        {
+          "name": "Dragonic M60",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "Dragonic 850x 💎",
+          "type": "M60",
+          "owners": 321
+        },
+        {
+          "name": "Dragonic MAC-10",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "Dragonic 850x 💎",
+          "type": "MAC-10",
+          "owners": 324
+        },
+        {
+          "name": "Dragonic Revolver",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Dragonic 850x 💎",
+          "type": "Revolver",
+          "owners": 329
+        },
+        {
+          "name": "Dragonic SCAR",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Dragonic 850x 💎",
+          "type": "SCAR",
+          "owners": 343
+        },
+        {
+          "name": "Dragonic Shark",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Dragonic 850x 💎",
+          "type": "Shark",
+          "owners": 338
+        },
+        {
+          "name": "Dragonic Tomahawk",
+          "rarity": "Mythical",
+          "value": "700,000",
+          "req": "Dragonic 850x 💎",
+          "type": "Tomahawk",
+          "owners": 345
+        },
+        {
+          "name": "Dragonic VITA",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Dragonic 850x 💎",
+          "type": "VITA",
+          "owners": 341
+        },
+        {
+          "name": "Dragonic Weatie",
+          "rarity": "Mythical",
+          "value": "500,000",
+          "req": "Dragonic 850x 💎",
+          "type": "Weatie",
+          "owners": 328
+        }
+      ]
+    },
+    {
+      "title": "Void Bundle",
+      "items": [
+        {
+          "name": "RGB",
+          "rarity": "Legendary",
+          "value": "1,000,000",
+          "req": "Void 850x 💎",
+          "type": "Character",
+          "owners": 440
+        },
+        {
+          "name": "RGB Black",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Void 850x 💎",
+          "type": "Character",
+          "owners": 438
+        },
+        {
+          "name": "Void AR-9",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Void 850x 💎",
+          "type": "AR-9",
+          "owners": 429
+        },
+        {
+          "name": "Void Bayonet",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Void 850x 💎",
+          "type": "Bayonet",
+          "owners": 429
+        },
+        {
+          "name": "Void LAR",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Void 850x 💎",
+          "type": "LAR",
+          "owners": 426
+        },
+        {
+          "name": "Void M60",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Void 850x 💎",
+          "type": "M60",
+          "owners": 420
+        },
+        {
+          "name": "Void MAC-10",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Void 850x 💎",
+          "type": "MAC-10",
+          "owners": 426
+        },
+        {
+          "name": "Void Revolver",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Void 850x 💎",
+          "type": "Revolver",
+          "owners": 420
+        },
+        {
+          "name": "Void SCAR",
+          "rarity": "Mythical",
+          "value": "2,500,000",
+          "req": "Void 850x 💎",
+          "type": "SCAR",
+          "owners": 431
+        },
+        {
+          "name": "Void Shark",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Void 850x 💎",
+          "type": "Shark",
+          "owners": 429
+        },
+        {
+          "name": "Void Tomahawk",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Void 850x 💎",
+          "type": "Tomahawk",
+          "owners": 438
+        },
+        {
+          "name": "Void VITA",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Void 850x 💎",
+          "type": "VITA",
+          "owners": 432
+        },
+        {
+          "name": "Void Weatie",
+          "rarity": "Mythical",
+          "value": "150,000",
+          "req": "Void 850x 💎",
+          "type": "Weatie",
+          "owners": 418
+        }
+      ]
+    },
+    {
+      "title": "Hotrod Bundle",
+      "items": [
+        {
+          "name": "Hotrod Bayonet",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "Bayonet",
+          "owners": 51
+        },
+        {
+          "name": "Hotrod LAR",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "LAR",
+          "owners": 53
+        },
+        {
+          "name": "Hotrod M60",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "M60",
+          "owners": 70
+        },
+        {
+          "name": "Hotrod MAC-10",
+          "rarity": "Mythical",
+          "value": "850,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "MAC-10",
+          "owners": 52
+        },
+        {
+          "name": "Hotrod Revolver",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "Revolver",
+          "owners": 52
+        },
+        {
+          "name": "Hotrod SCAR",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "SCAR",
+          "owners": 53
+        },
+        {
+          "name": "Hotrod Shark",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "Shark",
+          "owners": 52
+        },
+        {
+          "name": "Hotrod Tomahawk",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "Tomahawk",
+          "owners": 53
+        },
+        {
+          "name": "Hotrod VITA",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "VITA",
+          "owners": 52
+        },
+        {
+          "name": "Hotrod Weatie",
+          "rarity": "Mythical",
+          "value": "800,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "Weatie",
+          "owners": 53
+        },
+        {
+          "name": "Lola",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "Character",
+          "owners": 52
+        },
+        {
+          "name": "Elijah",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Hot Rod 850x 💎",
+          "type": "Character",
+          "owners": 53
+        }
+      ]
+    },
+    {
+      "title": "Shit Bundle",
+      "items": [
+        {
+          "name": "Shit Ar-9",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Shit 850x💎",
+          "type": "AR-9",
+          "owners": 99
+        },
+        {
+          "name": "Shit Bayonet",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Shit 850x💎",
+          "type": "Bayonet",
+          "owners": 99
+        },
+        {
+          "name": "Shit LAR",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Shit 850x💎",
+          "type": "LAR",
+          "owners": 100
+        },
+        {
+          "name": "Shit M60",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Shit 850x💎",
+          "type": "M60",
+          "owners": 100
+        },
+        {
+          "name": "Shit Mac-10",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Shit 850x💎",
+          "type": "MAC-10",
+          "owners": 99
+        },
+        {
+          "name": "Shit Revolver",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Shit 850x💎",
+          "type": "Revolver",
+          "owners": 100
+        },
+        {
+          "name": "Shit Scar",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Shit 850x💎",
+          "type": "SCAR",
+          "owners": 99
+        },
+        {
+          "name": "Shit Shark",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Shit 850x💎",
+          "type": "Shark",
+          "owners": 99
+        },
+        {
+          "name": "Shit Tomahawk",
+          "rarity": "Mythical",
+          "value": "2,000,000",
+          "req": "Shit 850x💎",
+          "type": "Tomahawk",
+          "owners": 99
+        },
+        {
+          "name": "Shit Vita",
+          "rarity": "Mythical",
+          "value": "1,500,000",
+          "req": "Shit 850x💎",
+          "type": "VITA",
+          "owners": 100
+        },
+        {
+          "name": "Shit Weatie",
+          "rarity": "Mythical",
+          "value": "1,000,000",
+          "req": "Shit 850x💎",
+          "type": "Weatie",
+          "owners": 99
+        }
+      ]
+    }
+  ],
+  "rewards": [
+    {
+      "title": "Giveaways/Other",
+      "items": [
+        {
+          "name": "Bled",
+          "rarity": "Legendary",
+          "value": "350,000,000",
+          "req": "Spawned & Giveaway",
+          "type": "Bayonet",
+          "owners": 11
+        },
+        {
+          "name": "Forge",
+          "rarity": "Legendary",
+          "value": "900,000,000",
+          "req": "Offical Giveaway",
+          "type": "Bayonet",
+          "owners": 18
+        },
+        {
+          "name": "Love",
+          "rarity": "Legendary",
+          "value": "1,850,000,000",
+          "req": "Offical Giveaway",
+          "type": "VITA",
+          "owners": 5
+        },
+        {
+          "name": "Butterflies",
+          "rarity": "Legendary",
+          "value": "625,000,000",
+          "req": "Offical Giveaway",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Kiss",
+          "rarity": "Legendary",
+          "value": "500,000,000",
+          "req": "Offical Giveaway",
+          "type": "Shark",
+          "owners": 3
+        },
+        {
+          "name": "Dissident",
+          "rarity": "Legendary",
+          "value": "1,500,000,000",
+          "req": "Glitched in chests/marketed",
+          "type": "Shark",
+          "owners": 6
+        },
+        {
+          "name": "Raffle",
+          "rarity": "Legendary",
+          "value": "TBD",
+          "req": "Streamer Choice",
+          "type": "Shark",
+          "owners": 7
+        },
+        {
+          "name": "Platinum",
+          "rarity": "Paranormal",
+          "value": "500,000,000",
+          "req": "500m Coins on Market",
+          "type": "Bayonet",
+          "owners": 5
+        }
+      ]
+    },
+    {
+      "title": "Tournament Items",
+      "items": [
+        {
+          "name": "Champion",
+          "rarity": "Legendary",
+          "value": "0",
+          "req": "2022 Offical Tournament",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Legend",
+          "rarity": "Legendary",
+          "value": "2,000,000,000",
+          "req": "2022 Offcial Tournamnet",
+          "type": "VITA",
+          "owners": 9
+        },
+        {
+          "name": "Master",
+          "rarity": "Legendary",
+          "value": "700,000,000",
+          "req": "2022 Offical Tournamnet",
+          "type": "AR-9",
+          "owners": 25
+        },
+        {
+          "name": "Priceless",
+          "rarity": "Mythical",
+          "value": "1,000,000,000",
+          "req": "2025 Resunz Championship",
+          "type": "M60",
+          "owners": 4
+        },
+        {
+          "name": "KCL Gold",
+          "rarity": "Paranormal",
+          "value": "500,000,000",
+          "req": "2026 KCL Tournament",
+          "type": "Character",
+          "owners": 4
+        },
+        {
+          "name": "KCL Silver",
+          "rarity": "Paranormal",
+          "value": "450,000,000",
+          "req": "2026 KCL Tournament",
+          "type": "Character",
+          "owners": 4
+        },
+        {
+          "name": "KCL Bronze",
+          "rarity": "Paranormal",
+          "value": "449,999,999",
+          "req": "2026 KCL Tournament",
+          "type": "Character",
+          "owners": 4
+        }
+      ]
+    },
+    {
+      "title": "Rewards",
+      "items": [
+        {
+          "name": "MemestarTV",
+          "rarity": "Legendary",
+          "value": "750,000,000",
+          "req": "Gift for First map maker",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Monday",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Gift for Ramen",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Luminescent",
+          "rarity": "Mythical",
+          "value": "696,969,696",
+          "req": "Ranked Gift For Bloom",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Duelist",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Gift for Kaz3",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Bros",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Gift for BVL Members",
+          "type": "VITA",
+          "owners": 10
+        },
+        {
+          "name": "Fluorescent",
+          "rarity": "Mythical",
+          "value": "696,969,696",
+          "req": "Gift for Bloom",
+          "type": "VITA",
+          "owners": 1
+        },
+        {
+          "name": "Rad",
+          "rarity": "Legendary",
+          "value": "750,000,000",
+          "req": "Gift for Kirka Admin",
+          "type": "Shark",
+          "owners": 1
+        },
+        {
+          "name": "New",
+          "rarity": "Legendary",
+          "value": "750,000,000",
+          "req": "Gift for Kirka Admin",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Rosy",
+          "rarity": "Mythical",
+          "value": "2,500,000,000",
+          "req": "Reward for Bug Finder",
+          "type": "VITA",
+          "owners": 1
+        },
+        {
+          "name": "Juicer",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Gift for Irrvlo",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Sunflower",
+          "rarity": "Legendary",
+          "value": "750,000,000",
+          "req": "Gift for CarrySheriff",
+          "type": "Shark",
+          "owners": 11
+        },
+        {
+          "name": "Scary Monster",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Gift for CarrySheriff",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Scalped",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Gift for Skywalk",
+          "type": "Tomahawk",
+          "owners": 1
+        },
+        {
+          "name": "Kekw",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Gift for Skywalk",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Impostor",
+          "rarity": "Mythical",
+          "value": "1,250,000,000",
+          "req": "Zombie Texture",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Mangle",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Zombie Texture",
+          "type": "Character",
+          "owners": 2
+        },
+        {
+          "name": "Zombie",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Zombie Texture",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Phoenix",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Exclusive Giveaway",
+          "type": "Character",
+          "owners": 10
+        },
+        {
+          "name": "Muppet",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Exclusive Giveaway",
+          "type": "Character",
+          "owners": 10
+        },
+        {
+          "name": "Pop",
+          "rarity": "Mythical",
+          "value": "750,000,000",
+          "req": "Gift For Masten",
+          "type": "Character",
+          "owners": 1
+        },
+        {
+          "name": "Flowstate",
+          "rarity": "Mythical",
+          "value": "450,000,000",
+          "req": "Gift for Flow Members",
+          "type": "VITA",
+          "owners": 15
+        },
+        {
+          "name": "Zg-Mario",
+          "rarity": "Legendary",
+          "value": "750,000,000",
+          "req": "Reward for first level 101",
+          "type": "SCAR",
+          "owners": 1
+        },
+        {
+          "name": "Zg-Mar104",
+          "rarity": "Paranormal",
+          "value": "750,000,000",
+          "req": "Reward for first level 104",
+          "type": "SCAR",
+          "owners": 1
+        },
+        {
+          "name": "Zg-Mar102",
+          "rarity": "Paranormal",
+          "value": "750,000,000",
+          "req": "Reward for first level 102",
+          "type": "Shark",
+          "owners": 1
+        },
+        {
+          "name": "Zg-Bayonet",
+          "rarity": "Paranormal",
+          "value": "750,000,000",
+          "req": "Reward for first level 103",
+          "type": "Bayonet",
+          "owners": 1
+        }
+      ]
+    },
+    {
+      "title": "Ranked LB Rewards",
+      "items": [
+        {
+          "name": "Ranked_S1 Gold",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 1",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_S1 Silver",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 2",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_S1 Bronze",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 3",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_S1 Top10",
+          "rarity": "Mythical",
+          "value": "450,000,000",
+          "req": "Ranked LB Rank 4-10",
+          "type": "Bayonet",
+          "owners": 7
+        },
+        {
+          "name": "Ranked_S1 Top100",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "Ranked LB Rank 11-100",
+          "type": "Bayonet",
+          "owners": 90
+        },
+        {
+          "name": "Ranked_s2 Gold",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 1",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_s2 Silver",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 2",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_s2 Bronze",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 3",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_s2 Top10",
+          "rarity": "Mythical",
+          "value": "450,000,000",
+          "req": "Ranked LB Rank 4-10",
+          "type": "Bayonet",
+          "owners": 7
+        },
+        {
+          "name": "Ranked_s2 Top100",
+          "rarity": "Mythical",
+          "value": "15,000,000",
+          "req": "Ranked LB Rank 11-100",
+          "type": "Bayonet",
+          "owners": 89
+        },
+        {
+          "name": "Ranked_s3 gold",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 1",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Ranked_s3 silver",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 2",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Ranked_s3 bronze",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 3",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Ranked_s3 top10",
+          "rarity": "Mythical",
+          "value": "150,000,000",
+          "req": "Ranked LB Rank 4-10",
+          "type": "Bayonet",
+          "owners": 13
+        },
+        {
+          "name": "Ranked_s3 top100",
+          "rarity": "Mythical",
+          "value": "8,000,000",
+          "req": "Ranked LB Rank 11-100",
+          "type": "Bayonet",
+          "owners": 177
+        },
+        {
+          "name": "Ranked_s4 gold",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 1",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Ranked_s4 silver",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 2",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Ranked_s4 bronze",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 3",
+          "type": "Bayonet",
+          "owners": 2
+        },
+        {
+          "name": "Ranked_s4 top10",
+          "rarity": "Mythical",
+          "value": "140,000,000",
+          "req": "Ranked LB Rank 4-10",
+          "type": "Bayonet",
+          "owners": 14
+        },
+        {
+          "name": "Ranked_s4 top100",
+          "rarity": "Mythical",
+          "value": "7,000,000",
+          "req": "Ranked LB Rank 11-100",
+          "type": "Bayonet",
+          "owners": 183
+        },
+        {
+          "name": "Ranked_S5 Bronze",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 3",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_S5 Gold",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 1",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_S5 Silver",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 2",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_S5 Top10",
+          "rarity": "Mythical",
+          "value": "450,000,000",
+          "req": "Ranked LB Rank 4-10",
+          "type": "Bayonet",
+          "owners": 7
+        },
+        {
+          "name": "Ranked_S5 Top100",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "Ranked LB Rank 11-100",
+          "type": "Bayonet",
+          "owners": 90
+        },
+        {
+          "name": "Ranked_s6 Gold",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 1",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_s6 Silver",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 2",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_s6 Bronze",
+          "rarity": "Mythical",
+          "value": "500,000,000",
+          "req": "Ranked LB Rank 3",
+          "type": "Bayonet",
+          "owners": 1
+        },
+        {
+          "name": "Ranked_s6 Top10",
+          "rarity": "Mythical",
+          "value": "450,000,000",
+          "req": "Ranked LB Rank 4-10",
+          "type": "Bayonet",
+          "owners": 7
+        },
+        {
+          "name": "Ranked_s6 Top100",
+          "rarity": "Mythical",
+          "value": "20,000,000",
+          "req": "Ranked LB Rank 11-100",
+          "type": "Bayonet",
+          "owners": 90
+        }
+      ]
+    }
+  ]
+}

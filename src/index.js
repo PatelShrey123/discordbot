@@ -33,6 +33,7 @@ import * as weaponCmd from './commands/weapon.js';
 import * as serversCmd from './commands/servers.js';
 import * as storeCmd from './commands/store.js';
 import * as storeupdateCmd from './commands/storeupdate.js';
+import * as eventsCmd from './commands/events.js';
 import * as helpCmd from './commands/help.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
 
@@ -74,6 +75,7 @@ client.commands.set(weaponCmd.data.name, weaponCmd);
 client.commands.set(serversCmd.data.name, serversCmd);
 client.commands.set(storeCmd.data.name, storeCmd);
 client.commands.set(storeupdateCmd.data.name, storeupdateCmd);
+client.commands.set(eventsCmd.data.name, eventsCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -751,6 +753,55 @@ client.on('messageCreate', async (message) => {
 
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
     await storeupdateCmd.executePrefix(message, args);
+  }
+
+  // 20. .events / .event / .eventquests [query]
+  else if (
+    lowerContent === '.events' ||
+    lowerContent.startsWith('.events ') ||
+    lowerContent === '.event' ||
+    lowerContent.startsWith('.event ') ||
+    lowerContent === '.eventquests' ||
+    lowerContent.startsWith('.eventquests ')
+  ) {
+    let prefixUsed = '.events';
+    if (lowerContent.startsWith('.eventquests')) prefixUsed = '.eventquests';
+    else if (lowerContent.startsWith('.event ') || lowerContent === '.event') prefixUsed = '.event';
+
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await message.channel.sendTyping();
+    await eventsCmd.executePrefix(message, args);
+  }
+
+  // 21. .cw / .clanwars / .clanwar [number]
+  else if (
+    lowerContent === '.cw' ||
+    lowerContent.startsWith('.cw ') ||
+    lowerContent === '.clanwar' ||
+    lowerContent.startsWith('.clanwar ') ||
+    lowerContent === '.clanwars' ||
+    lowerContent.startsWith('.clanwars ')
+  ) {
+    let prefixUsed = '.cw';
+    if (lowerContent.startsWith('.clanwars')) prefixUsed = '.clanwars';
+    else if (lowerContent.startsWith('.clanwar')) prefixUsed = '.clanwar';
+
+    const args = ['cw', ...content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean)];
+    await message.channel.sendTyping();
+    await eventsCmd.executePrefix(message, args);
+  }
+
+  // 22. .seasons / .eventseasons / .eventstores
+  else if (
+    lowerContent === '.seasons' ||
+    lowerContent.startsWith('.seasons ') ||
+    lowerContent === '.eventseasons' ||
+    lowerContent.startsWith('.eventseasons ')
+  ) {
+    let prefixUsed = lowerContent.startsWith('.eventseasons') ? '.eventseasons' : '.seasons';
+    const args = ['seasons', ...content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean)];
+    await message.channel.sendTyping();
+    await eventsCmd.executePrefix(message, args);
   }
 
 });
