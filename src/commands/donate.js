@@ -33,17 +33,11 @@ export function buildDonateEmbed() {
       `**KirkaHub** is 100% free and open for the entire Kirka.io community.\n` +
       `Your support directly funds high-speed cloud hosting, database servers, 3D skin rendering, and instant live trading feeds!\n\n` +
       `### 🇮🇳 Indian Donators (Direct UPI / Zero Leaks):\n` +
-      `• **☕ Buy Me A Chai:** [buymeachai.in/xpert](${BUY_ME_A_CHAI_URL})\n` +
-      `• Supports **Google Pay, PhonePe, Paytm, BHIM, and FamPay**.\n` +
-      `• 100% direct, zero platform cuts, and keeps personal phone numbers completely private!\n\n` +
-      `### 🎯 Gift Valorant Points (Direct In-Game Top-Up):\n` +
-      `• **1. Copy Riot ID:** \`${RIOT_ID}\`\n` +
-      `• **2. Open:** Click **[🎯 Gift Valorant Points]** below (or use the website modal to auto-copy)\n` +
-      `• **3. Top-Up:** Paste \`${RIOT_ID}\` on Codashop, choose any amount, and pay via UPI!\n` +
-      `*(No codes needed — the Valorant Points land directly in the dev's game account)*\n\n` +
-      `### 🎁 Steam / Amazon / Digital Gift Cards:\n` +
-      `• Send a Steam wallet code or gift card via \`.donate submit <code>\` *(automatically hidden from chat for privacy & delivered directly to the dev)*.\n` +
-      `• Or open a ticket / DM the developer in our [Tracker Bot Server](${TRACKER_BOT_INVITE})!\n\n` +
+      `• **☕ Buy Me A Chai:** [buymeachai.in/xpert](${BUY_ME_A_CHAI_URL}) (Google Pay, PhonePe, Paytm, BHIM, FamPay)\n` +
+      `• **🎯 Codashop Valorant:** Top-up Riot ID \`${RIOT_ID}\` for direct in-game VP.\n\n` +
+      `### 🌍 International Donators (USA / Europe / Worldwide):\n` +
+      `• **🎮 Steam Wallet Cards (Global):** Steam codes in any currency (USD $, EUR €, GBP £) automatically convert to Indian currency when redeemed! Buy on Steam or Amazon $\rightarrow$ submit via \`.donate submit <code>\`.\n` +
+      `• **🎯 Valorant Points (India Region via SEAGM):** Use PayPal / International Cards on SEAGM to buy an **India Region** VP card $\rightarrow$ submit via \`.donate submit <code>\`.\n` +
       `• **🚀 Discord Server Boost:** Boost our official [Tracker Bot Server](${TRACKER_BOT_INVITE}) to unlock perks!\n\n` +
       `### 🌟 Donor Perks (What You Get):\n` +
       `• **⭐ Supporter Badge:** Permanent glowing badge on your **\`.profile\`** player card!\n` +
