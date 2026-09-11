@@ -35,7 +35,10 @@ import * as storeCmd from './commands/store.js';
 import * as storeupdateCmd from './commands/storeupdate.js';
 import * as eventsCmd from './commands/events.js';
 import * as helpCmd from './commands/help.js';
+import * as supportCmd from './commands/support.js';
+import * as suggestCmd from './commands/suggest.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
+import { maybeSendFeedbackReminder } from './utils/feedbackReminder.js';
 
 dotenv.config();
 
@@ -76,6 +79,8 @@ client.commands.set(serversCmd.data.name, serversCmd);
 client.commands.set(storeCmd.data.name, storeCmd);
 client.commands.set(storeupdateCmd.data.name, storeupdateCmd);
 client.commands.set(eventsCmd.data.name, eventsCmd);
+client.commands.set(supportCmd.data.name, supportCmd);
+client.commands.set(suggestCmd.data.name, suggestCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -210,6 +215,7 @@ client.on('interactionCreate', async (interaction) => {
 
   try {
     await command.execute(interaction);
+    maybeSendFeedbackReminder(interaction.channel, interaction.guild);
   } catch (error) {
     console.error(`❌ Error executing command /${interaction.commandName}:`, error);
     const replyMsg = { content: '⚠️ There was an error while executing this command!', flags: 64 };
@@ -802,6 +808,42 @@ client.on('messageCreate', async (message) => {
     const args = ['seasons', ...content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean)];
     await message.channel.sendTyping();
     await eventsCmd.executePrefix(message, args);
+  }
+
+  // 23. .support / .discord / .server / .community
+  else if (
+    lowerContent === '.support' ||
+    lowerContent.startsWith('.support ') ||
+    lowerContent === '.discord' ||
+    lowerContent.startsWith('.discord ') ||
+    lowerContent === '.server' ||
+    lowerContent.startsWith('.server ') ||
+    lowerContent === '.community' ||
+    lowerContent.startsWith('.community ')
+  ) {
+    await message.channel.sendTyping();
+    await supportCmd.executePrefix(message);
+  }
+
+  // 24. .suggest / .suggestion / .feedback
+  else if (
+    lowerContent === '.suggest' ||
+    lowerContent.startsWith('.suggest ') ||
+    lowerContent === '.suggestion' ||
+    lowerContent.startsWith('.suggestion ') ||
+    lowerContent === '.feedback' ||
+    lowerContent.startsWith('.feedback ')
+  ) {
+    let prefixUsed = '.suggest';
+    if (lowerContent.startsWith('.suggestion')) prefixUsed = '.suggestion';
+    else if (lowerContent.startsWith('.feedback')) prefixUsed = '.feedback';
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await suggestCmd.executePrefix(message, args);
+  }
+
+  // Check if a polite community/suggestion reminder should be sent (at most once every 1.5 - 2 days per server)
+  if (lowerContent.startsWith('.')) {
+    maybeSendFeedbackReminder(message.channel, message.guild);
   }
 
 });

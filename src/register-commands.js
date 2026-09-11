@@ -21,6 +21,8 @@ import * as storeCmd from './commands/store.js';
 import * as storeupdateCmd from './commands/storeupdate.js';
 import * as eventsCmd from './commands/events.js';
 import * as helpCmd from './commands/help.js';
+import * as supportCmd from './commands/support.js';
+import * as suggestCmd from './commands/suggest.js';
 
 dotenv.config();
 
@@ -45,7 +47,9 @@ const commands = [
   serversCmd.data.toJSON(),
   storeCmd.data.toJSON(),
   storeupdateCmd.data.toJSON(),
-  eventsCmd.data.toJSON()
+  eventsCmd.data.toJSON(),
+  supportCmd.data.toJSON(),
+  suggestCmd.data.toJSON()
 ];
 
 export async function registerCommands() {

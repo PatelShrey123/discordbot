@@ -27,18 +27,20 @@ export function buildHelpEmbed(category = 'home') {
         `### 🎨 How to Set a Custom Profile Background (\`.h\`)\n` +
         `KirkaHub allows you to customize the card background shown on \`.profile\` with **any image or GIF you want**!\n\n` +
         `**Step 1: Link your Kirka account**\n` +
-        `• Run \`.link <YourKirkaName>\` (or \`/link username:<name>\`).\n` +
-        `• The bot will give you a quick verification code. Paste the code into your Kirka in-game bio for 10 seconds, then confirm!\n\n` +
+        `• Run \`.link\` (or \`/link\`) in chat.\n` +
+        `• The bot will generate a unique verification code (e.g. \`kirkahub-0x...\`).\n` +
+        `• Open [Kirka.io](https://kirka.io/) and type that code into **in-game chat** (lobby, any match, or clan chat).\n` +
+        `• Click **[Done]** or let the bot's instant WebSocket listener automatically confirm and bind your account!\n\n` +
         `**Step 2: Set your custom background**\n` +
-        `• **Option A (Direct upload):** Send an image into chat with \`.h\` as the message caption.\n` +
+        `• **Option A (Direct upload):** Send an image into Discord with \`.h\` as the caption.\n` +
         `• **Option B (Link):** Type \`.h <image_url>\` (e.g. \`.h https://i.imgur.com/example.png\`).\n` +
         `• **Option C (Slash):** Run \`/h image:[upload]\` or \`/h url:[link]\`.\n\n` +
-        `> 💡 **Permanent Cloud Storage:** Your background is converted to permanent data storage in our Supabase database — **it will never expire or reset** when servers restart!\n\n` +
+        `> 💡 **Permanent Cloud Storage:** Your background is stored permanently in our database — **it will never expire or reset**!\n\n` +
         `### 📋 Profile Commands:\n` +
-        `• \`.profile [@DiscordUser/user]\` — Render your HD esports player card with 3D skins, clan tag, and K/D. Mention anyone to see their linked profile!\n` +
-        `• \`.inv [@DiscordUser/user]\` — View a player's inventory grid & Bolt valuation. Mention anyone to see their inventory!\n` +
+        `• \`.profile [@DiscordUser/user]\` — Render your HD esports player card with 3D skins, clan tag, and K/D. Mention anyone to view their card!\n` +
+        `• \`.inv [@DiscordUser/user]\` — View a player's inventory grid & total Bolt valuation. Mention anyone to see their inventory!\n` +
         `• \`.h [image/url]\` — Set or update your custom profile card background.\n` +
-        `• \`.link <user>\` — Securely link your Discord account to your Kirka profile.\n` +
+        `• \`.link\` — Link your Discord account to your Kirka profile via in-game chat verification.\n` +
         `• \`.unlink\` — Disconnect your linked profile.`
       )
       .setFooter({ text: 'KirkaHub Guide • Use buttons below to switch sections' });
@@ -56,9 +58,9 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.trade\` — Browse all current active trade offers on Kirka.\n` +
         `• \`.trade <skin>\` — Search active listings for a specific skin (e.g. \`.trade Hi-Score\`, \`.trade Shark\`, \`.trade Sinister\`).\n` +
         `• \`.trade history [skin]\` — Search completed and accepted trade history deals.\n` +
-        `• \`.skin <name>\` — Inspect any skin in the game with its live market value in Bolts, rarity, and Kirka 3D preview link.\n` +
-        `• \`.store [view]\` — View live in-game store bundles, weapon skins, and limited stock counters (e.g. Capybara 12/25 left) with renders.\n` +
-        `• \`.storeupdate\` — Subscribe to real-time pings whenever a new limited drop occurs or the store rotates.\n` +
+        `• \`.skin <name>\` — Inspect any skin in the game with its live market value in Bolts, rarity, artist credits, and Kirka 3D preview link.\n` +
+        `• \`.store\` — View live in-game store bundles, limited stock counters (e.g. Capybara 12/25 left), and weapon renders.\n` +
+        `• \`.storeupdate\` — Toggle real-time notifications whenever a new limited drop occurs or the store rotates.\n` +
         `• \`.inv [user]\` — Render an ultra-sharp 2X HD inventory grid card showing a player\'s owned items and total inventory valuation in Bolts!\n\n` +
         `> 💡 **One-Click Switcher:** When viewing trades, use the \`[Show Trade History 📜]\` and \`[Show Active Offers 🟢]\` buttons to toggle modes without retyping!`
       )
@@ -93,14 +95,14 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.unbox\` — Opens a Wood Chest (50 Coins).\n` +
         `• \`.unbox <chest>\` — Choose \`ice\`, \`golden\`, \`halloween\`, or \`christmas\`.\n` +
         `• Includes an interactive \`[🎲 Open Another]\` button to spam unbox!\n\n` +
-        `### 🏆 Clans & Leaderboards:\n` +
+        `### 🏆 Clans, Wars & Ranked:\n` +
+        `• \`.cw [number/skin]\` — View Clan Wars rewards (Top 3 • Top 8 • Top 39) with Bolt prices and owner counts (e.g. \`.cw 23\`, \`.cw 48\`, \`.cw turtle\`).\n` +
+        `• \`.events [query]\` — View 2026 Event Quests, kill/headshot requirements, and skin circulation (e.g. \`.events 27\`, \`.events ruby\`).\n` +
+        `• \`.seasons [query]\` — View Ranked Seasons and special event shops (e.g. \`.seasons 3\`, \`.seasons panda\`).\n` +
         `• \`.clan <tag>\` — Generate a visual roster card with member stats, level, and war points.\n` +
         `• \`.ranked [category]\` — View the top competitive Kirka players in Solo, Ranked, or 1v1.\n` +
         `• \`.leaderboard\` — Inspect top global players by kills, wins, and level.\n` +
-        `• \`.quests\` — View live daily and weekly in-game Kirka quests and diamond rewards.\n` +
-        `• \`.events [query]\` — View 2026 Event Quests, requirements, and live skin circulation.\n` +
-        `• \`.cw [number]\` — View Clan Wars rewards (Top 3 • Top 8 • Top 39) with live Bolt values & owners.\n` +
-        `• \`.seasons [query]\` — View Ranked Seasons and special event shops.\n\n` +
+        `• \`.quests\` — View live daily and weekly in-game Kirka quests and diamond rewards.\n\n` +
         `### 🌐 Live Server Browser (\`.servers\`):\n` +
         `• \`.servers [region]\` — View active rooms and matches in \`india\`, \`asia\`, \`eu\`, \`na\`, or \`sa\`.\n` +
         `• Renders real Kirka map background screenshots for every room, player counts (\`1/8\`), and interactive region switch buttons!`
@@ -115,23 +117,39 @@ export function buildHelpEmbed(category = 'home') {
     .setDescription(
       `Welcome to **KirkaHub Bot**, the ultimate companion for Kirka.io players, traders, and competitive clans!\n\n` +
       `### ⚡ Quick Start for New Players:\n` +
-      `**1.** Run \`.link <Username>\` to link your Kirka account.\n` +
+      `**1.** Run \`.link\` and type your verification code in the Kirka in-game chat to link your account.\n` +
       `**2.** Type \`.profile\` to view your rendered esports player card.\n` +
       `**3.** Customize your card with \`.h <image>\` — **it will never expire!**\n` +
-      `**4.** Check live trades with \`.trade <skin>\` or inspect guns with \`.weapon <name>\`.\n` +
-      `**5.** Test your unboxing luck with \`.unbox golden\`!\n\n` +
+      `**4.** Check your inventory value with \`.inv\` or inspect skins with \`.skin <name>\`.\n` +
+      `**5.** Check clan war rewards with \`.cw 23\` or search live trades with \`.trade <skin>\`.\n` +
+      `**6.** Test your unboxing luck with \`.unbox golden\`!\n\n` +
       `### 🗂️ Command Categories:\n` +
-      `• **👤 Profile & Background:** \`.profile\`, \`.link\`, \`.h\` (Custom BG), \`.unlink\`\n` +
-      `• **🎒 Inventory & Skins:** \`.inv [user]\`, \`.skin <name>\`\n` +
+      `• **👤 Profile & Background:** \`.profile\`, \`.inv\`, \`.link\`, \`.h\` (Custom BG), \`.unlink\`\n` +
+      `• **🎒 Inventory & Skins:** \`.inv [user]\`, \`.skin <name>\`, \`.store\`, \`.storeupdate\`\n` +
       `• **🔄 Live Trading:** \`.trade [skin]\`, \`.trade history [skin]\`\n` +
       `• **🔫 Weapons & TTK:** \`.weapon <gun>\`, \`.compare <gun1> <gun2>\`, \`.weapons\`\n` +
       `• **🎲 Chests & Quests:** \`.unbox [chest]\`, \`.quests\`, \`.events\`\n` +
-      `• **🏆 Clans & Ranked:** \`.clan <tag>\`, \`.cw [num]\`, \`.seasons\`, \`.ranked\`, \`.leaderboard\`\n` +
+      `• **🏆 Clans & Ranked:** \`.clan <tag>\`, \`.cw [num/skin]\`, \`.seasons\`, \`.ranked\`, \`.leaderboard\`\n` +
+      `• **🛠️ Community & Support:** \`.support\` (Support Server), \`.suggest <idea>\` (Submit Ideas Directly)\n` +
       `• **🌐 Live Server Browser:** \`.servers [region]\`, \`.rooms\` (India, Asia, EU, NA, SA)\n\n` +
+      `🌐 **Web Portal & Documentation:** [kirkahub.vercel.app](https://kirkahub.vercel.app) • [Bot Guide](https://kirkahub.vercel.app/bot)\n\n` +
       `> 💡 **Tip:** Every command supports both slash (\`/command\`) and prefix (\`.command\`) triggers! Click any button below for a detailed walkthrough.`
     )
     .setFooter({ text: 'KirkaHub Bot • Select a category below to learn more' })
     .setTimestamp();
+}
+
+export function buildLinksRow() {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setLabel('🚀 Tracker Bot Support Server')
+      .setStyle(ButtonStyle.Link)
+      .setURL('https://discord.gg/3zStCadBtP'),
+    new ButtonBuilder()
+      .setLabel('🌐 Open KirkaHub Website')
+      .setStyle(ButtonStyle.Link)
+      .setURL('https://kirkahub.vercel.app')
+  );
 }
 
 export function buildHelpButtons(activeCategory = 'home') {
@@ -164,7 +182,7 @@ export async function execute(interaction) {
 
   const reply = await interaction.reply({
     embeds: [buildHelpEmbed(chosenCat)],
-    components: [buildHelpButtons(chosenCat)]
+    components: [buildHelpButtons(chosenCat), buildLinksRow()]
   });
 
   const collector = reply.createMessageComponentCollector({
@@ -182,7 +200,7 @@ export async function execute(interaction) {
 
     await interaction.editReply({
       embeds: [buildHelpEmbed(cat)],
-      components: [buildHelpButtons(cat)]
+      components: [buildHelpButtons(cat), buildLinksRow()]
     });
   });
 
@@ -193,9 +211,9 @@ export async function execute(interaction) {
         new ButtonBuilder().setCustomId('help_dis_2').setLabel('👤 Profile & BG').setStyle(ButtonStyle.Secondary).setDisabled(true),
         new ButtonBuilder().setCustomId('help_dis_3').setLabel('🔄 Trades').setStyle(ButtonStyle.Secondary).setDisabled(true),
         new ButtonBuilder().setCustomId('help_dis_4').setLabel('🔫 Weapons').setStyle(ButtonStyle.Secondary).setDisabled(true),
-        new ButtonBuilder().setLabel('🌐 Open KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app')
+        new ButtonBuilder().setCustomId('help_dis_5').setLabel('🎲 Chests').setStyle(ButtonStyle.Secondary).setDisabled(true)
       );
-      await interaction.editReply({ components: [disabledRow] });
+      await interaction.editReply({ components: [disabledRow, buildLinksRow()] });
     } catch {}
   });
 }
@@ -217,7 +235,7 @@ export async function executePrefix(message, args = []) {
 
   const replyMsg = await message.reply({
     embeds: [buildHelpEmbed(category)],
-    components: [buildHelpButtons(category)]
+    components: [buildHelpButtons(category), buildLinksRow()]
   });
 
   const collector = replyMsg.createMessageComponentCollector({
@@ -235,7 +253,7 @@ export async function executePrefix(message, args = []) {
 
     await replyMsg.edit({
       embeds: [buildHelpEmbed(cat)],
-      components: [buildHelpButtons(cat)]
+      components: [buildHelpButtons(cat), buildLinksRow()]
     });
   });
 
@@ -246,9 +264,9 @@ export async function executePrefix(message, args = []) {
         new ButtonBuilder().setCustomId('help_dis_2').setLabel('👤 Profile & BG').setStyle(ButtonStyle.Secondary).setDisabled(true),
         new ButtonBuilder().setCustomId('help_dis_3').setLabel('🔄 Trades').setStyle(ButtonStyle.Secondary).setDisabled(true),
         new ButtonBuilder().setCustomId('help_dis_4').setLabel('🔫 Weapons').setStyle(ButtonStyle.Secondary).setDisabled(true),
-        new ButtonBuilder().setLabel('🌐 Open KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app')
+        new ButtonBuilder().setCustomId('help_dis_5').setLabel('🎲 Chests').setStyle(ButtonStyle.Secondary).setDisabled(true)
       );
-      await replyMsg.edit({ components: [disabledRow] });
+      await replyMsg.edit({ components: [disabledRow, buildLinksRow()] });
     } catch {}
   });
 }
