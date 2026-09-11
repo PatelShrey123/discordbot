@@ -19,8 +19,8 @@ const SEAGM_VALORANT_URL = 'https://www.seagm.com/valorant-gift-card-india?ps=Se
 const SEAGM_AMAZON_URL = 'https://www.seagm.com/amazon-gift-card-india?ps=Universal-Search';
 const RIOT_ID = 'IMSMARTY#2254';
 
-// Cooldown: 48 hours (2 days) per server
-const REMINDER_COOLDOWN_MS = 48 * 60 * 60 * 1000;
+// Cooldown: 7 days (1 week) per server
+const REMINDER_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 
 let cooldownMap = {};
 try {
@@ -136,7 +136,7 @@ export function findBestReminderChannel(guild, fallbackChannel) {
 
 /**
  * Checks if a donation reminder should be sent in this guild.
- * Triggers at most once every 48 hours (2 days) per server during command usage.
+ * Triggers at most once every 7 days (1 week) per server during command usage.
  */
 export async function maybeSendFeedbackReminder(channel, guild) {
   if (!guild || !channel) return;
@@ -144,7 +144,7 @@ export async function maybeSendFeedbackReminder(channel, guild) {
   const lastSent = cooldownMap[guild.id] || 0;
   const now = Date.now();
 
-  // If 48 hours haven't passed since last reminder in this guild, skip
+  // If 7 days haven't passed since last reminder in this guild, skip
   if (now - lastSent < REMINDER_COOLDOWN_MS) return;
 
   // 25% chance (1 in 4) on command execution so it feels natural
@@ -162,7 +162,7 @@ export async function maybeSendFeedbackReminder(channel, guild) {
       try {
         const payload = buildDonationReminderMessage();
         await targetChannel.send(payload);
-        console.log(`[DonationReminder] Sent 48h reminder to guild "${guild.name}" (#${targetChannel.name})`);
+        console.log(`[DonationReminder] Sent weekly reminder to guild "${guild.name}" (#${targetChannel.name})`);
       } catch (sendErr) {
         console.warn(`[DonationReminder] Could not send to #${targetChannel.name}:`, sendErr.message);
       }
