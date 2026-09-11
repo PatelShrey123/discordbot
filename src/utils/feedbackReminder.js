@@ -6,7 +6,8 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  PermissionFlagsBits
+  PermissionFlagsBits,
+  ChannelType
 } from 'discord.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,8 +20,8 @@ const SEAGM_VALORANT_URL = 'https://www.seagm.com/valorant-gift-card-india?ps=Se
 const SEAGM_AMAZON_URL = 'https://www.seagm.com/amazon-gift-card-india?ps=Universal-Search';
 const RIOT_ID = 'IMSMARTY#2254';
 
-// Cooldown: 7 days (1 week) per server
-const REMINDER_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+// Cooldown: 4 days per server
+const REMINDER_COOLDOWN_MS = 4 * 24 * 60 * 60 * 1000;
 
 let cooldownMap = {};
 try {
@@ -93,19 +94,19 @@ export function buildDonationReminderMessage() {
 
 /**
  * Finds the ideal channel in a server to send the reminder:
- * 1. #general / #chat / #main
- * 2. #bot-commands / #bot / #cmds
- * 3. Fallback to the channel where a command was used
+ * 1. True #general / #chat / #main (most active first)
+ * 2. #bot-commands / #commands / #spam (most active first)
+ * 3. Most active non-system text channel in the server
+ * 4. NEVER logs, mod, staff, audit, ticket, or voice channels!
  */
 export function findBestReminderChannel(guild, fallbackChannel) {
   if (!guild || !guild.channels || !guild.channels.cache) return fallbackChannel;
 
   const me = guild.members?.me;
 
-  // Check channel permissions helper
+  // STRICT check: ONLY GuildText (type 0). NEVER voice (type 2), stage (type 13), category (type 4), threads, etc.
   const canSend = (ch) => {
-    if (!ch || !ch.isTextBased()) return false;
-    // Exclude threads so bot doesn't spam active discussion/forum threads
+    if (!ch || ch.type !== ChannelType.GuildText) return false;
     if (typeof ch.isThread === 'function' && ch.isThread()) return false;
     if (!me) return true;
     const perms = ch.permissionsFor(me);
@@ -124,33 +125,58 @@ export function findBestReminderChannel(guild, fallbackChannel) {
     }
   };
 
-  // 1. First priority: general / chat / main
-  const generalChannel = guild.channels.cache.find(c => {
-    if (!canSend(c)) return false;
-    const clean = getCleanName(c);
-    return /(general|chat|main|lounge|discussion|public)/i.test(clean);
-  });
-  if (generalChannel) return generalChannel;
+  // Exclude system, logs, staff, ticket, and moderation channels
+  const isExcluded = (clean) => {
+    return /(log|audit|transcript|ticket|mod[-_]?chat|staff|admin|management|leader|officer|rule|welcome|announcement|update|self[-_]?role|autorole|reaction[-_]?role|blacklist|mute|jail|report|sancion|warning)/i.test(clean);
+  };
 
-  // 2. Second priority: bot-commands / bot / commands
-  const botChannel = guild.channels.cache.find(c => {
-    if (!canSend(c)) return false;
-    const clean = getCleanName(c);
-    return /(bot|command|cmds|spam)/i.test(clean);
-  });
-  if (botChannel) return botChannel;
+  const candidates = guild.channels.cache.filter(c => canSend(c) && !isExcluded(getCleanName(c)));
 
-  // 3. Fallback: current channel if sendable
+  // 1. First priority: General / Chat / Main / Lounge (sorted by activity: highest snowflake ID = most recent message)
+  const generalCandidates = candidates.filter(c => {
+    const name = getCleanName(c);
+    return /(general|chat|main|lounge|discussion|noi[-_]?chuyen|chitchat)/i.test(name);
+  });
+
+  if (generalCandidates.size > 0) {
+    return generalCandidates.sort((a, b) => {
+      const idA = BigInt(a.lastMessageId || 0);
+      const idB = BigInt(b.lastMessageId || 0);
+      return idB > idA ? 1 : idB < idA ? -1 : 0;
+    }).first();
+  }
+
+  // 2. Second priority: Dedicated Bot Command / Spam
+  const botCandidates = candidates.filter(c => {
+    const name = getCleanName(c);
+    return /(bot[-_]?command|bot[-_]?cmd|command|cmds|bot|spam)/i.test(name);
+  });
+
+  if (botCandidates.size > 0) {
+    return botCandidates.sort((a, b) => {
+      const idA = BigInt(a.lastMessageId || 0);
+      const idB = BigInt(b.lastMessageId || 0);
+      return idB > idA ? 1 : idB < idA ? -1 : 0;
+    }).first();
+  }
+
+  // 3. Third priority: The single most active text channel in the guild
+  if (candidates.size > 0) {
+    return candidates.sort((a, b) => {
+      const idA = BigInt(a.lastMessageId || 0);
+      const idB = BigInt(b.lastMessageId || 0);
+      return idB > idA ? 1 : idB < idA ? -1 : 0;
+    }).first();
+  }
+
+  // 4. Fallback: current channel if sendable
   if (canSend(fallbackChannel)) return fallbackChannel;
-
-  // 4. Any sendable top-level text channel
-  const anySendable = guild.channels.cache.find(c => canSend(c));
-  return anySendable || fallbackChannel;
+  return null;
 }
 
 /**
  * Checks if a donation reminder should be sent in this guild.
- * Triggers at most once every 7 days (1 week) per server during command usage.
+ * Triggers at most once every 4 days per server during command usage.
  */
 export async function maybeSendFeedbackReminder(channel, guild) {
   if (!guild || !channel) return;
@@ -158,7 +184,7 @@ export async function maybeSendFeedbackReminder(channel, guild) {
   const lastSent = cooldownMap[guild.id] || 0;
   const now = Date.now();
 
-  // If 7 days haven't passed since last reminder in this guild, skip
+  // If 4 days haven't passed since last reminder in this guild, skip
   if (now - lastSent < REMINDER_COOLDOWN_MS) return;
 
   // 25% chance (1 in 4) on command execution so it feels natural
@@ -176,7 +202,7 @@ export async function maybeSendFeedbackReminder(channel, guild) {
       try {
         const payload = buildDonationReminderMessage();
         await targetChannel.send(payload);
-        console.log(`[DonationReminder] Sent weekly reminder to guild "${guild.name}" (#${targetChannel.name})`);
+        console.log(`[DonationReminder] Sent 4-day reminder to guild "${guild.name}" (#${targetChannel.name})`);
       } catch (sendErr) {
         console.warn(`[DonationReminder] Could not send to #${targetChannel.name}:`, sendErr.message);
       }
