@@ -43,7 +43,7 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.link\` — Link your Discord account to your Kirka profile via in-game chat verification.\n` +
         `• \`.unlink\` — Disconnect your linked profile.`
       )
-      .setFooter({ text: 'KirkaHub Guide • Use buttons below to switch sections' });
+      .setFooter({ text: 'KirkaHub Guide • Support 24/7 Hosting: .donate' });
   }
 
   if (category === 'trading') {
@@ -64,7 +64,7 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.inv [user]\` — Render an ultra-sharp 2X HD inventory grid card showing a player\'s owned items and total inventory valuation in Bolts!\n\n` +
         `> 💡 **One-Click Switcher:** When viewing trades, use the \`[Show Trade History 📜]\` and \`[Show Active Offers 🟢]\` buttons to toggle modes without retyping!`
       )
-      .setFooter({ text: 'KirkaHub Guide • Use buttons below to switch sections' });
+      .setFooter({ text: 'KirkaHub Trading • Support 24/7 Hosting: .donate' });
   }
 
   if (category === 'weapons') {
@@ -82,7 +82,7 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.weapons\` — Display quick stats and damage for all 10 Kirka weapons.\n\n` +
         `**Available Guns:** \`AR-9\`, \`SCAR\`, \`LAR\`, \`M60\`, \`VITA\`, \`MAC-10\`, \`Weatie\`, \`Shark\`, \`Revolver\`, \`Bayonet\`.`
       )
-      .setFooter({ text: 'KirkaHub Guide • Use buttons below to switch sections' });
+      .setFooter({ text: 'KirkaHub Weapons • Support 24/7 Hosting: .donate' });
   }
 
   if (category === 'clans') {
@@ -107,7 +107,7 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.servers [region]\` — View active rooms and matches in \`india\`, \`asia\`, \`eu\`, \`na\`, or \`sa\`.\n` +
         `• Renders real Kirka map background screenshots for every room, player counts (\`1/8\`), and interactive region switch buttons!`
       )
-      .setFooter({ text: 'KirkaHub Guide • Use buttons below to switch sections' });
+      .setFooter({ text: 'KirkaHub Competitive • Support 24/7 Hosting: .donate' });
   }
 
   // Default 'home' Overview Embed
@@ -134,7 +134,7 @@ export function buildHelpEmbed(category = 'home') {
       `🌐 **Web Portal & Documentation:** [kirkahub.vercel.app](https://kirkahub.vercel.app) • [Bot Guide](https://kirkahub.vercel.app/bot)\n\n` +
       `> 💡 **Tip:** Every command supports both slash (\`/command\`) and prefix (\`.command\`) triggers! Click any button below for a detailed walkthrough.`
     )
-    .setFooter({ text: 'KirkaHub Bot • Select a category below to learn more' })
+    .setFooter({ text: 'KirkaHub Bot • Support 24/7 Hosting: .donate' })
     .setTimestamp();
 }
 

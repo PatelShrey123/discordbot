@@ -63,6 +63,7 @@ export async function execute(interaction) {
     const attachment = new AttachmentBuilder(cardBuffer, { name: 'profile-card.png' });
 
     await interaction.editReply({
+      content: '☕ *Support 24/7 Hosting:* `.donate`',
       files: [attachment]
     });
   } catch (err) {

@@ -358,7 +358,7 @@ client.on('messageCreate', async (message) => {
       const cardBuffer = await renderProfileCard(profile, customBg, discordUsername);
       const attachment = new AttachmentBuilder(cardBuffer, { name: 'profile-card.png' });
 
-      await message.reply({ files: [attachment] });
+      await message.reply({ content: '☕ *Support 24/7 Hosting:* `.donate`', files: [attachment] });
     } catch (err) {
       console.error('Error in prefix profile command:', err);
       await message.reply(`⚠️ Failed to render profile card image.`);
