@@ -36,10 +36,11 @@ export function buildDonateEmbed() {
       `• **☕ Buy Me A Chai:** [buymeachai.in/xpert](${BUY_ME_A_CHAI_URL})\n` +
       `• Supports **Google Pay, PhonePe, Paytm, BHIM, and FamPay**.\n` +
       `• 100% direct, zero platform cuts, and keeps personal phone numbers completely private!\n\n` +
-      `### 🎯 Gift Valorant Points (Direct to Game — No Codes to Copy!):\n` +
-      `• Open **[Codashop Valorant](${CODASHOP_VALORANT_URL})**\n` +
-      `• Enter Riot ID: \`${RIOT_ID}\`\n` +
-      `• Select your VP amount and pay — the Valorant Points land **directly inside the dev's account instantly**!\n\n` +
+      `### 🎯 Gift Valorant Points (Direct In-Game Top-Up):\n` +
+      `• **1. Copy Riot ID:** \`${RIOT_ID}\`\n` +
+      `• **2. Open:** Click **[🎯 Gift Valorant Points]** below (or use the website modal to auto-copy)\n` +
+      `• **3. Top-Up:** Paste \`${RIOT_ID}\` on Codashop, choose any amount, and pay via UPI!\n` +
+      `*(No codes needed — the Valorant Points land directly in the dev's game account)*\n\n` +
       `### 🎁 Steam / Amazon / Digital Gift Cards:\n` +
       `• Send a Steam wallet code or gift card via \`.donate submit <code>\` *(automatically hidden from chat for privacy & delivered directly to the dev)*.\n` +
       `• Or open a ticket / DM the developer in our [Tracker Bot Server](${TRACKER_BOT_INVITE})!\n\n` +
