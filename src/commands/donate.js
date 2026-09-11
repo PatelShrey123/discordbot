@@ -22,6 +22,10 @@ export const data = new SlashCommandBuilder()
 const TRACKER_BOT_INVITE = 'https://discord.gg/3zStCadBtP';
 const MOD_CHAT_CHANNEL_ID = '1545085772154151063'; // Private mod-chat channel in Tracker Bot server
 const BUY_ME_A_CHAI_URL = 'https://www.buymeachai.in/xpert';
+const CODASHOP_VALORANT_URL = 'https://www.codashop.com/en-in/valorant';
+const AMAZON_GIFT_URL = 'https://www.amazon.in/dp/B00KGE2EYC';
+const RIOT_ID = 'IMSMARTY#2254';
+const AMAZON_EMAIL = 'meetshrey2402@gmail.com';
 
 export function buildDonateEmbed() {
   return new EmbedBuilder()
@@ -30,24 +34,24 @@ export function buildDonateEmbed() {
     .setDescription(
       `**KirkaHub** is 100% free and open for the entire Kirka.io community.\n` +
       `Your support directly funds high-speed cloud hosting, database servers, 3D skin rendering, and instant live trading feeds!\n\n` +
-      `### 🇮🇳 Indian Donators (Direct UPI / No Phone Leaks):\n` +
+      `### 🇮🇳 Indian Donators (Direct UPI / Zero Leaks):\n` +
       `• **☕ Buy Me A Chai:** [buymeachai.in/xpert](${BUY_ME_A_CHAI_URL})\n` +
       `• Supports **Google Pay, PhonePe, Paytm, BHIM, and FamPay**.\n` +
       `• 100% direct, zero platform cuts, and keeps personal phone numbers completely private!\n\n` +
-      `### 🌍 Gaming & International Donators (Gift Cards Directly to Dev):\n` +
-      `You can tip directly with digital gift cards starting with **less than $1**:\n` +
-      `• **🎯 Valorant Points (VP):** Send a Valorant Gift Card / Riot PIN code.\n` +
-      `• **🎮 Steam Wallet Codes:** Send a **$1 – $5** Steam digital gift code.\n` +
-      `• **🎁 Amazon.in E-Gift Card:** Can be bought from anywhere in the world on [Amazon.in](https://www.amazon.in/giftcard) with foreign cards in custom amounts (starts as low as **₹50 / ~$0.60 USD**).\n` +
-      `• **🚀 Discord Server Boost:** Boost our official [Tracker Bot Server](${TRACKER_BOT_INVITE}) to unlock perks!\n` +
-      `• **✨ Discord Nitro:** Send a Nitro Basic or Nitro Gift link.\n\n` +
+      `### 🎮 Gaming & Direct Digital Donations (Zero Codes to Type!):\n` +
+      `• **🎯 Valorant Points (Direct to Riot ID):**\n` +
+      `  Open [Codashop Valorant](${CODASHOP_VALORANT_URL}), enter Riot ID \`${RIOT_ID}\`, choose your VP amount, and pay — the VP lands **directly inside the dev's account instantly** with no codes to copy/paste!\n\n` +
+      `• **🎁 Amazon.in E-Gift Card (Direct to Email):**\n` +
+      `  Buy an e-gift card on [Amazon.in](${AMAZON_GIFT_URL}) (starts as low as **₹50 / ~$0.60 USD**, accepts all international credit cards) and set recipient email to:\n` +
+      `  \`${AMAZON_EMAIL}\`\n` +
+      `  Amazon will automatically deliver the balance straight to the dev's email inbox!\n\n` +
+      `• **🎮 Steam Wallet / Other Codes:**\n` +
+      `  Send a Steam wallet code or gift card via \`.donate submit <code>\` *(automatically hidden from chat for privacy & forwarded directly to dev)*.\n\n` +
+      `• **🚀 Discord Server Boost:** Boost our official [Tracker Bot Server](${TRACKER_BOT_INVITE})!\n\n` +
       `### 🌟 Donor Perks (What You Get):\n` +
       `• **⭐ Supporter Badge:** Permanent glowing badge on your **\`.profile\`** player card!\n` +
       `• **🏆 VIP Server Role:** Exclusive Supporter role in our official Discord server.\n` +
-      `• **🚀 Priority Feature Requests:** Direct input on upcoming tools & features.\n\n` +
-      `### 📥 How to Send Your Gift Card / Code:\n` +
-      `• **Option 1 (Instant):** Run \`.donate submit <code>\` *(automatically hidden from chat for privacy & forwarded directly to dev)*\n` +
-      `• **Option 2 (Direct):** DM the developer or open a ticket in our [Tracker Bot Server](${TRACKER_BOT_INVITE})!`
+      `• **🚀 Priority Feature Requests:** Direct input on upcoming tools & features.`
     )
     .setFooter({ text: 'KirkaHub • Thank you for keeping our servers alive!' })
     .setTimestamp();
@@ -56,15 +60,23 @@ export function buildDonateEmbed() {
 export function buildDonateButtons() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setLabel('☕ Buy Me A Chai (UPI/India)')
+      .setLabel('☕ Buy Me A Chai (UPI)')
       .setStyle(ButtonStyle.Link)
       .setURL(BUY_ME_A_CHAI_URL),
     new ButtonBuilder()
-      .setLabel('🚀 Join Tracker Bot Server')
+      .setLabel('🎯 Gift Valorant Points')
+      .setStyle(ButtonStyle.Link)
+      .setURL(CODASHOP_VALORANT_URL),
+    new ButtonBuilder()
+      .setLabel('🎁 Amazon E-Gift Card')
+      .setStyle(ButtonStyle.Link)
+      .setURL(AMAZON_GIFT_URL),
+    new ButtonBuilder()
+      .setLabel('🚀 Tracker Bot Server')
       .setStyle(ButtonStyle.Link)
       .setURL(TRACKER_BOT_INVITE),
     new ButtonBuilder()
-      .setLabel('🌐 Open KirkaHub Website')
+      .setLabel('🌐 Open Website')
       .setStyle(ButtonStyle.Link)
       .setURL('https://kirkahub.vercel.app')
   );
