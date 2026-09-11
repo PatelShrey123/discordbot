@@ -129,8 +129,7 @@ export function buildHelpEmbed(category = 'home') {
       `• **🔄 Live Trading:** \`.trade [skin]\`, \`.trade history [skin]\`\n` +
       `• **🔫 Weapons & TTK:** \`.weapon <gun>\`, \`.compare <gun1> <gun2>\`, \`.weapons\`\n` +
       `• **🎲 Chests & Quests:** \`.unbox [chest]\`, \`.quests\`, \`.events\`\n` +
-      `• **🏆 Clans & Ranked:** \`.clan <tag>\`, \`.cw [num/skin]\`, \`.seasons\`, \`.ranked\`, \`.leaderboard\`\n` +
-      `• **🛠️ Community & Support:** \`.support\` (Support Server), \`.suggest <idea>\` (Submit Ideas Directly)\n` +
+      `• **🛠️ Community & Support:** \`.support\` (Server), \`.suggest <idea>\`, \`.donate\` (Buy Me A Chai / Gift Cards)\n` +
       `• **🌐 Live Server Browser:** \`.servers [region]\`, \`.rooms\` (India, Asia, EU, NA, SA)\n\n` +
       `🌐 **Web Portal & Documentation:** [kirkahub.vercel.app](https://kirkahub.vercel.app) • [Bot Guide](https://kirkahub.vercel.app/bot)\n\n` +
       `> 💡 **Tip:** Every command supports both slash (\`/command\`) and prefix (\`.command\`) triggers! Click any button below for a detailed walkthrough.`

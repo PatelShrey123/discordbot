@@ -37,6 +37,7 @@ import * as eventsCmd from './commands/events.js';
 import * as helpCmd from './commands/help.js';
 import * as supportCmd from './commands/support.js';
 import * as suggestCmd from './commands/suggest.js';
+import * as donateCmd from './commands/donate.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
 import { maybeSendFeedbackReminder } from './utils/feedbackReminder.js';
 
@@ -81,6 +82,7 @@ client.commands.set(storeupdateCmd.data.name, storeupdateCmd);
 client.commands.set(eventsCmd.data.name, eventsCmd);
 client.commands.set(supportCmd.data.name, supportCmd);
 client.commands.set(suggestCmd.data.name, suggestCmd);
+client.commands.set(donateCmd.data.name, donateCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -839,6 +841,19 @@ client.on('messageCreate', async (message) => {
     else if (lowerContent.startsWith('.feedback')) prefixUsed = '.feedback';
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
     await suggestCmd.executePrefix(message, args);
+  }
+
+  // 25. .donate / .tip
+  else if (
+    lowerContent === '.donate' ||
+    lowerContent.startsWith('.donate ') ||
+    lowerContent === '.tip' ||
+    lowerContent.startsWith('.tip ')
+  ) {
+    let prefixUsed = lowerContent.startsWith('.donate') ? '.donate' : '.tip';
+    const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
+    await message.channel.sendTyping();
+    await donateCmd.executePrefix(message, args);
   }
 
   // Check if a polite community/suggestion reminder should be sent (at most once every 1.5 - 2 days per server)
