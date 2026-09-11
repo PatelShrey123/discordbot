@@ -105,6 +105,8 @@ export function findBestReminderChannel(guild, fallbackChannel) {
   // Check channel permissions helper
   const canSend = (ch) => {
     if (!ch || !ch.isTextBased()) return false;
+    // Exclude threads so bot doesn't spam active discussion/forum threads
+    if (typeof ch.isThread === 'function' && ch.isThread()) return false;
     if (!me) return true;
     const perms = ch.permissionsFor(me);
     return perms && perms.has([
@@ -114,22 +116,34 @@ export function findBestReminderChannel(guild, fallbackChannel) {
     ]);
   };
 
+  const getCleanName = (ch) => {
+    try {
+      return (ch.name || '').normalize('NFKD').replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase();
+    } catch {
+      return (ch.name || '').toLowerCase();
+    }
+  };
+
   // 1. First priority: general / chat / main
-  const generalChannel = guild.channels.cache.find(c =>
-    /^(general|chat|main|lounge|discussion|public)/i.test(c.name) && canSend(c)
-  );
+  const generalChannel = guild.channels.cache.find(c => {
+    if (!canSend(c)) return false;
+    const clean = getCleanName(c);
+    return /(general|chat|main|lounge|discussion|public)/i.test(clean);
+  });
   if (generalChannel) return generalChannel;
 
   // 2. Second priority: bot-commands / bot / commands
-  const botChannel = guild.channels.cache.find(c =>
-    /(bot|command|cmds|spam)/i.test(c.name) && canSend(c)
-  );
+  const botChannel = guild.channels.cache.find(c => {
+    if (!canSend(c)) return false;
+    const clean = getCleanName(c);
+    return /(bot|command|cmds|spam)/i.test(clean);
+  });
   if (botChannel) return botChannel;
 
   // 3. Fallback: current channel if sendable
   if (canSend(fallbackChannel)) return fallbackChannel;
 
-  // 4. Any sendable text channel
+  // 4. Any sendable top-level text channel
   const anySendable = guild.channels.cache.find(c => canSend(c));
   return anySendable || fallbackChannel;
 }
