@@ -20,9 +20,11 @@ export const data = new SlashCommandBuilder()
   );
 
 const TRACKER_BOT_INVITE = 'https://discord.gg/3zStCadBtP';
-const MOD_CHAT_CHANNEL_ID = '1545085772154151063'; // Private mod-chat channel in Tracker Bot server
+const BOT_OWNER_ID = '728104078428733452'; // @tooexpert
 const BUY_ME_A_CHAI_URL = 'https://www.buymeachai.in/xpert';
 const CODASHOP_VALORANT_URL = 'https://www.codashop.com/en-in/valorant';
+const SEAGM_VALORANT_URL = 'https://www.seagm.com/valorant-gift-card-india?ps=Search-Results:Related-cards';
+const SEAGM_AMAZON_URL = 'https://www.seagm.com/amazon-gift-card-india?ps=Universal-Search';
 const RIOT_ID = 'IMSMARTY#2254';
 
 export function buildDonateEmbed() {
@@ -32,13 +34,22 @@ export function buildDonateEmbed() {
     .setDescription(
       `**KirkaHub** is 100% free and open for the entire Kirka.io community.\n` +
       `Your support directly funds high-speed cloud hosting, database servers, 3D skin rendering, and instant live trading feeds!\n\n` +
-      `### 🇮🇳 Indian Donators (Direct UPI / Zero Leaks):\n` +
-      `• **☕ Buy Me A Chai:** [buymeachai.in/xpert](${BUY_ME_A_CHAI_URL}) (Google Pay, PhonePe, Paytm, BHIM, FamPay)\n` +
-      `• **🎯 Codashop Valorant:** Top-up Riot ID \`${RIOT_ID}\` for direct in-game VP.\n\n` +
-      `### 🌍 International Donators (USA / Europe / Worldwide):\n` +
-      `• **🎮 Steam Wallet Cards (Global):** Steam codes in any currency (USD $, EUR €, GBP £) automatically convert to Indian currency when redeemed! Buy on Steam or Amazon $\rightarrow$ submit via \`.donate submit <code>\`.\n` +
-      `• **🎯 Valorant Points (India Region via SEAGM):** Use PayPal / International Cards on SEAGM to buy an **India Region** VP card $\rightarrow$ submit via \`.donate submit <code>\`.\n` +
-      `• **🚀 Discord Server Boost:** Boost our official [Tracker Bot Server](${TRACKER_BOT_INVITE}) to unlock perks!\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `### 🇮🇳 Segment 1: Indian Donators (Direct UPI / Zero Leaks)\n` +
+      `• **☕ Buy Me A Chai:** [buymeachai.in/xpert](${BUY_ME_A_CHAI_URL})\n` +
+      `  *Instant UPI via Google Pay, PhonePe, Paytm, BHIM, and FamPay. Zero personal phone or email leaks!*\n` +
+      `• **🎯 Codashop Valorant:** Top-up Riot ID \`${RIOT_ID}\` on [Codashop](${CODASHOP_VALORANT_URL}) for direct in-game VP.\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `### 🌍 Segment 2: International Donators (USA, Malaysia, Europe, Worldwide)\n` +
+      `*Pay in your local currency with PayPal, Apple Pay, Google Pay, or Credit Card:*\n` +
+      `• **🎯 Valorant Points (India Region):** [Buy on SEAGM](${SEAGM_VALORANT_URL})\n` +
+      `• **📦 Amazon Pay Gift Card (India):** [Buy on SEAGM](${SEAGM_AMAZON_URL})\n` +
+      `• **🎮 Steam Digital Gift Cards:** Send directly via Steam to auto-convert currency.\n\n` +
+      `**📋 How to Submit Your Gift Card Code:**\n` +
+      `1. Buy the India card code from the SEAGM link above.\n` +
+      `2. Type \`.donate submit <your-code>\` right here.\n` +
+      `3. The bot immediately hides your message for security and **DMs the code directly to developer @tooexpert**!\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `### 🌟 Donor Perks (What You Get):\n` +
       `• **⭐ Supporter Badge:** Permanent glowing badge on your **\`.profile\`** player card!\n` +
       `• **🏆 VIP Server Role:** Exclusive Supporter role in our official Discord server.\n` +
@@ -55,27 +66,30 @@ export function buildDonateButtons() {
       .setStyle(ButtonStyle.Link)
       .setURL(BUY_ME_A_CHAI_URL),
     new ButtonBuilder()
-      .setLabel('🎯 Gift Valorant Points')
+      .setLabel('🎯 SEAGM Valorant (Intl)')
       .setStyle(ButtonStyle.Link)
-      .setURL(CODASHOP_VALORANT_URL),
+      .setURL(SEAGM_VALORANT_URL),
+    new ButtonBuilder()
+      .setLabel('📦 SEAGM Amazon (Intl)')
+      .setStyle(ButtonStyle.Link)
+      .setURL(SEAGM_AMAZON_URL),
     new ButtonBuilder()
       .setLabel('🚀 Tracker Bot Server')
       .setStyle(ButtonStyle.Link)
-      .setURL(TRACKER_BOT_INVITE),
-    new ButtonBuilder()
-      .setLabel('🌐 Open Website')
-      .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app')
+      .setURL(TRACKER_BOT_INVITE)
   );
 }
 
 export async function forwardDonation(client, { author, code, guildName }) {
   try {
-    const channel = await client.channels.fetch(MOD_CHAT_CHANNEL_ID).catch(() => null);
-    if (!channel) return false;
+    const owner = await client.users.fetch(BOT_OWNER_ID).catch(() => null);
+    if (!owner) {
+      console.error('[Donate] Could not fetch bot owner:', BOT_OWNER_ID);
+      return false;
+    }
 
     const donationEmbed = new EmbedBuilder()
-      .setTitle('💰 New Donation / Gift Card Submitted!')
+      .setTitle('💰 New Donation / Gift Card Received!')
       .setColor(0x10b981)
       .setDescription(`**Submitted Details / Code:**\n\`\`\`${code}\`\`\``)
       .addFields(
@@ -83,13 +97,16 @@ export async function forwardDonation(client, { author, code, guildName }) {
         { name: '📍 Source Guild', value: guildName || 'Direct Message', inline: true }
       )
       .setThumbnail(author.displayAvatarURL({ dynamic: true }))
-      .setFooter({ text: 'KirkaHub Donations • Verify and grant Supporter perks' })
+      .setFooter({ text: 'KirkaHub Donations • Direct DM to tooexpert' })
       .setTimestamp();
 
-    await channel.send({ content: `🔔 <@1545037736543653919> New donation received!`, embeds: [donationEmbed] });
+    await owner.send({
+      content: `🔔 Hey <@${BOT_OWNER_ID}>, you received a new donation code from **${author.tag}**!`,
+      embeds: [donationEmbed]
+    });
     return true;
   } catch (err) {
-    console.error('[Donate] Error forwarding donation to mod-chat:', err);
+    console.error('[Donate] Error DMing donation code to tooexpert:', err);
     return false;
   }
 }
