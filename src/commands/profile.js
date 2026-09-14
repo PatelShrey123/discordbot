@@ -60,7 +60,9 @@ export async function execute(interaction) {
     }
 
     const cardBuffer = await renderProfileCard(profile, customBg, discordUsername);
-    const attachment = new AttachmentBuilder(cardBuffer, { name: 'profile-card.png' });
+    const isAnimated = cardBuffer.isAnimated === true;
+    const fileName = isAnimated ? 'profile-card.gif' : 'profile-card.png';
+    const attachment = new AttachmentBuilder(cardBuffer, { name: fileName });
 
     await interaction.editReply({
       content: '☕ *Support 24/7 Hosting:* `.donate`',

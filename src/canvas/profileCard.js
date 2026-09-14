@@ -1,8 +1,11 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { getCachedImage } from './imageLoader.js';
+import { getCachedImage, getRawImageBuffer } from './imageLoader.js';
 import { getVipProfileInfo } from '../utils/vip.js';
+import omggif from 'omggif';
+import gifenc from 'gifenc';
+const { GIFEncoder, quantize, applyPalette } = gifenc;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -106,11 +109,12 @@ function drawLightning(ctx, x, y, size, color) {
   ctx.restore();
 }
 
-export async function renderProfileCard(profile, customBgUrl = null, discordUsername = null) {
-  const width = 760;
-  const height = 465; 
-  const canvas = createCanvas(width, height);
-  const ctx = canvas.getContext('2d');  // Safely extract stats from Kirka API schema
+/**
+ * Render all text, avatar, badges, progress bar, and stats onto a canvas.
+ * Can be called onto a transparent canvas for overlaying onto GIF frames,
+ * or onto an existing canvas for static rendering.
+ */
+export async function drawProfileForeground(ctx, width, height, profile, discordUsername = null) {
   const stats = profile?.stats || {};
   const kills = stats.kills ?? profile?.kills ?? 0;
   const deaths = stats.deaths ?? profile?.deaths ?? 0;
@@ -133,34 +137,6 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   const clanStr = typeof profile?.clan === 'string' ? profile.clan : profile?.clan?.name || '';
   const clanTag = clanStr ? ` [${clanStr}]` : '';
 
-  // 1. Draw Custom Background (Custom or default black car with headlights bg)
-  let bgImg = null;
-  if (customBgUrl) {
-    try {
-      bgImg = await getCachedImage(customBgUrl);
-    } catch (err) {
-      console.warn('[ProfileCard] Failed to load custom background, falling back to default:', err.message);
-    }
-  }
-
-  if (!bgImg) {
-    try {
-      bgImg = await getCachedImage(bgPath);
-    } catch (err) {
-      console.warn('[ProfileCard] Failed to load default background:', err.message);
-    }
-  }
-
-  if (bgImg) {
-    ctx.drawImage(bgImg, 0, 0, width, height);
-  } else {
-    const gradBg = ctx.createLinearGradient(0, 0, width, height);
-    gradBg.addColorStop(0, '#090a0f');
-    gradBg.addColorStop(1, '#020205');
-    ctx.fillStyle = gradBg;
-    ctx.fillRect(0, 0, width, height);
-  }
-
   // Semi-transparent dark overlay for high contrast text readability
   ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
   ctx.fillRect(0, 0, width, height);
@@ -175,7 +151,7 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
 
   ctx.fillStyle = '#111827';
   ctx.fillRect(avatarX, avatarY, avatarSize, avatarSize);
-  ctx.strokeStyle = vip ? vip.borderColor : '#f59e0b'; // Glowing VIP border or gold
+  ctx.strokeStyle = vip ? vip.borderColor : '#f59e0b';
   ctx.lineWidth = vip ? 3.5 : 3;
   if (vip) {
     ctx.save();
@@ -202,32 +178,30 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
       }
       const textureImg = await getCachedImage(finalUrl);
       
-      // Check if texture image is loaded successfully and has expected dimensions
       if (textureImg && textureImg.width > 0 && textureImg.height > 0) {
         ctx.save();
-        ctx.imageSmoothingEnabled = false; // Keep sharp pixel-art style!
+        ctx.imageSmoothingEnabled = false;
 
         const scale = textureImg.width / 64;
 
-        // 1. Draw base head front face: source rect (8, 8, 8, 8)
+        // 1. Base head front face
         ctx.drawImage(
           textureImg,
-          8 * scale, 8 * scale, 8 * scale, 8 * scale, // source
-          avatarX + 4, avatarY + 4, avatarSize - 8, avatarSize - 8 // dest
+          8 * scale, 8 * scale, 8 * scale, 8 * scale,
+          avatarX + 4, avatarY + 4, avatarSize - 8, avatarSize - 8
         );
 
-        // 2. Draw overlay head front face (hair/hat): source rect (40, 8, 8, 8)
+        // 2. Overlay head front face
         ctx.drawImage(
           textureImg,
-          40 * scale, 8 * scale, 8 * scale, 8 * scale, // source
-          avatarX + 4, avatarY + 4, avatarSize - 8, avatarSize - 8 // dest
+          40 * scale, 8 * scale, 8 * scale, 8 * scale,
+          avatarX + 4, avatarY + 4, avatarSize - 8, avatarSize - 8
         );
 
         ctx.restore();
       }
     } catch (e) {
       console.warn('Failed to render pixel-art avatar face, using fallback render:', e.message);
-      // Fallback: draw full skin render scaled down
       try {
         const renderUrl = profile?.activeBodySkin?.renderUrl;
         if (renderUrl) {
@@ -237,21 +211,20 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
             ctx.drawImage(avatarImg, avatarX + 8, avatarY + 5, avatarSize - 16, avatarSize - 10);
           }
         }
-      } catch (err) {}
+      } catch {}
     }
   }
 
   // 3. Username & Clan Tag
   const nameX = 145;
-  const nameY = 80; // slightly lower center
+  const nameY = 80;
   const fullName = `${profile?.name || 'Unknown'}${clanTag}`;
 
   const badgeW = 205;
   const badgeH = 46;
-  const badgeX = width - 35 - badgeW; // 520
+  const badgeX = width - 35 - badgeW;
   const badgeY = 52;
 
-  // Prevent username from overlapping top-right VIP badge if present
   const maxNameWidth = vip ? badgeX - nameX - 15 : width - nameX - 35;
   let fontSize = 34;
   ctx.font = `bold ${fontSize}px Roboto`;
@@ -267,11 +240,9 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   // 3b. VIP Member Badge in Top Right
   if (vip) {
     ctx.save();
-    // Glowing shadow
     ctx.shadowColor = vip.glowColor;
     ctx.shadowBlur = 16;
 
-    // Gradient background
     const bgGrad = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH);
     bgGrad.addColorStop(0, vip.gradientStart);
     bgGrad.addColorStop(0.5, vip.gradientMiddle);
@@ -282,30 +253,26 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
     ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 12);
     ctx.fill();
 
-    // Glowing border
     ctx.strokeStyle = vip.borderColor;
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Remove blur for clean typography
     ctx.shadowBlur = 0;
 
-    // Top line: Star + VIP MEMBER
     const topText = 'VIP MEMBER';
     ctx.font = 'bold 11px Roboto';
     const topTextWidth = ctx.measureText(topText).width;
-    const topTotalW = topTextWidth + 16; // 10px star + 6px gap
+    const topTotalW = topTextWidth + 16;
     const topStartX = badgeX + (badgeW - topTotalW) / 2;
     drawStar(ctx, topStartX + 4, badgeY + 14, 5, 5, 2.5, vip.secondaryColor);
     ctx.fillStyle = vip.secondaryColor;
     ctx.textAlign = 'left';
     ctx.fillText(topText, topStartX + 16, badgeY + 18);
 
-    // Bottom line: Lightning + YIP or SOULLESS
     const bottomText = vip.type === 'yip' ? 'YIP' : 'SOULLESS';
     ctx.font = 'bold 16px Roboto';
     const bottomTextWidth = ctx.measureText(bottomText).width;
-    const bottomTotalW = bottomTextWidth + 18; // 12px lightning + 6px gap
+    const bottomTotalW = bottomTextWidth + 18;
     const bottomStartX = badgeX + (badgeW - bottomTotalW) / 2;
     drawLightning(ctx, bottomStartX, badgeY + 24, 14, vip.primaryColor);
     ctx.fillStyle = vip.primaryColor;
@@ -321,7 +288,6 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   const barW = width - 70;
   const barH = 32;
 
-  // Bar Container
   ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
   ctx.beginPath();
   ctx.roundRect(barX, barY, barW, barH, 16);
@@ -330,7 +296,6 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Progress Fill
   if (pct > 0) {
     ctx.fillStyle = '#f59e0b';
     ctx.beginPath();
@@ -338,7 +303,6 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
     ctx.fill();
   }
 
-  // XP Text
   ctx.font = 'bold 16px Roboto';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
@@ -347,7 +311,7 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   ctx.textAlign = 'right';
   ctx.fillText(`${pct}%`, barX + barW - 15, barY + 22);
 
-  // 5. Stats Table (3 Rows - NO Kirka ID)
+  // 5. Stats Table (3 Rows)
   const row1 = [
     { label: 'Level', val: level },
     { label: 'Score', val: formatNumber(scores) },
@@ -381,9 +345,8 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
 
   const gridStartY = 210;
   const rowHeight = 70;
-
-  // Draw Row 1 (5 columns)
   const colWidth5 = (width - 70) / 5;
+
   row1.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
     ctx.font = 'bold 16px Roboto';
@@ -396,7 +359,6 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
     ctx.fillText(String(cell.val), x, gridStartY + 28);
   });
 
-  // Draw Row 2 (5 columns)
   row2.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
     const y = gridStartY + rowHeight;
@@ -410,7 +372,6 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
     ctx.fillText(String(cell.val), x, y + 28);
   });
 
-  // Draw Row 3 (5 columns aligned)
   row3.forEach((cell, idx) => {
     const x = barX + idx * colWidth5 + colWidth5 / 2;
     const y = gridStartY + 2 * rowHeight;
@@ -424,12 +385,11 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
     ctx.fillText(String(cell.val), x, y + 28);
   });
 
-  // Draw Discord footer bar
+  // Footer bar
   const footerY = height - 40;
   ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
   ctx.fillRect(0, footerY, width, 40);
 
-  // Draw top border for footer bar
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -437,16 +397,154 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   ctx.lineTo(width, footerY);
   ctx.stroke();
 
-  // Draw Discord Logo
   const discordLogoX = 35;
   const discordLogoY = footerY + 10;
   drawDiscordLogo(ctx, discordLogoX, discordLogoY, 20);
 
-  // Draw Discord Name
   ctx.font = 'bold 15px Roboto';
   ctx.fillStyle = '#e2e8f0';
   ctx.textAlign = 'left';
   ctx.fillText(discordUsername || 'Unknown', discordLogoX + 30, footerY + 25);
-
-  return canvas.toBuffer('image/png');
 }
+
+/**
+ * Render animated profile card as GIF when custom background is an animated GIF.
+ */
+async function renderAnimatedProfileCard(profile, gifBuffer, discordUsername = null) {
+  const width = 760;
+  const height = 465;
+
+  const reader = new omggif.GifReader(gifBuffer);
+  const totalFrames = reader.numFrames();
+
+  if (totalFrames <= 1) {
+    return null; // Not animated
+  }
+
+  // Pre-render foreground overlay once for ultra-fast compositing
+  const fgCanvas = createCanvas(width, height);
+  const fgCtx = fgCanvas.getContext('2d');
+  await drawProfileForeground(fgCtx, width, height, profile, discordUsername);
+
+  // Target 16-20 frames for silky smooth animation with small file size (~1.2MB)
+  const targetFrameCount = Math.min(20, Math.max(12, Math.round(totalFrames / 5)));
+  const step = Math.max(1, Math.floor(totalFrames / targetFrameCount));
+  const sampledIndices = [];
+  for (let i = 0; i < totalFrames; i += step) {
+    sampledIndices.push(i);
+    if (sampledIndices.length >= 24) break;
+  }
+
+  const gifEncoder = GIFEncoder();
+  const frameCanvas = createCanvas(width, height);
+  const frameCtx = frameCanvas.getContext('2d');
+
+  const srcWidth = reader.width;
+  const srcHeight = reader.height;
+
+  // Scale math to maintain aspect ratio and fill the 760x465 card
+  const scale = Math.max(width / srcWidth, height / srcHeight);
+  const drawW = srcWidth * scale;
+  const drawH = srcHeight * scale;
+  const offsetX = (width - drawW) / 2;
+  const offsetY = (height - drawH) / 2;
+
+  const rgbaBuffer = new Uint8Array(srcWidth * srcHeight * 4);
+  const tempSrcCanvas = createCanvas(srcWidth, srcHeight);
+  const tempSrcCtx = tempSrcCanvas.getContext('2d');
+
+  for (const fIdx of sampledIndices) {
+    reader.decodeAndBlitFrameRGBA(fIdx, rgbaBuffer);
+    const imgData = tempSrcCtx.createImageData(srcWidth, srcHeight);
+    imgData.data.set(rgbaBuffer);
+    tempSrcCtx.putImageData(imgData, 0, 0);
+
+    // Draw scaled GIF background frame
+    frameCtx.clearRect(0, 0, width, height);
+    frameCtx.drawImage(tempSrcCanvas, offsetX, offsetY, drawW, drawH);
+
+    // Composite pre-rendered foreground
+    frameCtx.drawImage(fgCanvas, 0, 0);
+
+    // Quantize to 256-color palette and write GIF frame
+    const frameData = frameCtx.getImageData(0, 0, width, height).data;
+    const palette = quantize(frameData, 256);
+    const indexData = applyPalette(frameData, palette);
+
+    const frameInfo = reader.frameInfo(fIdx);
+    const delayMs = Math.max(70, (frameInfo.delay || 10) * 10 * step);
+
+    gifEncoder.writeFrame(indexData, width, height, {
+      palette,
+      delay: delayMs
+    });
+  }
+
+  gifEncoder.finish();
+  const gifResult = Buffer.from(gifEncoder.bytes());
+  gifResult.isAnimated = true;
+  return gifResult;
+}
+
+export async function renderProfileCard(profile, customBgUrl = null, discordUsername = null) {
+  const width = 760;
+  const height = 465;
+
+  // Check if custom background is an animated GIF
+  const isGif = customBgUrl && (
+    customBgUrl.toLowerCase().includes('.gif') || 
+    customBgUrl.toLowerCase().includes('format=gif')
+  );
+
+  if (isGif) {
+    try {
+      const rawBuf = await getRawImageBuffer(customBgUrl);
+      if (rawBuf && rawBuf.length > 0) {
+        const animatedCard = await renderAnimatedProfileCard(profile, rawBuf, discordUsername);
+        if (animatedCard) {
+          return animatedCard;
+        }
+      }
+    } catch (gifErr) {
+      console.warn('[ProfileCard] Animated GIF render failed, falling back to static:', gifErr.message);
+    }
+  }
+
+  // Static PNG rendering
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+
+  let bgImg = null;
+  if (customBgUrl) {
+    try {
+      bgImg = await getCachedImage(customBgUrl);
+    } catch (err) {
+      console.warn('[ProfileCard] Failed to load custom background, falling back to default:', err.message);
+    }
+  }
+
+  if (!bgImg) {
+    try {
+      bgImg = await getCachedImage(bgPath);
+    } catch (err) {
+      console.warn('[ProfileCard] Failed to load default background:', err.message);
+    }
+  }
+
+  if (bgImg) {
+    ctx.drawImage(bgImg, 0, 0, width, height);
+  } else {
+    const gradBg = ctx.createLinearGradient(0, 0, width, height);
+    gradBg.addColorStop(0, '#090a0f');
+    gradBg.addColorStop(1, '#020205');
+    ctx.fillStyle = gradBg;
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  await drawProfileForeground(ctx, width, height, profile, discordUsername);
+
+  const pngBuffer = canvas.toBuffer('image/png');
+  pngBuffer.isAnimated = false;
+  return pngBuffer;
+}
+

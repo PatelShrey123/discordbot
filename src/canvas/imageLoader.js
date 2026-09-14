@@ -77,3 +77,58 @@ export async function getCachedImage(url) {
   console.warn(`[ImageLoader] All fetch attempts failed for: ${cleanUrl}`);
   return null;
 }
+
+/**
+ * Fetch raw binary buffer of an image (used for GIF decoding).
+ */
+export async function getRawImageBuffer(url) {
+  if (!url) return null;
+  const cleanUrl = url.trim();
+
+  const isLocal = cleanUrl.startsWith('.') || 
+                  cleanUrl.startsWith('/') || 
+                  cleanUrl.startsWith('data:') || 
+                  /^[a-zA-Z]:\\/.test(cleanUrl);
+                  
+  if (isLocal) {
+    try {
+      const fs = await import('fs/promises');
+      return await fs.readFile(cleanUrl);
+    } catch (err) {
+      console.warn(`[ImageLoader] Failed to read local file buffer: ${cleanUrl} (${err.message})`);
+      return null;
+    }
+  }
+
+  const urlsToTry = [cleanUrl];
+  if (cleanUrl.startsWith('http')) {
+    urlsToTry.push(`https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&default=404`);
+  }
+
+  for (const targetUrl of urlsToTry) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    try {
+      const res = await fetch(targetUrl, {
+        signal: controller.signal,
+        redirect: 'follow',
+        headers: {
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+          'referer': 'https://kirka.io/'
+        }
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const arrayBuffer = await res.arrayBuffer();
+        return Buffer.from(arrayBuffer);
+      }
+    } catch {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  return null;
+}
