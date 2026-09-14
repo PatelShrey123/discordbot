@@ -59,7 +59,7 @@ export function createRegionButtons(activeRegionId = 'india') {
     new ButtonBuilder()
       .setLabel('🌐 Web Tracker & 3D Renders')
       .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app')
+      .setURL('https://kirkahub.online')
   );
 
   return [row, linksRow];

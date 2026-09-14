@@ -361,7 +361,7 @@ export function buildWeaponButtons(w1, w2 = null) {
       new ButtonBuilder()
         .setLabel('🌐 View 3D Models')
         .setStyle(ButtonStyle.Link)
-        .setURL('https://kirkahub.vercel.app/catalog')
+        .setURL('https://kirkahub.online/catalog')
     );
   } else {
     const rival = w1.id === 'ar-9' ? 'scar' : (w1.id === 'scar' ? 'ar-9' : (w1.id === 'mac-10' ? 'weatie' : 'ar-9'));
@@ -374,7 +374,7 @@ export function buildWeaponButtons(w1, w2 = null) {
       new ButtonBuilder()
         .setLabel('🌐 View 3D Models')
         .setStyle(ButtonStyle.Link)
-        .setURL('https://kirkahub.vercel.app/catalog')
+        .setURL('https://kirkahub.online/catalog')
     );
   }
 

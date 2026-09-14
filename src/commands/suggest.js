@@ -64,7 +64,7 @@ export function buildSuggestButtons() {
     new ButtonBuilder()
       .setLabel('🌐 Open KirkaHub Website')
       .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app')
+      .setURL('https://kirkahub.online')
   );
 }
 

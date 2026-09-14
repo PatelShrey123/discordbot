@@ -88,14 +88,14 @@ export async function execute(interaction) {
       const trackerButton = new ButtonBuilder()
         .setLabel('Clan Tracker')
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://kirkahub.vercel.app/clan/${encodeURIComponent(clan.name)}`);
+        .setURL(`https://kirkahub.online/clan/${encodeURIComponent(clan.name)}`);
 
       row.addComponents(prevButton, nextButton, trackerButton);
     } else {
       const trackerButton = new ButtonBuilder()
         .setLabel('Clan Tracker')
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://kirkahub.vercel.app/clan/${encodeURIComponent(clan.name)}`);
+        .setURL(`https://kirkahub.online/clan/${encodeURIComponent(clan.name)}`);
 
       row.addComponents(trackerButton);
     }

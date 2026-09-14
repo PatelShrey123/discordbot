@@ -131,7 +131,7 @@ export function buildHelpEmbed(category = 'home') {
       `• **🎲 Chests & Quests:** \`.unbox [chest]\`, \`.quests\`, \`.events\`\n` +
       `• **🛠️ Community & Support:** \`.support\` (Server), \`.suggest <idea>\`, \`.donate\` (Buy Me A Chai / Gift Cards)\n` +
       `• **🌐 Live Server Browser:** \`.servers [region]\`, \`.rooms\` (India, Asia, EU, NA, SA)\n\n` +
-      `🌐 **Web Portal & Documentation:** [kirkahub.vercel.app](https://kirkahub.vercel.app) • [Bot Guide](https://kirkahub.vercel.app/bot)\n\n` +
+      `🌐 **Web Portal & Documentation:** [kirkahub.online](https://kirkahub.online) • [Bot Guide](https://kirkahub.online/bot)\n\n` +
       `> 💡 **Tip:** Every command supports both slash (\`/command\`) and prefix (\`.command\`) triggers! Click any button below for a detailed walkthrough.`
     )
     .setFooter({ text: 'KirkaHub Bot • Support 24/7 Hosting: .donate' })
@@ -147,7 +147,7 @@ export function buildLinksRow() {
     new ButtonBuilder()
       .setLabel('🌐 Open KirkaHub Website')
       .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app')
+      .setURL('https://kirkahub.online')
   );
 }
 

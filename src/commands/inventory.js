@@ -131,7 +131,7 @@ export async function execute(interaction) {
         text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
       });
 
-    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+    const webInventoryUrl = `https://kirkahub.online/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
 
     // Buttons
     const components = [];
@@ -202,7 +202,7 @@ export async function execute(interaction) {
 
   collector.on('end', () => {
     // Disable buttons on timeout
-    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+    const webInventoryUrl = `https://kirkahub.online/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
     const disabledComponents = [
       new ButtonBuilder().setCustomId('prev_dis').setLabel('◀').setStyle(ButtonStyle.Secondary).setDisabled(true),
       new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true),
@@ -313,7 +313,7 @@ export async function executePrefix(message, args) {
         text: `Page ${pageIdx + 1} of ${totalPages} • ${profile.name}#${(profile.shortId || '').toUpperCase()}`
       });
 
-    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+    const webInventoryUrl = `https://kirkahub.online/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
 
     const components = [];
     if (totalPages > 1) {
@@ -381,7 +381,7 @@ export async function executePrefix(message, args) {
   });
 
   collector.on('end', () => {
-    const webInventoryUrl = `https://kirkahub.vercel.app/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
+    const webInventoryUrl = `https://kirkahub.online/inventory/${encodeURIComponent((profile.shortId || profile.id).toUpperCase())}`;
     const disabledComponents = [
       new ButtonBuilder().setCustomId('prev_dis').setLabel('◀').setStyle(ButtonStyle.Secondary).setDisabled(true),
       new ButtonBuilder().setCustomId('next_dis').setLabel('▶').setStyle(ButtonStyle.Secondary).setDisabled(true),

@@ -277,7 +277,7 @@ function buildButtons(index, totalCount, mode) {
     new ButtonBuilder()
       .setLabel('🌐 View on KirkaHub')
       .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app/trades')
+      .setURL('https://kirkahub.online/trades')
   );
   return row;
 }
@@ -404,7 +404,7 @@ export async function execute(interaction) {
         new ButtonBuilder().setCustomId('trade_prev').setLabel('◀ Prev').setStyle(ButtonStyle.Primary).setDisabled(true),
         new ButtonBuilder().setCustomId('trade_next').setLabel('Next ▶').setStyle(ButtonStyle.Primary).setDisabled(true),
         new ButtonBuilder().setCustomId('trade_closed').setLabel('Session Expired').setStyle(ButtonStyle.Secondary).setDisabled(true),
-        new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
+        new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.online/trades')
       );
       await interaction.editReply({ components: [disabledRow] });
     } catch {}
@@ -516,7 +516,7 @@ export async function executePrefix(message, args = []) {
         new ButtonBuilder().setCustomId('trade_prev').setLabel('◀ Prev').setStyle(ButtonStyle.Primary).setDisabled(true),
         new ButtonBuilder().setCustomId('trade_next').setLabel('Next ▶').setStyle(ButtonStyle.Primary).setDisabled(true),
         new ButtonBuilder().setCustomId('trade_closed').setLabel('Session Expired').setStyle(ButtonStyle.Secondary).setDisabled(true),
-        new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.vercel.app/trades')
+        new ButtonBuilder().setLabel('🌐 View on KirkaHub').setStyle(ButtonStyle.Link).setURL('https://kirkahub.online/trades')
       );
       await replyMsg.edit({ components: [disabledRow] });
     } catch {}

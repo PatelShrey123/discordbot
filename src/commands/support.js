@@ -24,7 +24,7 @@ export function buildSupportEmbed() {
     )
     .addFields(
       { name: '🔗 Server Invite', value: `[discord.gg/3zStCadBtP](${TRACKER_BOT_INVITE})`, inline: true },
-      { name: '🌐 Web Platform', value: '[kirkahub.vercel.app](https://kirkahub.vercel.app)', inline: true }
+      { name: '🌐 Web Platform', value: '[kirkahub.online](https://kirkahub.online)', inline: true }
     )
     .setFooter({ text: 'KirkaHub • Official Community & Support' })
     .setTimestamp();
@@ -39,7 +39,7 @@ export function buildSupportButtons() {
     new ButtonBuilder()
       .setLabel('🌐 Open KirkaHub Website')
       .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app')
+      .setURL('https://kirkahub.online')
   );
 }
 

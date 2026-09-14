@@ -98,7 +98,7 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
   const boltValueStr = boltValue > 0 ? formatValueLong(boltValue) : '—';
 
   // Share link pointing directly to the website routing path
-  const shareLink = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name)}`;
+  const shareLink = `https://kirkahub.online/skin/${encodeURIComponent(matchedItem.name)}`;
 
   const embed = new EmbedBuilder()
     .setTitle(matchedItem.name.toUpperCase())
@@ -188,7 +188,7 @@ export async function execute(interaction) {
   try {
     embed = createSkinEmbed(matchedItem, priceMap, allItemData);
 
-    const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
+    const web3DUrl = `https://kirkahub.online/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
     row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setLabel('🎮 View in 3D (360° Studio)')

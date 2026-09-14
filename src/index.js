@@ -1,5 +1,5 @@
 import './dns-init.js';
-import { Client, GatewayIntentBits, Collection, AttachmentBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } from 'discord.js';
+import { Client, GatewayIntentBits, Partials, Collection, AttachmentBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } from 'discord.js';
 import http from 'http';
 import dotenv from 'dotenv';
 import dns from 'dns';
@@ -53,7 +53,12 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.DirectMessages
+  ],
+  partials: [
+    Partials.Channel,
+    Partials.Message
   ]
 });
 
@@ -290,7 +295,7 @@ client.on('messageCreate', async (message) => {
       let row;
       try {
         embed = createSkinEmbed(matchedItem, priceMap, allItemData);
-        const web3DUrl = `https://kirkahub.vercel.app/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
+        const web3DUrl = `https://kirkahub.online/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
         row = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setLabel('🎮 View in 3D (360° Studio)')
@@ -621,7 +626,7 @@ client.on('messageCreate', async (message) => {
       const trackerButton = new ButtonBuilder()
         .setLabel('Clan Tracker')
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://kirkahub.vercel.app/clan/${encodeURIComponent(clan.name)}`);
+        .setURL(`https://kirkahub.online/clan/${encodeURIComponent(clan.name)}`);
 
       const row = new ActionRowBuilder().addComponents(trackerButton);
 

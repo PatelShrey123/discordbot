@@ -173,7 +173,7 @@ export function buildUnboxButtons(chestKey) {
     new ButtonBuilder()
       .setLabel('🌐 View Live Catalog')
       .setStyle(ButtonStyle.Link)
-      .setURL('https://kirkahub.vercel.app/catalog')
+      .setURL('https://kirkahub.online/catalog')
   );
 }
 
@@ -237,7 +237,7 @@ export async function execute(interaction) {
         new ButtonBuilder()
           .setLabel('🌐 View Live Catalog')
           .setStyle(ButtonStyle.Link)
-          .setURL('https://kirkahub.vercel.app/catalog')
+          .setURL('https://kirkahub.online/catalog')
       );
       await interaction.editReply({ components: [disabledRow] });
     } catch {}
@@ -315,7 +315,7 @@ export async function executePrefix(message, args) {
         new ButtonBuilder()
           .setLabel('🌐 View Live Catalog')
           .setStyle(ButtonStyle.Link)
-          .setURL('https://kirkahub.vercel.app/catalog')
+          .setURL('https://kirkahub.online/catalog')
       );
       await replyMsg.edit({ components: [disabledRow] });
     } catch {}
