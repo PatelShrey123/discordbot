@@ -2,6 +2,7 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { getCachedImage } from './imageLoader.js';
+import { getVipProfileInfo } from '../utils/vip.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,6 +59,50 @@ function drawDiscordLogo(ctx, x, y, size) {
   ctx.fillStyle = '#ffffff';
   ctx.fill();
   
+  ctx.restore();
+}
+
+function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius, color) {
+  let rot = Math.PI / 2 * 3;
+  let x = cx;
+  let y = cy;
+  const step = Math.PI / spikes;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - outerRadius);
+  for (let i = 0; i < spikes; i++) {
+    x = cx + Math.cos(rot) * outerRadius;
+    y = cy + Math.sin(rot) * outerRadius;
+    ctx.lineTo(x, y);
+    rot += step;
+
+    x = cx + Math.cos(rot) * innerRadius;
+    y = cy + Math.sin(rot) * innerRadius;
+    ctx.lineTo(x, y);
+    rot += step;
+  }
+  ctx.lineTo(cx, cy - outerRadius);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawLightning(ctx, x, y, size, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(size / 16, size / 16);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(9, 1);
+  ctx.lineTo(3, 9);
+  ctx.lineTo(8, 9);
+  ctx.lineTo(7, 15);
+  ctx.lineTo(13, 7);
+  ctx.lineTo(8, 7);
+  ctx.closePath();
+  ctx.fill();
   ctx.restore();
 }
 
@@ -120,6 +165,9 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
   ctx.fillRect(0, 0, width, height);
 
+  // Check VIP Status
+  const vip = getVipProfileInfo(profile);
+
   // 2. Avatar Box (Top Left) - Render pixel-art face of equipped skin
   const avatarX = 35;
   const avatarY = 30;
@@ -127,9 +175,17 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
 
   ctx.fillStyle = '#111827';
   ctx.fillRect(avatarX, avatarY, avatarSize, avatarSize);
-  ctx.strokeStyle = '#f59e0b'; // Gold border for avatar
-  ctx.lineWidth = 3;
-  ctx.strokeRect(avatarX, avatarY, avatarSize, avatarSize);
+  ctx.strokeStyle = vip ? vip.borderColor : '#f59e0b'; // Glowing VIP border or gold
+  ctx.lineWidth = vip ? 3.5 : 3;
+  if (vip) {
+    ctx.save();
+    ctx.shadowColor = vip.glowColor;
+    ctx.shadowBlur = 14;
+    ctx.strokeRect(avatarX, avatarY, avatarSize, avatarSize);
+    ctx.restore();
+  } else {
+    ctx.strokeRect(avatarX, avatarY, avatarSize, avatarSize);
+  }
 
   // Load and render character face crop from texture sheet
   let textureUrl = profile?.activeBodySkin?.textureUrl || profile?.activeBodySkin?.renderUrl;
@@ -188,11 +244,76 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   // 3. Username & Clan Tag
   const nameX = 145;
   const nameY = 80; // slightly lower center
+  const fullName = `${profile?.name || 'Unknown'}${clanTag}`;
 
-  ctx.font = 'bold 34px Roboto';
+  const badgeW = 205;
+  const badgeH = 46;
+  const badgeX = width - 35 - badgeW; // 520
+  const badgeY = 52;
+
+  // Prevent username from overlapping top-right VIP badge if present
+  const maxNameWidth = vip ? badgeX - nameX - 15 : width - nameX - 35;
+  let fontSize = 34;
+  ctx.font = `bold ${fontSize}px Roboto`;
+  while (ctx.measureText(fullName).width > maxNameWidth && fontSize > 20) {
+    fontSize -= 2;
+    ctx.font = `bold ${fontSize}px Roboto`;
+  }
+
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
-  ctx.fillText(`${profile?.name || 'Unknown'}${clanTag}`, nameX, nameY);
+  ctx.fillText(fullName, nameX, nameY);
+
+  // 3b. VIP Member Badge in Top Right
+  if (vip) {
+    ctx.save();
+    // Glowing shadow
+    ctx.shadowColor = vip.glowColor;
+    ctx.shadowBlur = 16;
+
+    // Gradient background
+    const bgGrad = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH);
+    bgGrad.addColorStop(0, vip.gradientStart);
+    bgGrad.addColorStop(0.5, vip.gradientMiddle);
+    bgGrad.addColorStop(1, vip.gradientEnd);
+
+    ctx.fillStyle = bgGrad;
+    ctx.beginPath();
+    ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 12);
+    ctx.fill();
+
+    // Glowing border
+    ctx.strokeStyle = vip.borderColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Remove blur for clean typography
+    ctx.shadowBlur = 0;
+
+    // Top line: Star + VIP MEMBER
+    const topText = 'VIP MEMBER';
+    ctx.font = 'bold 11px Roboto';
+    const topTextWidth = ctx.measureText(topText).width;
+    const topTotalW = topTextWidth + 16; // 10px star + 6px gap
+    const topStartX = badgeX + (badgeW - topTotalW) / 2;
+    drawStar(ctx, topStartX + 4, badgeY + 14, 5, 5, 2.5, vip.secondaryColor);
+    ctx.fillStyle = vip.secondaryColor;
+    ctx.textAlign = 'left';
+    ctx.fillText(topText, topStartX + 16, badgeY + 18);
+
+    // Bottom line: Lightning + YIP or SOULLESS
+    const bottomText = vip.type === 'yip' ? 'YIP' : 'SOULLESS';
+    ctx.font = 'bold 16px Roboto';
+    const bottomTextWidth = ctx.measureText(bottomText).width;
+    const bottomTotalW = bottomTextWidth + 18; // 12px lightning + 6px gap
+    const bottomStartX = badgeX + (badgeW - bottomTotalW) / 2;
+    drawLightning(ctx, bottomStartX, badgeY + 24, 14, vip.primaryColor);
+    ctx.fillStyle = vip.primaryColor;
+    ctx.textAlign = 'left';
+    ctx.fillText(bottomText, bottomStartX + 18, badgeY + 37);
+
+    ctx.restore();
+  }
 
   // 4. XP Progress Bar
   const barX = 35;
