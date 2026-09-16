@@ -39,6 +39,8 @@ import * as supportCmd from './commands/support.js';
 import * as suggestCmd from './commands/suggest.js';
 import * as donateCmd from './commands/donate.js';
 import * as fitCmd from './commands/fit.js';
+import * as vipCmd from './commands/vip.js';
+import * as flipCmd from './commands/flip.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
 import { maybeSendFeedbackReminder } from './utils/feedbackReminder.js';
 
@@ -90,6 +92,8 @@ client.commands.set(supportCmd.data.name, supportCmd);
 client.commands.set(suggestCmd.data.name, suggestCmd);
 client.commands.set(donateCmd.data.name, donateCmd);
 client.commands.set(fitCmd.data.name, fitCmd);
+client.commands.set(vipCmd.data.name, vipCmd);
+client.commands.set(flipCmd.data.name, flipCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -869,6 +873,17 @@ client.on('messageCreate', async (message) => {
   else if (lowerContent === '.fit' || lowerContent.startsWith('.fit ')) {
     const args = content.substring(4).trim().split(/ +/).filter(Boolean);
     await fitCmd.executePrefix(message, args);
+  }
+
+  // 27. .vip
+  else if (lowerContent === '.vip' || lowerContent.startsWith('.vip ')) {
+    await vipCmd.executePrefix(message);
+  }
+
+  // 28. .flip [heads/tails]
+  else if (lowerContent === '.flip' || lowerContent.startsWith('.flip ')) {
+    const args = content.substring(5).trim().split(/ +/).filter(Boolean);
+    await flipCmd.executePrefix(message, args);
   }
 
   // Check if a polite community/suggestion reminder should be sent (at most once every 1.5 - 2 days per server)
