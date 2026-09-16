@@ -38,6 +38,7 @@ import * as helpCmd from './commands/help.js';
 import * as supportCmd from './commands/support.js';
 import * as suggestCmd from './commands/suggest.js';
 import * as donateCmd from './commands/donate.js';
+import * as fitCmd from './commands/fit.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
 import { maybeSendFeedbackReminder } from './utils/feedbackReminder.js';
 
@@ -88,6 +89,7 @@ client.commands.set(eventsCmd.data.name, eventsCmd);
 client.commands.set(supportCmd.data.name, supportCmd);
 client.commands.set(suggestCmd.data.name, suggestCmd);
 client.commands.set(donateCmd.data.name, donateCmd);
+client.commands.set(fitCmd.data.name, fitCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -861,6 +863,12 @@ client.on('messageCreate', async (message) => {
     const args = content.substring(prefixUsed.length).trim().split(/ +/).filter(Boolean);
     await message.channel.sendTyping();
     await donateCmd.executePrefix(message, args);
+  }
+
+  // 26. .fit [user] [p1/p2/p3]
+  else if (lowerContent === '.fit' || lowerContent.startsWith('.fit ')) {
+    const args = content.substring(4).trim().split(/ +/).filter(Boolean);
+    await fitCmd.executePrefix(message, args);
   }
 
   // Check if a polite community/suggestion reminder should be sent (at most once every 1.5 - 2 days per server)
