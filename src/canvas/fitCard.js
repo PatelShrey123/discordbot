@@ -21,7 +21,7 @@ const CARD_W = 690;
 const VIEW_H = 620;
 const SLOT_H = 150;
 const GAP = 3;
-const SUPERSAMPLE = 2;
+const SUPERSAMPLE = 1.5; // on top of SCALE; 2 used ~2x the memory, too much for the 512 MB host
 
 // Scene setup mirrored from the website viewer (orthographic lobby camera, ambient + key light)
 const FRUSTUM_HEIGHT = 4.1;
@@ -108,6 +108,10 @@ function catalogMatch(catalog, item) {
 }
 
 // ---------------------------------------------------------------------------
+// Hand the event loop back every few ms so Discord interactions and heartbeats aren't starved mid-render
+const YIELD_MS = 25;
+const yieldToEventLoop = () => new Promise((resolve) => setImmediate(resolve));
+
 // Software rasterizer: flat-shaded, nearest-sampled textures, alpha test, z-buffer.
 // Kirka's models are low-poly blocks, so this matches the WebGL look closely.
 // ---------------------------------------------------------------------------
@@ -115,16 +119,21 @@ const SRGB_TO_LINEAR = new Float32Array(256).map((_, i) => {
   const c = i / 255;
   return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 });
-const linearToSrgb = (c) => {
+// Lookup table for linear -> sRGB bytes (Math.pow per pixel was the hottest part of the render)
+const LINEAR_LUT_SIZE = 8192, LINEAR_LUT_MAX = 1.25;
+const LINEAR_TO_SRGB = new Uint8ClampedArray(LINEAR_LUT_SIZE + 1).map((_, i) => {
+  const c = (i / LINEAR_LUT_SIZE) * LINEAR_LUT_MAX;
   const v = c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
-  return Math.max(0, Math.min(255, Math.round(v * 255)));
-};
+  return Math.round(v * 255);
+});
+const linearToSrgb = (c) => LINEAR_TO_SRGB[c <= 0 ? 0 : c >= LINEAR_LUT_MAX ? LINEAR_LUT_SIZE : Math.round((c / LINEAR_LUT_MAX) * LINEAR_LUT_SIZE)];
 
 class Rasterizer {
   constructor(width, height, camera) {
     this.width = width;
     this.height = height;
     this.color = new Uint8ClampedArray(width * height * 4);
+    this.lastYield = performance.now();
     this.depth = new Float32Array(width * height).fill(-Infinity);
     this.camera = camera;
   }
@@ -137,7 +146,7 @@ class Rasterizer {
     return out;
   }
 
-  drawMesh(mesh, texels, fallbackColor) {
+  async drawMesh(mesh, texels, fallbackColor) {
     const geometry = mesh.geometry;
     const pos = geometry.attributes.position;
     const uv = geometry.attributes.uv;
@@ -164,6 +173,7 @@ class Rasterizer {
     const sa = {}, sb = {}, sc = {};
 
     for (let t = 0; t < triCount; t++) {
+      if (performance.now() - this.lastYield > YIELD_MS) { await yieldToEventLoop(); this.lastYield = performance.now(); }
       const i0 = index ? index.getX(t * 3) : t * 3;
       const i1 = index ? index.getX(t * 3 + 1) : t * 3 + 1;
       const i2 = index ? index.getX(t * 3 + 2) : t * 3 + 2;
@@ -277,11 +287,12 @@ async function renderScene({ bodyTextureUrl, weaponFile, weaponTextureUrl, pose 
   };
   const raster = new Rasterizer(width, height, camera);
 
-  character.traverse((obj) => {
-    if (!obj.isMesh) return;
+  const meshes = [];
+  character.traverse((obj) => { if (obj.isMesh) meshes.push(obj); });
+  for (const obj of meshes) {
     const isWeapon = weapon === obj || obj.parent === weapon || weapon.getObjectById(obj.id);
-    raster.drawMesh(obj, isWeapon ? weaponTexels : bodyTexels, isWeapon ? [0x4b, 0x54, 0x68] : [0x2a, 0x31, 0x48]);
-  });
+    await raster.drawMesh(obj, isWeapon ? weaponTexels : bodyTexels, isWeapon ? [0x4b, 0x54, 0x68] : [0x2a, 0x31, 0x48]);
+  }
 
   const canvas = createCanvas(width, height);
   canvas.getContext('2d').putImageData(new ImageData(raster.color, width, height), 0, 0);
@@ -302,7 +313,15 @@ function fitText(ctx, text, maxWidth) {
  * Render a Kirka lobby-style fit card: character holding the primary, name + level banner,
  * and primary / secondary / melee slots. Returns a PNG buffer.
  */
-export async function renderFitCard({ profile, inventory, catalog = [], pose = 'pose1' }) {
+// One render at a time: concurrent fits would each hold full-size buffers and can exhaust the host's memory
+let renderQueue = Promise.resolve();
+export function renderFitCard(options) {
+  const run = renderQueue.then(() => renderFitCardNow(options));
+  renderQueue = run.catch(() => {});
+  return run;
+}
+
+async function renderFitCardNow({ profile, inventory, catalog = [], pose = 'pose1' }) {
   const loadout = resolveLoadout(profile, inventory);
   const primary = loadout.primary;
   const primaryMatch = catalogMatch(catalog, primary);
@@ -398,5 +417,5 @@ export async function renderFitCard({ profile, inventory, catalog = [], pose = '
     }
   });
 
-  return canvas.toBuffer('image/png');
+  return canvas.encode('png'); // encodes off the main thread (toBuffer blocked the bot for ~0.5s)
 }
