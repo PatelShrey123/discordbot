@@ -42,7 +42,6 @@ import * as fitCmd from './commands/fit.js';
 import * as vipCmd from './commands/vip.js';
 import * as flipCmd from './commands/flip.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
-import { maybeSendFeedbackReminder } from './utils/feedbackReminder.js';
 
 dotenv.config();
 
@@ -228,7 +227,6 @@ client.on('interactionCreate', async (interaction) => {
 
   try {
     await command.execute(interaction);
-    maybeSendFeedbackReminder(interaction.channel, interaction.guild);
   } catch (error) {
     console.error(`❌ Error executing command /${interaction.commandName}:`, error);
     const replyMsg = { content: '⚠️ There was an error while executing this command!', flags: 64 };
@@ -884,11 +882,6 @@ client.on('messageCreate', async (message) => {
   else if (lowerContent === '.flip' || lowerContent.startsWith('.flip ')) {
     const args = content.substring(5).trim().split(/ +/).filter(Boolean);
     await flipCmd.executePrefix(message, args);
-  }
-
-  // Check if a polite community/suggestion reminder should be sent (at most once every 1.5 - 2 days per server)
-  if (lowerContent.startsWith('.')) {
-    maybeSendFeedbackReminder(message.channel, message.guild);
   }
 
 });

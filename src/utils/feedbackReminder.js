@@ -175,41 +175,10 @@ export function findBestReminderChannel(guild, fallbackChannel) {
 }
 
 /**
- * Checks if a donation reminder should be sent in this guild.
- * Triggers at most once every 4 days per server during command usage.
+ * Disabled: Donation messages are now only shown when explicitly requested by users via .donate or /donate.
  */
 export async function maybeSendFeedbackReminder(channel, guild) {
-  if (!guild || !channel) return;
-
-  const lastSent = cooldownMap[guild.id] || 0;
-  const now = Date.now();
-
-  // If 4 days haven't passed since last reminder in this guild, skip
-  if (now - lastSent < REMINDER_COOLDOWN_MS) return;
-
-  // 25% chance (1 in 4) on command execution so it feels natural
-  if (Math.random() > 0.25) return;
-
-  // Mark as sent immediately to avoid race conditions
-  cooldownMap[guild.id] = now;
-  saveCooldowns();
-
-  try {
-    const targetChannel = findBestReminderChannel(guild, channel);
-    if (!targetChannel) return;
-
-    setTimeout(async () => {
-      try {
-        const payload = buildDonationReminderMessage();
-        await targetChannel.send(payload);
-        console.log(`[DonationReminder] Sent 4-day reminder to guild "${guild.name}" (#${targetChannel.name})`);
-      } catch (sendErr) {
-        console.warn(`[DonationReminder] Could not send to #${targetChannel.name}:`, sendErr.message);
-      }
-    }, 1500);
-  } catch (err) {
-    console.error('[DonationReminder] Error running reminder:', err);
-  }
+  return;
 }
 
 /**
