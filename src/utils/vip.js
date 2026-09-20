@@ -62,3 +62,51 @@ export function getVipProfileInfo(profile) {
 
   return null;
 }
+
+// Bot Developer Discord ID
+export const BOT_DEVELOPER_DISCORD_ID = '728104078428733452';
+
+// Specific Discord IDs granted VIP perks
+export const VIP_DISCORD_IDS = new Set([
+  '728104078428733452', // @tooexpert (developer)
+  '1280875135456247958'  // king_of_seals_fr (grandfathered seal user)
+]);
+
+// Grandfathered Kirka Short IDs allowed to use GIF backgrounds
+export const GRANDFATHERED_GIF_SHORTS = new Set([
+  '3KRQH0' // *ScythX* (king_of_seals_fr)
+]);
+
+// Grandfathered Kirka UUIDs allowed to use GIF backgrounds
+export const GRANDFATHERED_GIF_UUIDS = new Set([
+  'dc596564-3e52-4e19-9076-898903981d44' // *ScythX* (king_of_seals_fr)
+]);
+
+/**
+ * Checks if a user or Kirka profile is authorized to set or display an animated GIF background.
+ * - Developer (@tooexpert)
+ * - Specific authorized Discord IDs (VIP / grandfathered)
+ * - Grandfathered seal user (king_of_seals_fr / #3KRQH0 / ScythX)
+ * - Any official KirkaHub VIP member (Souless, Carson, Yip, etc.)
+ */
+export function canUseGifBackground({ discordId, shortId, kirkaId } = {}) {
+  if (discordId && (discordId === BOT_DEVELOPER_DISCORD_ID || VIP_DISCORD_IDS.has(discordId))) {
+    return true;
+  }
+
+  const cleanShort = (shortId || '').trim().toUpperCase().replace(/^#+/, '');
+  const cleanId = (kirkaId || '').trim().toLowerCase();
+
+  if (cleanShort && GRANDFATHERED_GIF_SHORTS.has(cleanShort)) {
+    return true;
+  }
+  if (cleanId && GRANDFATHERED_GIF_UUIDS.has(cleanId)) {
+    return true;
+  }
+
+  if (getVipProfileInfo({ shortId: cleanShort, id: cleanId }) !== null) {
+    return true;
+  }
+
+  return false;
+}

@@ -2,7 +2,7 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { getCachedImage, getRawImageBuffer } from './imageLoader.js';
-import { getVipProfileInfo } from '../utils/vip.js';
+import { getVipProfileInfo, canUseGifBackground } from '../utils/vip.js';
 import omggif from 'omggif';
 import gifenc from 'gifenc';
 const { GIFEncoder, quantize, applyPalette } = gifenc;
@@ -490,13 +490,19 @@ export async function renderProfileCard(profile, customBgUrl = null, discordUser
   const width = 760;
   const height = 465;
 
-  // Check if custom background is an animated GIF
+  // Check if custom background is an animated GIF and authorized for VIP / grandfathered seal user
   const isGif = customBgUrl && (
     customBgUrl.toLowerCase().includes('.gif') || 
-    customBgUrl.toLowerCase().includes('format=gif')
+    customBgUrl.toLowerCase().includes('format=gif') ||
+    customBgUrl.toLowerCase().includes('image/gif')
   );
 
-  if (isGif) {
+  const isAuthorizedGif = isGif && canUseGifBackground({
+    shortId: profile?.shortId,
+    kirkaId: profile?.id
+  });
+
+  if (isAuthorizedGif) {
     try {
       const rawBuf = await getRawImageBuffer(customBgUrl);
       if (rawBuf && rawBuf.length > 0) {
