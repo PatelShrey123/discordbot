@@ -11,6 +11,26 @@ const REGIONS = [
 const wsInstances = new Map();
 let clientInstance = null;
 
+// Rolling buffer of what the global chat has said lately, so /chat can answer instantly
+// without opening another socket. Holds only what fits on screen, nothing is persisted.
+const CHAT_BUFFER_MAX = 80;
+const chatBuffer = [];
+
+function pushChat(entry) {
+  chatBuffer.push(entry);
+  if (chatBuffer.length > CHAT_BUFFER_MAX) chatBuffer.splice(0, chatBuffer.length - CHAT_BUFFER_MAX);
+}
+
+/** Most recent chat lines, oldest first. `limit` caps how many come back. */
+export function getRecentChat(limit = 15, includeTrades = true) {
+  const rows = includeTrades ? chatBuffer : chatBuffer.filter((m) => m.type === 2);
+  return rows.slice(-limit);
+}
+
+export function getChatBufferSize() {
+  return chatBuffer.length;
+}
+
 export function startChatListener(client) {
   clientInstance = client;
   REGIONS.forEach(region => {
@@ -49,6 +69,24 @@ function connectRegionWebSocket(region) {
   ws.on('message', async (rawData) => {
     try {
       const data = JSON.parse(rawData.toString());
+
+      // Keep every displayable line: type 2 = player chat, type 13 = server/trade notices.
+      // type 3 is the backlog Kirka sends on connect, which arrives as a list.
+      const remember = (m) => {
+        if (!m || typeof m.message !== 'string' || !m.message.trim()) return;
+        if (m.type !== 2 && m.type !== 13) return;
+        pushChat({
+          type: m.type,
+          name: m.user?.name || null,
+          shortId: m.user?.shortId || null,
+          level: m.user?.level ?? null,
+          role: m.user?.role || 'USER',
+          message: m.message,
+          at: Date.now(),
+        });
+      };
+      if (data.type === 3 && Array.isArray(data.messages)) data.messages.forEach(remember);
+      else remember(data);
 
       // type 2 is general user chat messages in the Kirka server lobby
       if (data.type === 2 && data.user && typeof data.message === 'string') {

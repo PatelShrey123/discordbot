@@ -41,6 +41,7 @@ import * as donateCmd from './commands/donate.js';
 import * as fitCmd from './commands/fit.js';
 import * as vipCmd from './commands/vip.js';
 import * as flipCmd from './commands/flip.js';
+import * as chatCmd from './commands/chat.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
 
 dotenv.config();
@@ -92,6 +93,7 @@ client.commands.set(suggestCmd.data.name, suggestCmd);
 client.commands.set(donateCmd.data.name, donateCmd);
 client.commands.set(fitCmd.data.name, fitCmd);
 client.commands.set(vipCmd.data.name, vipCmd);
+client.commands.set(chatCmd.data.name, chatCmd);
 client.commands.set(flipCmd.data.name, flipCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
@@ -216,6 +218,32 @@ client.on('interactionCreate', async (interaction) => {
     } catch (err) {
       console.error('[StoreButton] Sub toggle error:', err);
       await interaction.editReply('⚠️ Failed to update subscription status.');
+    }
+    return;
+  }
+
+  // Handle /chat buttons: refresh in place, a short live view, and the trade-line toggle
+  if (interaction.isButton() && interaction.customId.startsWith('chat_')) {
+    const [, action, linesRaw, tradesRaw] = interaction.customId.split('_');
+    const lines = Math.min(25, Math.max(5, parseInt(linesRaw, 10) || 15));
+    const showTrades = tradesRaw === '1';
+    try {
+      const { buildChatPayload } = await import('./commands/chat.js');
+      await interaction.deferUpdate();
+
+      if (action === 'live') {
+        // redraw every 3 seconds for 15 seconds, then leave the last view in place
+        for (let i = 0; i < 5; i++) {
+          await interaction.editReply(buildChatPayload(lines, showTrades));
+          if (i < 4) await new Promise((r) => setTimeout(r, 3000));
+        }
+        return;
+      }
+
+      // refresh and the trades toggle both just rebuild with the ids they carry
+      await interaction.editReply(buildChatPayload(lines, showTrades));
+    } catch (err) {
+      console.error('[ChatButton] Error:', err);
     }
     return;
   }

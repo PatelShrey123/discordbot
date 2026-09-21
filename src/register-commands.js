@@ -27,6 +27,7 @@ import * as donateCmd from './commands/donate.js';
 import * as fitCmd from './commands/fit.js';
 import * as vipCmd from './commands/vip.js';
 import * as flipCmd from './commands/flip.js';
+import * as chatCmd from './commands/chat.js';
 
 dotenv.config();
 
@@ -57,7 +58,8 @@ const commands = [
   donateCmd.data.toJSON(),
   fitCmd.data.toJSON(),
   vipCmd.data.toJSON(),
-  flipCmd.data.toJSON()
+  flipCmd.data.toJSON(),
+  chatCmd.data.toJSON()
 ];
 
 export async function registerCommands() {
