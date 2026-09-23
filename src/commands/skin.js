@@ -28,6 +28,20 @@ function formatNumber(num) {
   return Number(num).toLocaleString('en-US');
 }
 
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+function formatRelativeDate(isoStr) {
+  if (!isoStr) return '';
+  const date = new Date(isoStr);
+  const diffMs = Date.now() - date.getTime();
+  if (isNaN(diffMs) || diffMs < 0) return '';
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays >= 1) return `${diffDays}d ago`;
+  if (diffHours >= 1) return `${diffHours}h ago`;
+  return 'just now';
+}
+
 export function getRecentTradesForSkin(skinName, historyTrades = []) {
   if (!skinName || !Array.isArray(historyTrades)) return [];
   const cleanTarget = skinName.toLowerCase().trim();
@@ -36,6 +50,12 @@ export function getRecentTradesForSkin(skinName, historyTrades = []) {
   for (const t of historyTrades) {
     if (!t.trade || !t.trade.offered || !t.trade.wanted) continue;
     if (t.offerer === 'PWNSTAR#ESCROW' || t.accepter === 'PWNSTAR#ESCROW') continue;
+
+    // Filter out trades older than 7 days
+    const tradeTime = new Date(t.updatedAt || 0).getTime();
+    if (tradeTime && (Date.now() - tradeTime > SEVEN_DAYS_MS)) {
+      continue;
+    }
 
     const offeredItems = t.trade.offered.items || [];
     const wantedItems = t.trade.wanted.items || [];
@@ -67,6 +87,7 @@ export function getRecentTradesForSkin(skinName, historyTrades = []) {
 
     validTrades.push({
       date: t.updatedAt,
+      dateRelative: formatRelativeDate(t.updatedAt),
       counterValue: counterVal,
       counterSummary: counterSummary.length > 32 ? counterSummary.slice(0, 30) + '...' : counterSummary
     });
@@ -153,7 +174,8 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades
   } else {
     tradeHistoryText = recentTrades.map((tr, idx) => {
       const numIcon = idx === 0 ? '1️⃣' : idx === 1 ? '2️⃣' : '3️⃣';
-      return `${numIcon} ⚡ **${formatValueShort(tr.counterValue)}** ➔ \`${tr.counterSummary}\``;
+      const timeTag = tr.dateRelative ? ` *(${tr.dateRelative})*` : '';
+      return `${numIcon} ⚡ **${formatValueShort(tr.counterValue)}** ➔ \`${tr.counterSummary}\`${timeTag}`;
     }).join('\n');
 
     if (recentTrades.length < 3) {

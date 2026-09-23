@@ -65,7 +65,8 @@ export async function fetchTradeHistory() {
     if (res.ok) {
       const snapshots = await res.json();
       if (Array.isArray(snapshots)) {
-        const files = snapshots.filter(s => typeof s === 'string' && s.endsWith('.json') && s !== 'dailyTrades.json').slice(-2);
+        // Load the last 7 daily snapshots to cover the full 7-day trade window
+        const files = snapshots.filter(s => typeof s === 'string' && s.endsWith('.json') && s !== 'dailyTrades.json').slice(-7);
         const results = await Promise.all(
           files.map(f => fetch(`https://kirka.lukeskywalk.com/tradehistory/${f}`).then(r => r.json()).catch(() => []))
         );
