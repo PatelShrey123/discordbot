@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getPublicCatalog, getAllItemData } from '../api/kirka.js';
-import { getBoltPriceMap, formatValueLong } from '../api/boltPrices.js';
+import { getBoltPriceMap, formatValueLong, formatValueShort } from '../api/boltPrices.js';
+import { fetchTradeHistory } from './trade.js';
 
 export const data = new SlashCommandBuilder()
   .setName('skin')
@@ -27,7 +28,55 @@ function formatNumber(num) {
   return Number(num).toLocaleString('en-US');
 }
 
-export function createSkinEmbed(matchedItem, priceMap, allItemData) {
+export function getRecentTradesForSkin(skinName, historyTrades = []) {
+  if (!skinName || !Array.isArray(historyTrades)) return [];
+  const cleanTarget = skinName.toLowerCase().trim();
+  const validTrades = [];
+
+  for (const t of historyTrades) {
+    if (!t.trade || !t.trade.offered || !t.trade.wanted) continue;
+    if (t.offerer === 'PWNSTAR#ESCROW' || t.accepter === 'PWNSTAR#ESCROW') continue;
+
+    const offeredItems = t.trade.offered.items || [];
+    const wantedItems = t.trade.wanted.items || [];
+
+    const onOffered = offeredItems.some(i => (i.name || '').toLowerCase() === cleanTarget);
+    const onWanted = wantedItems.some(i => (i.name || '').toLowerCase() === cleanTarget);
+
+    if (!onOffered && !onWanted) continue;
+
+    const counterItems = onOffered ? wantedItems : offeredItems;
+
+    let counterVal = 0;
+    let hasNonWood = false;
+    for (const item of counterItems) {
+      const name = (item.name || '').toLowerCase();
+      if (name.includes('wood')) continue;
+      hasNonWood = true;
+      const p = item.value || 0;
+      counterVal += p * (parseInt(item.quantity, 10) || 1);
+    }
+
+    // Filter out wood / junk / troll trades
+    if (!hasNonWood || counterVal <= 1000) continue;
+
+    const counterSummary = counterItems.map(i => {
+      const qty = parseInt(i.quantity, 10) || 1;
+      return (qty > 1 ? qty + 'x ' : '') + i.name;
+    }).join(' + ');
+
+    validTrades.push({
+      date: t.updatedAt,
+      counterValue: counterVal,
+      counterSummary: counterSummary.length > 32 ? counterSummary.slice(0, 30) + '...' : counterSummary
+    });
+
+    if (validTrades.length >= 3) break;
+  }
+  return validTrades;
+}
+
+export function createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades = []) {
   const normalizedName = matchedItem.name.replace(/^_+/, '').trim().toLowerCase();
 
   // Find metadata from AllItemData.json
@@ -67,12 +116,12 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
     creator = metadata.creator?.name || matchedItem.creator?.name;
   }
 
-  // Find price and obtainable method from Bolt price sheet
+  // Find price and obtainable method from Hub price sheet
   const typeKey = metadata.type === 'BODY_SKIN' ? 'character' : (metadata.parent?.name || '').toLowerCase();
   const compositeKey = `${normalizedName}_${typeKey}`;
   const boltPriceData = priceMap.get(compositeKey) || priceMap.get(normalizedName);
 
-  // Obtainable Method: check Bolt price sheet first, then characterCard/chest info, then default to N/A
+  // Obtainable Method
   let obtainableMethod = 'N/A';
   if (boltPriceData && boltPriceData.obtainableBy && boltPriceData.obtainableBy !== 'N/A') {
     obtainableMethod = boltPriceData.obtainableBy;
@@ -93,9 +142,24 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
       })
     : 'May 16, 2025';
 
-  // Bolt Value
-  const boltValue = boltPriceData?.baseValue ?? 0;
-  const boltValueStr = boltValue > 0 ? formatValueLong(boltValue) : '—';
+  // Hub Value
+  const hubValue = boltPriceData?.baseValue ?? 0;
+  const hubValueStr = hubValue > 0 ? `${formatValueLong(hubValue)} Hub Value` : '— (Pending Valuation)';
+
+  // Build Last 3 Verified Trades text (ignoring wood/junk)
+  let tradeHistoryText = '';
+  if (!recentTrades || recentTrades.length === 0) {
+    tradeHistoryText = '`No non-wood trades recorded in the last 7 days`';
+  } else {
+    tradeHistoryText = recentTrades.map((tr, idx) => {
+      const numIcon = idx === 0 ? '1️⃣' : idx === 1 ? '2️⃣' : '3️⃣';
+      return `${numIcon} ⚡ **${formatValueShort(tr.counterValue)}** ➔ \`${tr.counterSummary}\``;
+    }).join('\n');
+
+    if (recentTrades.length < 3) {
+      tradeHistoryText += `\n> ⏳ *(${recentTrades.length}/3 verified non-wood trades logged)*`;
+    }
+  }
 
   // Share link pointing directly to the website routing path
   const shareLink = `https://kirkahub.online/skin/${encodeURIComponent(matchedItem.name)}`;
@@ -110,8 +174,8 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData) {
       { name: 'CREATOR', value: `\`${creator}\``, inline: true },
       { name: 'OBTAINABLE BY', value: `\`${obtainableMethod}\``, inline: true },
       { name: 'TOTAL OWNED', value: `\`${formatNumber(totalOwned)}\``, inline: true },
-      { name: 'CREATED', value: `\`${createdDate}\``, inline: true },
-      { name: 'BOLT VALUE', value: `\`${boltValueStr}\``, inline: true },
+      { name: 'HUB VALUE', value: `\`${hubValueStr}\``, inline: false },
+      { name: '📜 LAST 3 VERIFIED TRADES (NON-WOOD)', value: tradeHistoryText, inline: false },
       { name: 'SHARE LINK', value: shareLink, inline: false }
     )
     .setTimestamp();
@@ -139,10 +203,11 @@ export async function execute(interaction) {
   await interaction.deferReply();
   const searchName = interaction.options.getString('name').trim().toLowerCase();
 
-  const [catalog, priceMap, allItemData] = await Promise.all([
+  const [catalog, priceMap, allItemData, historyTrades] = await Promise.all([
     getPublicCatalog(),
     getBoltPriceMap(),
-    getAllItemData()
+    getAllItemData(),
+    fetchTradeHistory().catch(() => [])
   ]);
 
   // Find exact or closest match in catalog
@@ -186,7 +251,8 @@ export async function execute(interaction) {
   let embed;
   let row;
   try {
-    embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+    const recentTrades = getRecentTradesForSkin(matchedItem.name, historyTrades);
+    embed = createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades);
 
     const web3DUrl = `https://kirkahub.online/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
     row = new ActionRowBuilder().addComponents(

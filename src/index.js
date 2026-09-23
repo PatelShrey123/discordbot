@@ -9,7 +9,7 @@ import { getPublicCatalog, fetchClanLeaderboard, getAllItemData, fetchUserProfil
 import { getBoltPriceMap, getItemPrice, formatValueLong } from './api/boltPrices.js';
 import { initDb, getUserBackground, getLinkedAccount, getDiscordLinkedToKirka, setUserBackground, resolveKirkaTarget } from './api/db.js';
 import { startChatListener, getWebSocketStatus, pendingLinks } from './utils/chatListener.js';
-import { createSkinEmbed } from './commands/skin.js';
+import { createSkinEmbed, getRecentTradesForSkin } from './commands/skin.js';
 import { renderProfileCard } from './canvas/profileCard.js';
 import { renderInventoryGridPage } from './canvas/inventoryGrid.js';
 import { renderClanRosterPage } from './canvas/clanRoster.js';
@@ -283,10 +283,11 @@ client.on('messageCreate', async (message) => {
     console.log(`[MessageReceived] Matched .skin! Query: "${searchName}"`);
 
     try {
-      const [catalog, priceMap, allItemData] = await Promise.all([
+      const [catalog, priceMap, allItemData, historyTrades] = await Promise.all([
         getPublicCatalog(),
         getBoltPriceMap(),
-        getAllItemData()
+        getAllItemData(),
+        tradeCmd.fetchTradeHistory().catch(() => [])
       ]);
 
       let matchedItem = catalog.find(item => 
@@ -326,7 +327,8 @@ client.on('messageCreate', async (message) => {
       let embed;
       let row;
       try {
-        embed = createSkinEmbed(matchedItem, priceMap, allItemData);
+        const recentTrades = getRecentTradesForSkin(matchedItem.name, historyTrades);
+        embed = createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades);
         const web3DUrl = `https://kirkahub.online/skin/${encodeURIComponent(matchedItem.name.replace(/^_+/, ''))}`;
         row = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
