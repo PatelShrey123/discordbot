@@ -42,6 +42,8 @@ import * as fitCmd from './commands/fit.js';
 import * as vipCmd from './commands/vip.js';
 import * as flipCmd from './commands/flip.js';
 import * as chatCmd from './commands/chat.js';
+import * as refreshpricesCmd from './commands/refreshprices.js';
+import * as newskinsCmd from './commands/newskins.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
 
 dotenv.config();
@@ -95,6 +97,8 @@ client.commands.set(fitCmd.data.name, fitCmd);
 client.commands.set(vipCmd.data.name, vipCmd);
 client.commands.set(chatCmd.data.name, chatCmd);
 client.commands.set(flipCmd.data.name, flipCmd);
+client.commands.set(refreshpricesCmd.data.name, refreshpricesCmd);
+client.commands.set(newskinsCmd.data.name, newskinsCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');

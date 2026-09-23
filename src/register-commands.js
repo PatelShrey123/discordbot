@@ -28,6 +28,8 @@ import * as fitCmd from './commands/fit.js';
 import * as vipCmd from './commands/vip.js';
 import * as flipCmd from './commands/flip.js';
 import * as chatCmd from './commands/chat.js';
+import * as refreshpricesCmd from './commands/refreshprices.js';
+import * as newskinsCmd from './commands/newskins.js';
 
 dotenv.config();
 
@@ -59,7 +61,9 @@ const commands = [
   fitCmd.data.toJSON(),
   vipCmd.data.toJSON(),
   flipCmd.data.toJSON(),
-  chatCmd.data.toJSON()
+  chatCmd.data.toJSON(),
+  refreshpricesCmd.data.toJSON(),
+  newskinsCmd.data.toJSON()
 ];
 
 export async function registerCommands() {
