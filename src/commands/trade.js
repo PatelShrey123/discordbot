@@ -234,11 +234,43 @@ function normalizeTrade(rawTrade, mode, priceMap, catalog) {
   };
 }
 
-function filterTrades(trades, query, mode) {
-  if (!query) return trades;
-  const q = query.trim().toLowerCase();
+function isPureOneWoodSide(items = []) {
+  if (!items || items.length !== 1) return false;
+  const it = items[0];
+  const name = (it.i || it.name || '').trim().toLowerCase();
+  const qty = parseInt(it.q || it.quantity || '1', 10);
+  return name === 'wood' && qty === 1;
+}
 
-  return trades.filter(tr => {
+function filterTrades(trades, query, mode) {
+  const q = (query || '').trim().toLowerCase();
+  const isExplicitWoodSearch = q.includes('wood');
+
+  return (trades || []).filter(tr => {
+    // 1. Escrow filter (unless user explicitly searched for escrow)
+    if (!q.includes('pwnstar') && !q.includes('escrow')) {
+      if (mode === 'history') {
+        if (tr.offerer === 'PWNSTAR#ESCROW' || tr.accepter === 'PWNSTAR#ESCROW') return false;
+      } else {
+        if ((tr.userAndTag || '').toUpperCase() === 'PWNSTAR#ESCROW') return false;
+      }
+    }
+
+    // 2. Pure 1x Wood friendly transfers filter (unless user explicitly searched for wood)
+    if (!isExplicitWoodSearch) {
+      if (mode === 'history') {
+        const off = tr.trade?.offered?.items || [];
+        const want = tr.trade?.wanted?.items || [];
+        if (isPureOneWoodSide(off) || isPureOneWoodSide(want)) return false;
+      } else {
+        const off = tr.offered || [];
+        const want = tr.wanted || [];
+        if (isPureOneWoodSide(off) || isPureOneWoodSide(want)) return false;
+      }
+    }
+
+    if (!q) return true;
+
     if (mode === 'history') {
       if ((tr.offerer || '').toLowerCase().includes(q)) return true;
       if ((tr.accepter || '').toLowerCase().includes(q)) return true;
