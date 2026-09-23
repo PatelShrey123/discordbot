@@ -65,7 +65,18 @@ export function getRecentTradesForSkin(skinName, historyTrades = []) {
 
     if (!onOffered && !onWanted) continue;
 
+    const mySideItems = onOffered ? offeredItems : wantedItems;
     const counterItems = onOffered ? wantedItems : offeredItems;
+
+    // Check if the inspected skin was bundled with other non-wood items on its own side
+    const otherMySide = mySideItems.filter(i => {
+      const n = (i.name || '').toLowerCase();
+      return n !== cleanTarget && !n.includes('wood');
+    });
+    const myAddsSummary = otherMySide.map(i => {
+      const qty = parseInt(i.quantity, 10) || 1;
+      return (qty > 1 ? qty + 'x ' : '') + i.name;
+    }).join(' + ');
 
     let counterVal = 0;
     let hasNonWood = false;
@@ -80,16 +91,20 @@ export function getRecentTradesForSkin(skinName, historyTrades = []) {
     // Filter out wood / junk / troll trades
     if (!hasNonWood || counterVal <= 1000) continue;
 
-    const counterSummary = counterItems.map(i => {
+    let counterSummary = counterItems.map(i => {
       const qty = parseInt(i.quantity, 10) || 1;
       return (qty > 1 ? qty + 'x ' : '') + i.name;
     }).join(' + ');
+
+    if (myAddsSummary) {
+      counterSummary += ` (+ ${myAddsSummary})`;
+    }
 
     validTrades.push({
       date: t.updatedAt,
       dateRelative: formatRelativeDate(t.updatedAt),
       counterValue: counterVal,
-      counterSummary: counterSummary.length > 32 ? counterSummary.slice(0, 30) + '...' : counterSummary
+      counterSummary: counterSummary.length > 48 ? counterSummary.slice(0, 45) + '...' : counterSummary
     });
 
     if (validTrades.length >= 3) break;
