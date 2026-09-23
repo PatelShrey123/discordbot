@@ -14,7 +14,7 @@ import { getLinkedAccount, resolveKirkaTarget } from '../api/db.js';
 
 export const data = new SlashCommandBuilder()
   .setName('inventory')
-  .setDescription('View a Kirka player inventory with Bolt market valuations')
+  .setDescription('View a Kirka player inventory with Hub market valuations')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2)
   .addStringOption(option =>

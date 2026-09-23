@@ -3,7 +3,7 @@ import { getEventQuests, getClanWars, getStoresAndRanked } from '../api/eventsMa
 
 export const data = new SlashCommandBuilder()
   .setName('events')
-  .setDescription('View Kirka Event Quests, Clan Wars rewards, and Season rewards from the Bolt list')
+  .setDescription('View Kirka Event Quests, Clan Wars rewards, and Season rewards from the Kirka Hub list')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2)
   .addStringOption(option =>
@@ -70,7 +70,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
         const typeStr = it.type ? ` (${it.type})` : '';
         const ownersCount = it.owners !== null && it.owners !== undefined ? Number(it.owners) : null;
         const ownersStr = ownersCount !== null ? ` • ${ownersCount.toLocaleString()} Owner${ownersCount === 1 ? '' : 's'}` : '';
-        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Bolts` : '';
+        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Hub Value` : '';
         const reqStr = it.req ? ` • ${it.req}` : '';
         return `• **${it.name}${typeStr}**${reqStr}${ownersStr}${valStr}`;
       });
@@ -81,7 +81,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
       });
     });
 
-    embed.setFooter({ text: 'Bolt Price List • Use .cw <number> to inspect specific clan wars' });
+    embed.setFooter({ text: 'Kirka Hub Price List • Use .cw <number> to inspect specific clan wars' });
     return embed;
   }
 
@@ -102,7 +102,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
         const typeStr = it.type ? ` (${it.type})` : '';
         const ownersCount = it.owners !== null && it.owners !== undefined ? Number(it.owners) : null;
         const ownersStr = ownersCount !== null ? ` • ${ownersCount.toLocaleString()} Owner${ownersCount === 1 ? '' : 's'}` : '';
-        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Bolts` : '';
+        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Hub Value` : '';
         const reqStr = it.req ? ` • ${it.req}` : '';
         return `• **${it.name}${typeStr}**${reqStr}${ownersStr}${valStr}`;
       });
@@ -113,7 +113,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
       });
     });
 
-    embed.setFooter({ text: 'Bolt Price List • Use .ranked to view ranked sets' });
+    embed.setFooter({ text: 'Kirka Hub Price List • Use .ranked to view ranked sets' });
     return embed;
   }
 
@@ -135,7 +135,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
       const ownersCount = it.owners !== null && it.owners !== undefined ? Number(it.owners) : null;
       const ownersStr = ownersCount !== null ? ` • ${ownersCount.toLocaleString()} Owner${ownersCount === 1 ? '' : 's'}` : '';
       const reqStr = it.req ? ` • ${it.req}` : '';
-      const valStr = it.value && it.value !== '—' && it.value !== 'TBD' ? ` • ${it.value} Bolts` : (it.value === 'TBD' ? ' • TBD' : '');
+      const valStr = it.value && it.value !== '—' && it.value !== 'TBD' ? ` • ${it.value} Hub Value` : (it.value === 'TBD' ? ' • TBD' : '');
       return `• **${it.name}${typeStr}**${reqStr}${ownersStr}${valStr}`;
     });
 
@@ -146,6 +146,6 @@ export function buildEventsEmbed(category = 'events', query = '') {
     });
   });
 
-  embed.setFooter({ text: 'Bolt Price List • Use .events <number/name> to browse previous events' });
+  embed.setFooter({ text: 'Kirka Hub Price List • Use .events <number/name> to browse previous events' });
   return embed;
 }

@@ -38,7 +38,7 @@ export function buildHelpEmbed(category = 'home') {
         `> 💡 **Permanent Cloud Storage:** Your background is stored permanently in our database — **it will never expire or reset**!\n\n` +
         `### 📋 Profile Commands:\n` +
         `• \`.profile [@DiscordUser/user]\` — Render your HD esports player card with 3D skins, clan tag, and K/D. Mention anyone to view their card!\n` +
-        `• \`.inv [@DiscordUser/user]\` — View a player's inventory grid & total Bolt valuation. Mention anyone to see their inventory!\n` +
+        `• \`.inv [@DiscordUser/user]\` — View a player's inventory grid & total Hub valuation. Mention anyone to see their inventory!\n` +
         `• \`.h [image/url]\` — Set or update your custom profile card background.\n` +
         `• \`.link\` — Link your Discord account to your Kirka profile via in-game chat verification.\n` +
         `• \`.unlink\` — Disconnect your linked profile.`
@@ -52,16 +52,16 @@ export function buildHelpEmbed(category = 'home') {
       .setColor(0x38bdf8)
       .setDescription(
         `### 📈 Real-Time Trading Portal (\`.trade\`)\n` +
-        `The bot connects directly to **Luke Skywalk\'s Live Kirka Trades API** and evaluates deals using the official community **Bolt Pricing Sheet** (\`⚡ Bolts\`).\n\n` +
+        `The bot connects directly to **Luke Skywalk\'s Live Kirka Trades API** and evaluates deals using the official **Kirka Hub Valuation Index** (\`⚡ Hub Value\`).\n\n` +
         `**Visual Graphic Cards:** Every trade listing renders a visual card with official Kirka 3D weapon renders, rarity borders, and a profit/loss assessment!\n\n` +
         `### 📋 Trading Commands:\n` +
         `• \`.trade\` — Browse all current active trade offers on Kirka.\n` +
         `• \`.trade <skin>\` — Search active listings for a specific skin (e.g. \`.trade Hi-Score\`, \`.trade Shark\`, \`.trade Sinister\`).\n` +
         `• \`.trade history [skin]\` — Search completed and accepted trade history deals.\n` +
-        `• \`.skin <name>\` — Inspect any skin in the game with its live market value in Bolts, rarity, artist credits, and Kirka 3D preview link.\n` +
+        `• \`.skin <name>\` — Inspect any skin in the game with its live market value in Hub Value, rarity, artist credits, and Kirka 3D preview link.\n` +
         `• \`.store\` — View live in-game store bundles, limited stock counters (e.g. Capybara 12/25 left), and weapon renders.\n` +
         `• \`.storeupdate\` — Toggle real-time notifications whenever a new limited drop occurs or the store rotates.\n` +
-        `• \`.inv [user]\` — Render an ultra-sharp 2X HD inventory grid card showing a player\'s owned items and total inventory valuation in Bolts!\n\n` +
+        `• \`.inv [user]\` — Render an ultra-sharp 2X HD inventory grid card showing a player\'s owned items and total inventory valuation in Hub Value!\n\n` +
         `> 💡 **One-Click Switcher:** When viewing trades, use the \`[Show Trade History 📜]\` and \`[Show Active Offers 🟢]\` buttons to toggle modes without retyping!`
       )
       .setFooter({ text: 'KirkaHub Trading • Support 24/7 Hosting: .donate' });
@@ -96,7 +96,7 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.unbox <chest>\` — Choose \`ice\`, \`golden\`, \`halloween\`, or \`christmas\`.\n` +
         `• Includes an interactive \`[🎲 Open Another]\` button to spam unbox!\n\n` +
         `### 🏆 Clans, Wars & Ranked:\n` +
-        `• \`.cw [number/skin]\` — View Clan Wars rewards (Top 3 • Top 8 • Top 39) with Bolt prices and owner counts (e.g. \`.cw 23\`, \`.cw 48\`, \`.cw turtle\`).\n` +
+        `• \`.cw [number/skin]\` — View Clan Wars rewards (Top 3 • Top 8 • Top 39) with Hub prices and owner counts (e.g. \`.cw 23\`, \`.cw 48\`, \`.cw turtle\`).\n` +
         `• \`.events [query]\` — View 2026 Event Quests, kill/headshot requirements, and skin circulation (e.g. \`.events 27\`, \`.events ruby\`).\n` +
         `• \`.seasons [query]\` — View Ranked Seasons and special event shops (e.g. \`.seasons 3\`, \`.seasons panda\`).\n` +
         `• \`.clan <tag>\` — Generate a visual roster card with member stats, level, and war points.\n` +

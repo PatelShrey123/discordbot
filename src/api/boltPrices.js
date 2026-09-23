@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 let cachedPriceMap = null;
 let lastFetchTime = 0;
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes cache
@@ -66,42 +68,39 @@ export async function getBoltPriceMap() {
   }
 
   const map = new Map();
-  const url = 'https://opensheet.elk.sh/1pxMSoaSo8FYv-OIJ26HpSj8EDy7EDRmatHyQW24o6E4/1';
 
   try {
-    const res = await fetch(url);
-    if (res.ok) {
-      const rows = await res.json();
-      if (Array.isArray(rows)) {
-        rows.forEach((row) => {
-          const skinName = (row['Skin Name'] || '').trim();
-          const rarity = (row['Skin Rarity'] || '').trim();
-          const baseValueStr = (row['Base Value'] || '').toString().replace(/,/g, '');
-          const baseValue = parseInt(baseValueStr, 10) || 0;
-          const type = (row['Type'] || '').trim();
-          const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
+    const raw = fs.readFileSync(new URL('../data/hub_prices.json', import.meta.url), 'utf8');
+    const rows = JSON.parse(raw);
+    if (Array.isArray(rows)) {
+      rows.forEach((row) => {
+        const skinName = (row['Skin Name'] || '').trim();
+        const rarity = (row['Skin Rarity'] || '').trim();
+        const baseValueStr = (row['Base Value'] || '').toString().replace(/,/g, '');
+        const baseValue = parseInt(baseValueStr, 10) || 0;
+        const type = (row['Type'] || '').trim();
+        const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
 
-          const itemObj = {
-            skinName,
-            rarity,
-            baseValue,
-            type,
-            obtainableBy
-          };
+        const itemObj = {
+          skinName,
+          rarity,
+          baseValue,
+          type,
+          obtainableBy
+        };
 
-          const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
-          const keyNameOnly = skinName.toLowerCase();
+        const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
+        const keyNameOnly = skinName.toLowerCase();
 
-          map.set(keyWithType, itemObj);
-          if (!map.has(keyNameOnly)) {
-            map.set(keyNameOnly, itemObj);
-          }
-        });
-        console.log(`[BoltPrices] Successfully loaded ${map.size} items from Bolt Pricing Sheet.`);
-      }
+        map.set(keyWithType, itemObj);
+        if (!map.has(keyNameOnly)) {
+          map.set(keyNameOnly, itemObj);
+        }
+      });
+      console.log(`[HubPrices] Successfully loaded ${map.size} items from local Hub Pricing database.`);
     }
   } catch (err) {
-    console.error('[BoltPrices] Failed to fetch live sheet, using fallback price map:', err.message);
+    console.error('[HubPrices] Failed to read local hub_prices.json:', err.message);
   }
 
   // Populate fallback defaults if missing
