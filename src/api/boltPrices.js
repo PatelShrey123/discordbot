@@ -68,39 +68,89 @@ export async function getBoltPriceMap() {
   }
 
   const map = new Map();
+  let loaded = false;
 
-  try {
-    const raw = fs.readFileSync(new URL('../data/hub_prices.json', import.meta.url), 'utf8');
-    const rows = JSON.parse(raw);
-    if (Array.isArray(rows)) {
-      rows.forEach((row) => {
-        const skinName = (row['Skin Name'] || '').trim();
-        const rarity = (row['Skin Rarity'] || '').trim();
-        const baseValueStr = (row['Base Value'] || '').toString().replace(/,/g, '');
-        const baseValue = parseInt(baseValueStr, 10) || 0;
-        const type = (row['Type'] || '').trim();
-        const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
-
-        const itemObj = {
-          skinName,
-          rarity,
-          baseValue,
-          type,
-          obtainableBy
-        };
-
-        const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
-        const keyNameOnly = skinName.toLowerCase();
-
-        map.set(keyWithType, itemObj);
-        if (!map.has(keyNameOnly)) {
-          map.set(keyNameOnly, itemObj);
+  // 1. Private Google Sheet feed (if HUB_PRICES_SHEET_URL is configured in .env)
+  const sheetUrl = process.env.HUB_PRICES_SHEET_URL;
+  if (sheetUrl) {
+    try {
+      const res = await fetch(sheetUrl, { headers: { 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' } });
+      if (res.ok) {
+        const csvText = await res.text();
+        const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
+        if (lines.length > 500) {
+          const parseRow = (r) => {
+            const result = [];
+            let inQuotes = false;
+            let entry = '';
+            for (let i = 0; i < r.length; i++) {
+              const c = r[i];
+              if (c === '"') inQuotes = !inQuotes;
+              else if (c === ',' && !inQuotes) { result.push(entry.trim()); entry = ''; }
+              else entry += c;
+            }
+            result.push(entry.trim());
+            return result;
+          };
+          const headers = parseRow(lines[0]);
+          for (let i = 1; i < lines.length; i++) {
+            const vals = parseRow(lines[i]);
+            const row = {};
+            headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
+            const skinName = (row['Skin Name'] || '').trim();
+            const rarity = (row['Skin Rarity'] || '').trim();
+            const baseValueStr = (row['Base Value'] || row['Hub Value'] || '').toString().replace(/,/g, '');
+            const baseValue = parseInt(baseValueStr, 10) || 0;
+            const type = (row['Type'] || '').trim();
+            const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
+            const itemObj = { skinName, rarity, baseValue, type, obtainableBy };
+            map.set(`${skinName.toLowerCase()}_${type.toLowerCase()}`, itemObj);
+            if (!map.has(skinName.toLowerCase())) map.set(skinName.toLowerCase(), itemObj);
+          }
+          console.log(`[HubPrices] Successfully loaded ${map.size} items from private Google Sheet.`);
+          loaded = true;
         }
-      });
-      console.log(`[HubPrices] Successfully loaded ${map.size} items from local Hub Pricing database.`);
+      }
+    } catch (e) {
+      console.warn('[HubPrices] Sheet fetch failed, falling back to local json:', e.message);
     }
-  } catch (err) {
-    console.error('[HubPrices] Failed to read local hub_prices.json:', err.message);
+  }
+
+  // 2. Offline / Local fallback database
+  if (!loaded) {
+    try {
+      const raw = fs.readFileSync(new URL('../data/hub_prices.json', import.meta.url), 'utf8');
+      const rows = JSON.parse(raw);
+      if (Array.isArray(rows)) {
+        rows.forEach((row) => {
+          const skinName = (row['Skin Name'] || '').trim();
+          const rarity = (row['Skin Rarity'] || '').trim();
+          const baseValueStr = (row['Base Value'] || row['Hub Value'] || '').toString().replace(/,/g, '');
+          const baseValue = parseInt(baseValueStr, 10) || 0;
+          const type = (row['Type'] || '').trim();
+          const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
+
+          const itemObj = {
+            skinName,
+            rarity,
+            baseValue,
+            type,
+            obtainableBy
+          };
+
+          const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
+          const keyNameOnly = skinName.toLowerCase();
+
+          map.set(keyWithType, itemObj);
+          if (!map.has(keyNameOnly)) {
+            map.set(keyNameOnly, itemObj);
+          }
+        });
+        console.log(`[HubPrices] Successfully loaded ${map.size} items from local Hub Pricing database.`);
+      }
+    } catch (err) {
+      console.error('[HubPrices] Failed to read local hub_prices.json:', err.message);
+    }
   }
 
   // Populate fallback defaults if missing
