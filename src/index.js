@@ -6,7 +6,7 @@ import dns from 'dns';
 
 import { registerCommands } from './register-commands.js';
 import { getPublicCatalog, fetchClanLeaderboard, getAllItemData, fetchUserProfile, fetchUserInventory, fetchClan } from './api/kirka.js';
-import { getBoltPriceMap, getItemPrice, formatValueLong } from './api/boltPrices.js';
+import { getBoltPriceMap, getItemPrice, formatValueLong, clearPriceCache } from './api/boltPrices.js';
 import { initDb, getUserBackground, getLinkedAccount, getDiscordLinkedToKirka, setUserBackground, resolveKirkaTarget } from './api/db.js';
 import { startChatListener, getWebSocketStatus, pendingLinks } from './utils/chatListener.js';
 import { createSkinEmbed, getRecentTradesForSkin } from './commands/skin.js';
@@ -272,6 +272,18 @@ client.on('messageCreate', async (message) => {
 
   const content = message.content.trim();
   const lowerContent = content.toLowerCase();
+
+  // 0. .refreshprices / .reloadprices / .syncprices
+  if (lowerContent === '.refreshprices' || lowerContent === '.reloadprices' || lowerContent === '.syncprices') {
+    try {
+      await message.channel.sendTyping();
+      clearPriceCache();
+      const map = await getBoltPriceMap();
+      return message.reply(`⚡ **Hub Valuation Synchronized!** Successfully reloaded \`${map.size}\` items from your private Google Sheet.`);
+    } catch (err) {
+      return message.reply(`❌ Failed to synchronize prices: ${err.message}`);
+    }
+  }
 
   // 1. .skin [name]
   if (lowerContent.startsWith('.skin ')) {

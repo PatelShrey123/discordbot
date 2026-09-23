@@ -61,6 +61,11 @@ export function formatValueLong(val) {
   return val.toLocaleString();
 }
 
+export function clearPriceCache() {
+  cachedPriceMap = null;
+  lastFetchTime = 0;
+}
+
 export async function getBoltPriceMap() {
   const now = Date.now();
   if (cachedPriceMap && now - lastFetchTime < CACHE_TTL_MS) {
