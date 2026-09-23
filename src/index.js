@@ -285,6 +285,47 @@ client.on('messageCreate', async (message) => {
     }
   }
 
+  // 0.5 .newskins / .unlisted - Detect new drops in Kirka not in Google Sheet yet
+  if (lowerContent === '.newskins' || lowerContent === '.missing' || lowerContent === '.unlisted') {
+    try {
+      await message.channel.sendTyping();
+      const [catalog, priceMap] = await Promise.all([
+        getPublicCatalog(),
+        getBoltPriceMap()
+      ]);
+
+      const unlisted = [];
+      for (const item of catalog) {
+        if (!item.name) continue;
+        const clean = item.name.replace(/^_+/, '').trim().toLowerCase();
+        const typeKey = (item.type === 'BODY_SKIN' ? 'character' : (item.parent?.name || '')).toLowerCase();
+        const compositeKey = clean + '_' + typeKey;
+        if (!priceMap.has(compositeKey) && !priceMap.has(clean)) {
+          unlisted.push(item);
+        }
+      }
+
+      unlisted.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+      const top10 = unlisted.slice(0, 8);
+      const fields = top10.map((item, idx) => {
+        const type = item.type === 'BODY_SKIN' ? 'Character' : (item.parent?.name || 'Weapon');
+        return `**${idx + 1}. ${item.name}** (\`${type}\` • \`${item.rarity || 'COMMON'}\`)\n> 📋 Sheet Row: \`${item.name},${type},${item.rarity || 'Common'},TBD,New Drop\``;
+      }).join('\n\n');
+
+      const embed = new EmbedBuilder()
+        .setTitle('🆕 NEW / UNLISTED SKINS DETECTOR')
+        .setColor('#f59e0b')
+        .setDescription(`Found **${unlisted.length}** skins in Kirka's database not yet listed in your Google Sheet.\nHere are the latest ones you can add:`)
+        .addFields({ name: 'LATEST NEW DROPS (READY FOR YOUR SHEET)', value: fields || 'None! All skins are listed.' })
+        .setFooter({ text: 'Tip: Copy the row format above and paste it into the bottom of your Google Sheet!' });
+
+      return message.reply({ embeds: [embed] });
+    } catch (err) {
+      return message.reply(`❌ Failed to scan new skins: ${err.message}`);
+    }
+  }
+
   // 1. .skin [name]
   if (lowerContent.startsWith('.skin ')) {
     const searchName = content.substring(6).trim().toLowerCase();
