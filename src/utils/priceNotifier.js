@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { EmbedBuilder } from 'discord.js';
-import { getBoltPriceMap, clearPriceCache } from '../api/boltPrices.js';
+import { getBoltPriceMap, clearPriceCache, getLastPriceSource } from '../api/boltPrices.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '..', 'data');
@@ -132,28 +132,37 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
   const after = toSnapshot(priceMap);
   const rowCount = Object.keys(after).length;
 
+  const source = getLastPriceSource();
+
   if (rowCount < MIN_ROWS) {
-    console.warn(`[PriceNotifier] Sheet returned only ${rowCount} rows — skipping this check.`);
-    return { skipped: true, changed: 0, added: 0, removed: 0 };
+    console.warn(`[PriceNotifier] Only ${rowCount} rows — skipping this check.`);
+    return { skipped: true, source, rowCount, changed: 0, added: 0, removed: 0 };
+  }
+
+  // Reading the bundled file means the sheet was unreachable. It never changes, so the check would
+  // silently never fire; say so rather than reporting "no changes".
+  if (source !== 'sheet') {
+    console.warn('[PriceNotifier] Prices came from the local fallback, not the sheet — skipping.');
+    return { noSheet: true, source, rowCount, changed: 0, added: 0, removed: 0 };
   }
 
   const before = readSnapshot();
   if (!before) {
     writeSnapshot(after);
     console.log(`[PriceNotifier] Baseline recorded (${rowCount} items), nothing announced.`);
-    return { baseline: true, changed: 0, added: 0, removed: 0 };
+    return { baseline: true, source, rowCount, changed: 0, added: 0, removed: 0 };
   }
 
   const result = diff(before, after);
   const total = result.changed.length + result.added.length + result.removed.length;
-  if (!total) return { changed: 0, added: 0, removed: 0 };
+  if (!total) return { source, rowCount, changed: 0, added: 0, removed: 0 };
 
   if (announce) {
     const channel = await client.channels.fetch(CHANNEL_ID).catch(() => null);
     if (!channel) {
       // the snapshot is deliberately not saved, so the change is retried on the next poll
       console.warn(`[PriceNotifier] Channel ${CHANNEL_ID} unreachable — keeping the change for next time.`);
-      return { error: 'channel', changed: 0, added: 0, removed: 0 };
+      return { error: 'channel', source, rowCount, changed: 0, added: 0, removed: 0 };
     }
     const embeds = buildEmbeds(result);
     for (let i = 0; i < embeds.length; i += MAX_EMBEDS) {
@@ -164,7 +173,7 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
 
   writeSnapshot(after);
   console.log(`[PriceNotifier] ${result.changed.length} changed, ${result.added.length} added, ${result.removed.length} removed.`);
-  return { changed: result.changed.length, added: result.added.length, removed: result.removed.length };
+  return { source, rowCount, changed: result.changed.length, added: result.added.length, removed: result.removed.length };
 }
 
 export function startPriceNotifier(client) {

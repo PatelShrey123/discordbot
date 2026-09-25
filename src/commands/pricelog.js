@@ -13,8 +13,11 @@ export async function execute(interaction) {
   try {
     const r = await checkPriceChanges(interaction.client);
 
+    if (r.noSheet) {
+      return interaction.editReply('⚠️ Prices came from the local fallback rather than the sheet, so nothing was compared. Set `HUB_PRICES_SHEET_URL` in the environment and try again.');
+    }
     if (r.skipped) {
-      return interaction.editReply('⚠️ The sheet came back with too few rows to trust, so nothing was compared. Try again in a moment.');
+      return interaction.editReply(`⚠️ The sheet came back with only ${r.rowCount} rows, too few to trust, so nothing was compared.`);
     }
     if (r.baseline) {
       return interaction.editReply('📌 No snapshot existed yet, so the current sheet was recorded as the baseline. Changes from here on will be posted.');

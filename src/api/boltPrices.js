@@ -4,6 +4,10 @@ let cachedPriceMap = null;
 let lastFetchTime = 0;
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes cache
 
+// 'sheet' | 'local' | null — which source last populated the map
+let lastSource = null;
+export function getLastPriceSource() { return lastSource; }
+
 const FALLBACK_PRICES = {
   "grayscale_character": 50000000,
   "gazer_character": 35000000,
@@ -104,7 +108,9 @@ export async function getBoltPriceMap() {
             headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
             const skinName = (row['Skin Name'] || '').trim();
             const rarity = (row['Skin Rarity'] || '').trim();
-            const baseValueStr = (row['Base Value'] || row['Hub Value'] || '').toString().replace(/,/g, '');
+            // Hub Value is the column the list is maintained in; Base Value is the older header.
+            // The website reads them in this order, and the bot must agree or the two quote different prices.
+            const baseValueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
             const baseValue = parseInt(baseValueStr, 10) || 0;
             const type = (row['Type'] || '').trim();
             const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
@@ -114,6 +120,7 @@ export async function getBoltPriceMap() {
           }
           console.log(`[HubPrices] Successfully loaded ${map.size} items from private Google Sheet.`);
           loaded = true;
+          lastSource = 'sheet';
         }
       }
     } catch (e) {
@@ -152,6 +159,7 @@ export async function getBoltPriceMap() {
           }
         });
         console.log(`[HubPrices] Successfully loaded ${map.size} items from local Hub Pricing database.`);
+        lastSource = 'local';
       }
     } catch (err) {
       console.error('[HubPrices] Failed to read local hub_prices.json:', err.message);
