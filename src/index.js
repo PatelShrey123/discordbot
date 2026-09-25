@@ -1015,31 +1015,72 @@ let serverLocationInfo = { ip: 'Detecting...', region: 'Detecting...', country: 
 
 // Start lightweight HTTP server for Render.com health checks and status diagnostics
 const PORT = process.env.PORT || 3000;
+// /gateway/bot is one of Discord's strictest routes, and this page used to call it on every
+// single load. An uptime pinger hitting /status every few minutes is enough to earn an
+// hour-long block, which then applies to sending messages too. The result is cached, and a
+// Retry-After is honoured to the second instead of being walked into again.
+const discordCheck = { at: 0, blockedUntil: 0, result: null };
+const DISCORD_CHECK_TTL_MS = 15 * 60 * 1000;
+
+async function getDiscordApiStatus(client) {
+  const now = Date.now();
+
+  if (now < discordCheck.blockedUntil) {
+    return {
+      ...(discordCheck.result || {}),
+      connected: client.ws.status === 0,
+      rateLimited: true,
+      retryAfter: Math.ceil((discordCheck.blockedUntil - now) / 1000),
+      note: 'cached - backing off until the limit expires',
+    };
+  }
+  if (discordCheck.result && now - discordCheck.at < DISCORD_CHECK_TTL_MS) {
+    return { ...discordCheck.result, note: 'cached' };
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const response = await fetch('https://discord.com/api/v10/gateway/bot', {
+      headers: { Authorization: `Bot ${process.env.DISCORD_TOKEN}` },
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    const retryAfter = response.headers.get('retry-after') || null;
+    if (response.status === 429 && retryAfter) {
+      discordCheck.blockedUntil = Date.now() + Number(retryAfter) * 1000;
+      console.warn(`[Status] Discord rate limited this IP for ${retryAfter}s - pausing the outbound check.`);
+    }
+
+    discordCheck.at = Date.now();
+    discordCheck.result = {
+      connected: [200, 401, 403, 429].includes(response.status),
+      status: response.status,
+      statusText: response.statusText,
+      rateLimited: response.status === 429,
+      retryAfter
+    };
+    return discordCheck.result;
+  } catch (err) {
+    // the websocket is the real measure of whether the bot is up; REST is only a courtesy check
+    return { connected: client.ws.status === 0, status: 0, statusText: 'Unreachable', rateLimited: false, error: err.message };
+  }
+}
+
 http.createServer(async (req, res) => {
+  // Cheap liveness route for uptime pingers. It makes no outbound calls, so keeping the service
+  // awake costs nothing and cannot get the IP blocked. Point your pinger here, not at /status.
+  if (req.url === '/healthz') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    return res.end(client.ws.status === 0 ? 'ok' : `gateway:${client.ws.status}`);
+  }
+
   if (req.url === '/status') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    
-    // 1) Test Outbound Discord connection
-    let discordApiStatus = { connected: false, status: 0, statusText: 'Unknown', rateLimited: false };
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-      const response = await fetch('https://discord.com/api/v10/gateway/bot', {
-        headers: { Authorization: `Bot ${process.env.DISCORD_TOKEN}` },
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
 
-      discordApiStatus = {
-        connected: response.status === 200 || response.status === 401 || response.status === 403 || response.status === 429,
-        status: response.status,
-        statusText: response.statusText,
-        rateLimited: response.status === 429,
-        retryAfter: response.headers.get('retry-after') || null
-      };
-    } catch (err) {
-      discordApiStatus.error = err.message;
-    }
+    // 1) Outbound Discord connection (cached; see getDiscordApiStatus)
+    const discordApiStatus = await getDiscordApiStatus(client);
 
     // 2) Collect Gateway State
     const wsStates = { 0: 'READY', 1: 'CONNECTING', 2: 'RECONNECTING', 3: 'IDLE', 4: 'NEARLY', 5: 'DISCONNECTED' };
