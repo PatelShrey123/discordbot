@@ -56,13 +56,39 @@ export function getWebSocketStatus() {
   return status;
 }
 
+// ws applies no handshake timeout of its own. If the upgrade hangs — which is what a silently
+// dropped connection from a datacenter IP looks like — the socket sits in CONNECTING forever,
+// 'close' never fires, and the retry below never runs. One hung handshake killed the listener for
+// the life of the process. Both a handshakeTimeout and a watchdog now turn that into a retry.
+const HANDSHAKE_TIMEOUT_MS = 15000;
+const RETRY_BASE_MS = 5000;
+const RETRY_MAX_MS = 5 * 60 * 1000;
+const retryCounts = new Map();
+
 function connectRegionWebSocket(region) {
   console.log(`[ChatListener] Connecting to Kirka ${region.name} Chat WebSocket (${region.url})...`);
-  
-  const ws = new WebSocket(region.url);
+
+  // Origin matches what a browser sends; Kirka accepts anonymous connections but a datacenter IP
+  // with no Origin is the sort of request an edge proxy is most likely to sit on.
+  const ws = new WebSocket(region.url, {
+    handshakeTimeout: HANDSHAKE_TIMEOUT_MS,
+    headers: { Origin: 'https://kirka.io', 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' },
+  });
   wsInstances.set(region.name, ws);
 
+  // belt and braces: if the socket is still CONNECTING after the timeout, force it closed so the
+  // close handler schedules a retry
+  const watchdog = setTimeout(() => {
+    if (ws.readyState === 0) {
+      console.warn(`[ChatListener] ${region.name} handshake hung for ${HANDSHAKE_TIMEOUT_MS / 1000}s — forcing a retry.`);
+      try { ws.terminate(); } catch { /* already gone */ }
+    }
+  }, HANDSHAKE_TIMEOUT_MS + 2000);
+  ws.once('close', () => clearTimeout(watchdog));
+  ws.once('open', () => clearTimeout(watchdog));
+
   ws.on('open', () => {
+    retryCounts.set(region.name, 0);
     console.log(`[ChatListener] Connected to Kirka ${region.name} WebSocket successfully!`);
   });
 
@@ -126,8 +152,12 @@ function connectRegionWebSocket(region) {
   });
 
   ws.on('close', () => {
-    console.warn(`[ChatListener] WebSocket ${region.name} disconnected. Retrying in 5 seconds...`);
     wsInstances.set(region.name, null);
-    setTimeout(() => connectRegionWebSocket(region), 5000);
+    // back off when the far end keeps refusing, so a sustained block is not hammered every 5s
+    const n = (retryCounts.get(region.name) ?? 0) + 1;
+    retryCounts.set(region.name, n);
+    const delay = Math.min(RETRY_BASE_MS * 2 ** (n - 1), RETRY_MAX_MS);
+    console.warn(`[ChatListener] WebSocket ${region.name} disconnected (attempt ${n}). Retrying in ${delay / 1000}s...`);
+    setTimeout(() => connectRegionWebSocket(region), delay);
   });
 }
