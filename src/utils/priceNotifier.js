@@ -84,6 +84,44 @@ function diff(before, after) {
   return { changed, added, removed };
 }
 
+/**
+ * Identifies one announcement. The snapshot lives on Render's disk, which is wiped on every deploy
+ * and is not shared if more than one instance is briefly alive during one - either of which lets
+ * the same change be detected twice. The channel is the one piece of state every instance can see,
+ * so what has already been posted is read back from it and skipped.
+ */
+const signatureOf = (kind, name, from, to) => `${kind}|${name}|${from}|${to}`;
+
+/** Signatures of the price changes already announced in the channel's recent history. */
+async function alreadyAnnounced(channel) {
+  const seen = new Set();
+  try {
+    const messages = await channel.messages.fetch({ limit: 50 });
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    for (const msg of messages.values()) {
+      if (msg.createdTimestamp < cutoff) continue;
+      for (const e of msg.embeds) {
+        const title = e.title || '';
+        const m = title.match(/\(ID: (.+)\)$/);
+        if (!m) continue;
+        const name = m[1];
+        const kind = title.startsWith('New Skin Change') ? 'changed'
+          : title.startsWith('New Skin Added') ? 'added'
+          : title.startsWith('Skin Removed') ? 'removed' : null;
+        if (!kind) continue;
+        const value = e.fields?.[0]?.value ?? '';
+        const vals = [...value.matchAll(/"([^"]*)"/g)].map((x) => x[1]);
+        if (kind === 'changed' && vals.length >= 2) seen.add(signatureOf('changed', name, vals[0], vals[1]));
+        else if (kind === 'added' && vals.length >= 1) seen.add(signatureOf('added', name, '', vals[0]));
+        else if (kind === 'removed' && vals.length >= 1) seen.add(signatureOf('removed', name, vals[0], ''));
+      }
+    }
+  } catch (err) {
+    console.warn('[PriceNotifier] Could not read channel history, posting without the duplicate check:', err.message);
+  }
+  return seen;
+}
+
 function buildEmbeds({ changed, added, removed }) {
   const colour = (r) => RARITY_COLOUR[String(r || '').toLowerCase()] ?? 0x5865f2;
   const embeds = [];
@@ -164,11 +202,28 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
       console.warn(`[PriceNotifier] Channel ${CHANNEL_ID} unreachable — keeping the change for next time.`);
       return { error: 'channel', source, rowCount, changed: 0, added: 0, removed: 0 };
     }
-    const embeds = buildEmbeds(result);
+    // drop anything the channel already shows, so a lost snapshot cannot repost it
+    const posted = await alreadyAnnounced(channel);
+    const fresh = {
+      changed: result.changed.filter((c) => !posted.has(signatureOf('changed', c.n, fmt(c.from), fmt(c.to)))),
+      added: result.added.filter((a) => !posted.has(signatureOf('added', a.n, '', a.v ? fmt(a.v) : 'TBD'))),
+      removed: result.removed.filter((r) => !posted.has(signatureOf('removed', r.n, fmt(r.v), ''))),
+    };
+    const skipped = total - (fresh.changed.length + fresh.added.length + fresh.removed.length);
+    if (skipped > 0) console.log(`[PriceNotifier] ${skipped} change(s) already in the channel — not reposting.`);
+
+    const embeds = buildEmbeds(fresh);
     for (let i = 0; i < embeds.length; i += MAX_EMBEDS) {
       await channel.send({ embeds: embeds.slice(i, i + MAX_EMBEDS) }).catch((e) =>
         console.error('[PriceNotifier] Failed to post:', e.message));
     }
+
+    writeSnapshot(after);
+    console.log(`[PriceNotifier] ${fresh.changed.length} changed, ${fresh.added.length} added, ${fresh.removed.length} removed.`);
+    return {
+      source, rowCount, skipped,
+      changed: fresh.changed.length, added: fresh.added.length, removed: fresh.removed.length,
+    };
   }
 
   writeSnapshot(after);
