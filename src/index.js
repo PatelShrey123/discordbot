@@ -44,7 +44,9 @@ import * as flipCmd from './commands/flip.js';
 import * as chatCmd from './commands/chat.js';
 import * as refreshpricesCmd from './commands/refreshprices.js';
 import * as newskinsCmd from './commands/newskins.js';
+import * as pricelogCmd from './commands/pricelog.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
+import { startPriceNotifier } from './utils/priceNotifier.js';
 
 dotenv.config();
 
@@ -99,6 +101,7 @@ client.commands.set(chatCmd.data.name, chatCmd);
 client.commands.set(flipCmd.data.name, flipCmd);
 client.commands.set(refreshpricesCmd.data.name, refreshpricesCmd);
 client.commands.set(newskinsCmd.data.name, newskinsCmd);
+client.commands.set(pricelogCmd.data.name, pricelogCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -125,6 +128,7 @@ client.once('ready', async () => {
   console.log('🔔 [Startup] Step 5.5: Starting Store & Drop Notification Poller...');
   try {
     startStoreNotifier(client);
+    startPriceNotifier(client);
     console.log('✅ [Startup] Step 5.5: Store & Drop Notifier started.');
   } catch (err) {
     console.error('❌ [Startup] Step 5.5: Store Notifier failed to start:', err);
