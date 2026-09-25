@@ -198,6 +198,15 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades
     }
   }
 
+  // Released date. Kirka stamps every catalogue item with createdAt; Discord's <t:unix:D> renders it
+  // in each viewer's own timezone, and :R> gives the "2 years ago" that people actually want.
+  let releasedText = '`Unknown`';
+  const createdAt = matchedItem.createdAt ? new Date(matchedItem.createdAt) : null;
+  if (createdAt && !Number.isNaN(createdAt.getTime())) {
+    const unix = Math.floor(createdAt.getTime() / 1000);
+    releasedText = `<t:${unix}:D> · <t:${unix}:R>`;
+  }
+
   // Share link pointing directly to the website routing path
   const shareLink = `https://kirkahub.online/skin/${encodeURIComponent(matchedItem.name)}`;
 
@@ -211,6 +220,7 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades
       { name: 'CREATOR', value: `\`${creator}\``, inline: true },
       { name: 'OBTAINABLE BY', value: `\`${obtainableMethod}\``, inline: true },
       { name: 'TOTAL OWNED', value: `\`${formatNumber(totalOwned)}\``, inline: true },
+      { name: 'RELEASED', value: releasedText, inline: false },
       { name: 'HUB VALUE', value: `\`${hubValueStr}\``, inline: false },
       { name: '📜 LAST 3 VERIFIED TRADES (NON-WOOD)', value: tradeHistoryText, inline: false },
       { name: 'SHARE LINK', value: shareLink, inline: false }
