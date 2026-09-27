@@ -166,6 +166,11 @@ export async function getBoltPriceMap() {
     }
   }
 
+  // 3. Our own edits, applied on top of whichever source loaded above.
+  //    The website applies the same overrides the same way, from the same sheet, so the bot and
+  //    the site can never quote different numbers for the same skin.
+  await applyOverrides(map);
+
   // Populate fallback defaults if missing
   Object.entries(FALLBACK_PRICES).forEach(([key, val]) => {
     if (!map.has(key)) {
@@ -176,6 +181,83 @@ export async function getBoltPriceMap() {
   cachedPriceMap = map;
   lastFetchTime = now;
   return map;
+}
+
+/**
+ * Price overrides.
+ *
+ * The base list may not be ours to edit, so corrections live in a small separate sheet that we
+ * own and can share edit access to. Only two columns are required - "Skin Name" and "Hub Value" -
+ * though including "Type" is strongly advised, since without it an override applies to every
+ * skin sharing that name.
+ *
+ * A skin not present in the base list is added, so this can introduce skins as well as reprice
+ * them. A broken or unreachable override sheet is ignored rather than allowed to take prices
+ * down with it.
+ */
+async function applyOverrides(map) {
+  const url = process.env.PRICE_OVERRIDES_SHEET_URL;
+  if (!url) return;
+
+  try {
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const lines = (await res.text()).split(/\r?\n/).filter((l) => l.trim() !== '');
+    if (lines.length < 2) return;
+
+    const parseRow = (r) => {
+      const out = [];
+      let inQuotes = false;
+      let entry = '';
+      for (let i = 0; i < r.length; i++) {
+        const c = r[i];
+        if (c === '"') inQuotes = !inQuotes;
+        else if (c === ',' && !inQuotes) { out.push(entry.trim()); entry = ''; }
+        else entry += c;
+      }
+      out.push(entry.trim());
+      return out;
+    };
+
+    const headers = parseRow(lines[0]);
+    let applied = 0;
+
+    for (let i = 1; i < lines.length; i++) {
+      const vals = parseRow(lines[i]);
+      const row = {};
+      headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
+
+      const skinName = (row['Skin Name'] || '').trim();
+      if (!skinName) continue;
+
+      const valueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
+      const baseValue = parseInt(valueStr, 10);
+      if (!Number.isFinite(baseValue)) continue;
+
+      const type = (row['Type'] || '').trim();
+      const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
+      const keyNameOnly = skinName.toLowerCase();
+
+      // keep whatever the base row already knew, and change only what the override states
+      const existing = map.get(keyWithType) || map.get(keyNameOnly) || {};
+      const itemObj = {
+        skinName,
+        rarity: (row['Skin Rarity'] || '').trim() || existing.rarity || '',
+        baseValue,
+        type: type || existing.type || '',
+        obtainableBy: (row['Obtainable By'] || '').trim() || existing.obtainableBy || 'N/A',
+      };
+
+      map.set(keyWithType, itemObj);
+      map.set(keyNameOnly, itemObj);
+      applied++;
+    }
+
+    if (applied) console.log(`[HubPrices] ${applied} price override(s) applied.`);
+  } catch (e) {
+    console.warn('[HubPrices] override sheet unavailable, using base prices only:', e.message);
+  }
 }
 
 export function getItemPrice(priceMap, item) {
