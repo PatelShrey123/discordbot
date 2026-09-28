@@ -5,3 +5,5 @@ dist/
 cache/
 .DS_Store
 src/data/storeSnapshot.json
+test-*.png
+
