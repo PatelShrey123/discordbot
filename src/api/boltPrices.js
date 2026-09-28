@@ -149,48 +149,6 @@ export async function getBoltPriceMap() {
           console.log(`[HubPrices] Successfully loaded ${map.size} items from base Google Sheet.`);
           loaded = true;
           lastSource = 'sheet';
-
-          // Apply custom overrides from PRICE_OVERRIDES_SHEET_URL if configured
-          const overrideUrl = process.env.PRICE_OVERRIDES_SHEET_URL;
-          if (overrideUrl) {
-            try {
-              const ovRes = await fetch(overrideUrl, { headers: { 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' } });
-              if (ovRes.ok) {
-                const ovText = await ovRes.text();
-                const ovLines = ovText.split(/\r?\n/).filter(l => l.trim() !== '');
-                if (ovLines.length >= 2) {
-                  const ovHeaders = parseRow(ovLines[0]);
-                  let overrideCount = 0;
-                  for (let i = 1; i < ovLines.length; i++) {
-                    const vals = parseRow(ovLines[i]);
-                    const row = {};
-                    ovHeaders.forEach((h, idx) => { row[h] = vals[idx] || ''; });
-                    const skinName = (row['Skin Name'] || '').trim();
-                    if (!skinName) continue;
-                    const baseValueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
-                    const baseValue = parseInt(baseValueStr, 10);
-                    const type = (row['Type'] || '').trim();
-                    const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
-                    const keyNameOnly = skinName.toLowerCase();
-
-                    const existing = map.get(keyWithType) || map.get(keyNameOnly) || { skinName, type, rarity: 'Common', obtainableBy: 'N/A' };
-                    const merged = { ...existing };
-                    if (!isNaN(baseValue)) merged.baseValue = baseValue;
-                    if (row['Skin Rarity']) merged.rarity = row['Skin Rarity'].trim();
-                    if (row['Obtainable By']) merged.obtainableBy = row['Obtainable By'].trim();
-
-                    if (type) map.set(keyWithType, merged);
-                    map.set(keyNameOnly, merged);
-                    overrideCount++;
-                  }
-                  console.log(`[HubPrices] Applied ${overrideCount} custom price overrides to bot.`);
-                  lastSource = 'sheet-with-overrides';
-                }
-              }
-            } catch (ovErr) {
-              console.warn('[HubPrices] Override sheet fetch failed:', ovErr.message);
-            }
-          }
         }
       }
     } catch (e) {
