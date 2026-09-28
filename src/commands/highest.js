@@ -173,7 +173,7 @@ export async function buildWeaponHighestEmbed(weaponQuery) {
     const rEmoji = RARITY_EMOJIS[r] || '⚪';
     const isTop = idx === 0;
     topList += `${medals[idx]} **#${idx + 1}** ${rEmoji} **${skin.skinName}** — ⚡ **${formatValueLong(skin.baseValue)}** (` +
-      `${skin.baseValue.toLocaleString()} Bolts` +
+      `${skin.baseValue.toLocaleString()} Hub Value` +
       `)${isTop ? ' 👑' : ''}\n`;
   });
 

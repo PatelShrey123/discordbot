@@ -152,7 +152,7 @@ export function buildUnboxEmbed(chosenItem, chest, priceMap) {
     .setDescription(
       `**Category:** \`${typeName}\`\n` +
       `**Rarity:** ${rarityMeta.emoji} **${rarityMeta.label}**\n` +
-      `**Market Value:** ${boltPrice > 0 ? `⚡ **${formatValueLong(boltPrice)} Bolts** (\`${formatValueShort(boltPrice)}\`)` : '⚡ *Unpriced / Collector*'}\n` +
+      `**Market Value:** ${boltPrice > 0 ? `⚡ **${formatValueLong(boltPrice)} Hub Value** (\`${formatValueShort(boltPrice)}\`)` : '⚡ *Unpriced / Collector*'}\n` +
       `**Chest Cost:** \`${chest.cost}\``
     )
     .setImage(chosenItem.renderUrl)

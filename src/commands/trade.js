@@ -330,7 +330,7 @@ function buildEmbed(trade, index, totalCount, query, mode) {
     .setDescription(
       `**Trader:** \`${isHistory ? `${trade.offerer} ➔ ${trade.accepter}` : trade.userAndTag}\`\n` +
       `**Valuation:** **${trade.assessment}** (${trade.diffText})\n` +
-      `**Total Bolt Value:** ⚡ **${formatValueShort(trade.offeredTotal)}** vs ⚡ **${formatValueShort(trade.wantedTotal)}**\n\n` +
+      `**Total Hub Value:** ⚡ **${formatValueShort(trade.offeredTotal)}** vs ⚡ **${formatValueShort(trade.wantedTotal)}**\n\n` +
       `**Items Offered:**\n${offeredList}\n\n` +
       `**Items Wanted:**\n${wantedList}`
     )
