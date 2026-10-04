@@ -148,3 +148,138 @@ export async function execute(interaction) {
     });
   }
 }
+
+export async function executePrefix(message, args) {
+  const queryClan = args.join(' ').trim();
+  if (!queryClan) return message.reply('❌ Please specify a clan name: `.clan [name]`');
+
+  await message.channel.sendTyping().catch(() => {});
+
+  // 1. Fetch Clan details
+  const clan = await fetchClan(queryClan);
+  if (!clan) {
+    return message.reply(`❌ Could not find a Kirka clan named **${queryClan}**.`);
+  }
+
+  // 2. Fetch Leaderboard Rank (using cache)
+  let rank = 0;
+  try {
+    const results = await fetchClanLeaderboard();
+    const idx = results.findIndex(c => c.name && c.name.toLowerCase() === clan.name.toLowerCase());
+    if (idx !== -1) {
+      rank = idx + 1;
+    }
+  } catch (err) {
+    console.warn('Failed to fetch clan rank:', err.message);
+  }
+
+  const members = clan.members || [];
+  const leaders = members.filter(m => m.role === 'LEADER');
+  const officers = members.filter(m => m.role === 'OFFICER');
+  const newbies = members.filter(m => m.role === 'NEWBIE');
+
+  // Compute total elements to determine total pages
+  const totalElements = 
+    (leaders.length > 0 ? 1 : 0) + leaders.length +
+    (officers.length > 0 ? 1 : 0) + officers.length +
+    (newbies.length > 0 ? 1 : 0) + newbies.length;
+
+  let totalPages = 1;
+  if (totalElements > 25) {
+    totalPages = 1 + Math.ceil((totalElements - 25) / 30);
+  }
+
+  let currentPage = 0;
+
+  // Render Page function
+  const createPageMessage = async (pageIdx) => {
+    const cardBuffer = await renderClanRosterPage(clan, rank, pageIdx, totalPages);
+    const attachment = new AttachmentBuilder(cardBuffer, { name: 'clan-roster.png' });
+
+    // Create Action Buttons Row
+    const row = new ActionRowBuilder();
+
+    if (totalPages > 1) {
+      const prevButton = new ButtonBuilder()
+        .setCustomId('clan_prev')
+        .setLabel('Prev Page')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(pageIdx === 0);
+
+      const nextButton = new ButtonBuilder()
+        .setCustomId('clan_next')
+        .setLabel('Next Page')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(pageIdx === totalPages - 1);
+
+      const trackerButton = new ButtonBuilder()
+        .setLabel('Clan Tracker')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`https://kirkahub.online/clan/${encodeURIComponent(clan.name)}`);
+
+      row.addComponents(prevButton, nextButton, trackerButton);
+    } else {
+      const trackerButton = new ButtonBuilder()
+        .setLabel('Clan Tracker')
+        .setStyle(ButtonStyle.Link)
+        .setURL(`https://kirkahub.online/clan/${encodeURIComponent(clan.name)}`);
+
+      row.addComponents(trackerButton);
+    }
+
+    return { files: [attachment], components: [row] };
+  };
+
+  let initialPayload;
+  try {
+    initialPayload = await createPageMessage(currentPage);
+  } catch (err) {
+    console.error('Error rendering clan roster:', err);
+    return message.reply('⚠️ Failed to render clan roster page.');
+  }
+
+  const response = await message.reply(initialPayload);
+
+  // Setup Button Component Collector if paginated
+  if (totalPages > 1) {
+    const collector = response.createMessageComponentCollector({
+      componentType: ComponentType.Button,
+      time: 180000 // Keep active for 3 minutes
+    });
+
+    collector.on('collect', async (btnInteraction) => {
+      // Ensure only the original message author can paginate
+      if (btnInteraction.user.id !== message.author.id) {
+        return btnInteraction.reply({
+          content: '❌ Only the user who ran the command can change pages.',
+          flags: 64
+        });
+      }
+
+      await btnInteraction.deferUpdate();
+
+      if (btnInteraction.customId === 'clan_prev') {
+        currentPage = Math.max(0, currentPage - 1);
+      } else if (btnInteraction.customId === 'clan_next') {
+        currentPage = Math.min(totalPages - 1, currentPage + 1);
+      }
+
+      const nextPayload = await createPageMessage(currentPage);
+      await response.edit(nextPayload);
+    });
+
+    collector.on('end', async () => {
+      // Disable buttons upon expiration
+      try {
+        const expiredPayload = await createPageMessage(currentPage);
+        if (expiredPayload.components.length > 0) {
+          expiredPayload.components[0].components.forEach(btn => btn.setDisabled(true));
+          await response.edit({ components: expiredPayload.components });
+        }
+      } catch (err) {
+        console.warn('Failed to disable buttons on collector end:', err.message);
+      }
+    });
+  }
+}
+

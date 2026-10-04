@@ -678,64 +678,11 @@ client.on('messageCreate', async (message) => {
   }
 
   // 8. .clan [name]
-  else if (lowerContent.startsWith('.clan ')) {
-    const queryClan = content.substring(6).trim();
-    if (!queryClan) return message.reply('❌ Please specify a clan name: `.clan [name]`');
-
-    await message.channel.sendTyping();
-    console.log(`[MessageReceived] Matched .clan! Query: "${queryClan}"`);
-
-    const clan = await fetchClan(queryClan);
-    if (!clan) {
-      return message.reply(`❌ Could not find a Kirka clan named **${queryClan}**.`);
-    }
-
-    let rank = 0;
-    try {
-      const results = await fetchClanLeaderboard();
-      const idx = results.findIndex(c => c.name && c.name.toLowerCase() === clan.name.toLowerCase());
-      if (idx !== -1) {
-        rank = idx + 1;
-      }
-    } catch (err) {
-      console.warn('Failed to fetch clan rank:', err.message);
-    }
-
-    const members = clan.members || [];
-    const leaders = members.filter(m => m.role === 'LEADER');
-    const officers = members.filter(m => m.role === 'OFFICER');
-    const newbies = members.filter(m => m.role === 'NEWBIE');
-
-    const totalElements = 
-      (leaders.length > 0 ? 1 : 0) + leaders.length +
-      (officers.length > 0 ? 1 : 0) + officers.length +
-      (newbies.length > 0 ? 1 : 0) + newbies.length;
-
-    let totalPages = 1;
-    if (totalElements > 25) {
-      totalPages = 1 + Math.ceil((totalElements - 25) / 30);
-    }
-
-    try {
-      const cardBuffer = await renderClanRosterPage(clan, rank, 0, totalPages);
-      const attachment = new AttachmentBuilder(cardBuffer, { name: 'clan-roster.png' });
-
-      const trackerButton = new ButtonBuilder()
-        .setLabel('Clan Tracker')
-        .setStyle(ButtonStyle.Link)
-        .setURL(`https://kirkahub.online/clan/${encodeURIComponent(clan.name)}`);
-
-      const row = new ActionRowBuilder().addComponents(trackerButton);
-
-      await message.reply({
-        files: [attachment],
-        components: [row]
-      });
-    } catch (err) {
-      console.error('Error rendering clan roster:', err);
-      await message.reply('⚠️ Failed to render clan roster page.');
-    }
+  else if (lowerContent === '.clan' || lowerContent.startsWith('.clan ')) {
+    const args = content.substring(5).trim().split(/ +/).filter(Boolean);
+    await clanCmd.executePrefix(message, args);
   }
+
   
   // 9. .botname [new_name]
   else if (lowerContent.startsWith('.botname')) {

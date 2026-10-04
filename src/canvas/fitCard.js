@@ -85,14 +85,47 @@ export function resolveLoadout(profile, inventory) {
   const selected = (inventory || [])
     .map((inv) => ({ ...(inv.item || inv), isSelected: inv.isSelected }))
     .filter((item) => item.isSelected);
-  const weapons = selected.filter((item) => item.type === 'WEAPON_SKIN');
-  const bySlot = (slotType) => weapons.find((item) => (item.parent?.type || '').toUpperCase() === slotType) || null;
+
+  // Equipped base items (items without parent/parentId representing the equipped base weapon)
+  const baseMelee = selected.find((item) => 
+    (item.type === 'WEAPON_3' || ['TOMAHAWK', 'BAYONET'].includes(cleanName(item.name || '').toUpperCase())) && 
+    (!item.parent && !item.parentId)
+  );
+  const baseSecondary = selected.find((item) => 
+    (item.type === 'WEAPON_2' || cleanName(item.name || '').toUpperCase() === 'SHARK') && 
+    (!item.parent && !item.parentId)
+  );
+  const basePrimary = selected.find((item) => 
+    item.type === 'WEAPON_1' && 
+    (!item.parent && !item.parentId)
+  );
+
+  const weaponSkins = selected.filter((item) => item.type === 'WEAPON_SKIN');
+
+  const matchSlot = (baseItem, slotType, fallbackNames = []) => {
+    const slotSkins = weaponSkins.filter((item) => {
+      const pType = (item.parent?.type || '').toUpperCase();
+      const pName = cleanName(item.parent?.name || '').toUpperCase();
+      return pType === slotType || fallbackNames.includes(pName);
+    });
+
+    if (baseItem) {
+      const baseName = cleanName(baseItem.name || '').toUpperCase();
+      const skinForBase = slotSkins.find((item) => cleanName(item.parent?.name || '').toUpperCase() === baseName);
+      return skinForBase || baseItem;
+    }
+    return slotSkins[0] || null;
+  };
+
+  const primary = profile?.activeWeapon1Skin || matchSlot(basePrimary, 'WEAPON_1');
+  const secondary = matchSlot(baseSecondary, 'WEAPON_2', ['SHARK']);
+  const melee = matchSlot(baseMelee, 'WEAPON_3', ['TOMAHAWK', 'BAYONET']);
 
   return {
-    body: profile.activeBodySkin || selected.find((item) => item.type === 'BODY_SKIN') || null,
-    primary: profile.activeWeapon1Skin || bySlot('WEAPON_1'),
-    secondary: bySlot('WEAPON_2'),
-    melee: bySlot('WEAPON_3'),
+    body: profile?.activeBodySkin || selected.find((item) => item.type === 'BODY_SKIN') || null,
+    primary,
+    secondary,
+    melee,
   };
 }
 
@@ -325,7 +358,7 @@ async function renderFitCardNow({ profile, inventory, catalog = [], pose = 'pose
   const loadout = resolveLoadout(profile, inventory);
   const primary = loadout.primary;
   const primaryMatch = catalogMatch(catalog, primary);
-  const weaponFile = WEAPON_MODELS[cleanName(primary?.parent?.name).toUpperCase()] || 'SCAR.glb';
+  const weaponFile = WEAPON_MODELS[cleanName(primary?.parent?.name || primary?.name).toUpperCase()] || 'SCAR.glb';
   const bodyMatch = catalogMatch(catalog, loadout.body);
 
   const viewW = CARD_W * SCALE;
@@ -389,7 +422,7 @@ async function renderFitCardNow({ profile, inventory, catalog = [], pose = 'pose
       if (!item) return null;
       const img = await getCachedImage(item.renderUrl || catalogMatch(catalog, item)?.renderUrl);
       // Kirka's generic pistol render is filtered as a placeholder, but it is the real default Shark render
-      if (!img && cleanName(item.parent?.name).toUpperCase() === 'SHARK') {
+      if (!img && cleanName(item.parent?.name || item.name).toUpperCase() === 'SHARK') {
         return getCachedImage(join(__dirname, '../../assets/render-mini.webp'));
       }
       return img;
