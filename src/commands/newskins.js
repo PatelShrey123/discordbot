@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import { getPublicCatalog } from '../api/kirka.js';
 import { getBoltPriceMap } from '../api/boltPrices.js';
 
@@ -17,9 +17,10 @@ const RARITY_COLOUR = {
 export const data = new SlashCommandBuilder()
   .setName('newskins')
   .setDescription('Find skins Kirka has that the price sheet does not')
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
   .addBooleanOption((o) =>
     o.setName('post')
-      .setDescription('Also announce them in the price log channel')
+      .setDescription('Also announce them in the price log channel (Admin only)')
       .setRequired(false))
   .addBooleanOption((o) =>
     o.setName('all')
@@ -95,6 +96,11 @@ export async function execute(interaction) {
 
     // ---- optionally announce, in the same shape the price notifier uses ------------------
     if (post) {
+      if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+        await interaction.followUp({ content: '❌ Only administrators can broadcast detection embeds to the changelogs channel.', ephemeral: true });
+        return;
+      }
+
       const channel = await interaction.client.channels.fetch(CHANNEL_ID).catch(() => null);
       if (!channel?.isTextBased?.()) {
         await interaction.followUp({ content: `Could not reach the price log channel (${CHANNEL_ID}).`, ephemeral: true });
