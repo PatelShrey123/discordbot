@@ -27,7 +27,7 @@ export const data = new SlashCommandBuilder()
   );
 
 // Generate region switch action buttons
-export function createRegionButtons(activeRegionId = 'india') {
+export function createRegionButtons(activeRegionId = 'india', rooms = []) {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId('server_reg_india')
@@ -51,6 +51,24 @@ export function createRegionButtons(activeRegionId = 'india') {
       .setStyle(activeRegionId === 'sa' ? ButtonStyle.Primary : ButtonStyle.Secondary)
   );
 
+  const rows = [row];
+
+  // Up to 4 joinable live matches with direct 1-click links
+  const joinableRooms = (rooms || [])
+    .filter(r => !r.isFull && r.players > 0)
+    .sort((a, b) => b.players - a.players)
+    .slice(0, 4);
+
+  if (joinableRooms.length > 0) {
+    const matchButtons = joinableRooms.map(r =>
+      new ButtonBuilder()
+        .setLabel(`🎮 Join ${r.mode} (${r.players}/${r.maxPlayers})`)
+        .setStyle(ButtonStyle.Link)
+        .setURL(`https://kirka.io/games/${r.tag}`)
+    );
+    rows.push(new ActionRowBuilder().addComponents(matchButtons));
+  }
+
   const linksRow = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setLabel('🎮 Launch Kirka')
@@ -61,8 +79,9 @@ export function createRegionButtons(activeRegionId = 'india') {
       .setStyle(ButtonStyle.Link)
       .setURL('https://kirkahub.online')
   );
+  rows.push(linksRow);
 
-  return [row, linksRow];
+  return rows;
 }
 
 export async function execute(interaction) {
@@ -74,7 +93,7 @@ export async function execute(interaction) {
     const data = await fetchLiveRooms(regionConfig.id);
     const cardBuffer = await renderServerBrowserCard(data);
     const attachment = new AttachmentBuilder(cardBuffer, { name: 'server-browser.png' });
-    const components = createRegionButtons(data.region.id);
+    const components = createRegionButtons(data.region.id, data.rooms);
 
     await interaction.editReply({
       files: [attachment],
@@ -95,7 +114,7 @@ export async function executePrefix(message, args = []) {
     const data = await fetchLiveRooms(regionConfig.id);
     const cardBuffer = await renderServerBrowserCard(data);
     const attachment = new AttachmentBuilder(cardBuffer, { name: 'server-browser.png' });
-    const components = createRegionButtons(data.region.id);
+    const components = createRegionButtons(data.region.id, data.rooms);
 
     await message.reply({
       files: [attachment],

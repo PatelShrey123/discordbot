@@ -170,7 +170,7 @@ client.on('interactionCreate', async (interaction) => {
       const data = await fetchLiveRooms(regId);
       const cardBuffer = await renderServerBrowserCard(data);
       const attachment = new AttachmentBuilder(cardBuffer, { name: 'server-browser.png' });
-      const components = createRegionButtons(data.region.id);
+      const components = createRegionButtons(data.region.id, data.rooms);
 
       await interaction.editReply({
         files: [attachment],
