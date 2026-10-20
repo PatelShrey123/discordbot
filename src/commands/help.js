@@ -59,6 +59,7 @@ export function buildHelpEmbed(category = 'home') {
         `• \`.trade <skin>\` — Search active listings for a specific skin (e.g. \`.trade Hi-Score\`, \`.trade Shark\`, \`.trade Sinister\`).\n` +
         `• \`.trade history [skin]\` — Search completed and accepted trade history deals.\n` +
         `• \`.skin <name>\` — Inspect any skin in the game with its live market value in Hub Value, rarity, artist credits, and Kirka 3D preview link.\n` +
+        `• \`.texture <name>\` — View a skin's flat texture sheet, full size and ready to save (e.g. \`.texture Sketch\`, \`.texture 1337\`).\n` +
         `• \`.refreshprices\` — Instantly reload and synchronize the latest Hub Valuation prices from your Google Sheet.\n` +
         `• \`.newskins\` — Scan Kirka's game database for newly dropped skins missing from your Google Sheet.\n` +
         `• \`.store\` — View live in-game store bundles, limited stock counters (e.g. Capybara 12/25 left), and weapon renders.\n` +

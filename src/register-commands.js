@@ -31,6 +31,7 @@ import * as chatCmd from './commands/chat.js';
 import * as refreshpricesCmd from './commands/refreshprices.js';
 import * as newskinsCmd from './commands/newskins.js';
 import * as pricelogCmd from './commands/pricelog.js';
+import * as textureCmd from './commands/texture.js';
 
 dotenv.config();
 
@@ -65,7 +66,8 @@ const commands = [
   chatCmd.data.toJSON(),
   refreshpricesCmd.data.toJSON(),
   newskinsCmd.data.toJSON(),
-  pricelogCmd.data.toJSON()
+  pricelogCmd.data.toJSON(),
+  textureCmd.data.toJSON()
 ];
 
 export async function registerCommands() {

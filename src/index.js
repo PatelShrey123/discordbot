@@ -45,6 +45,7 @@ import * as chatCmd from './commands/chat.js';
 import * as refreshpricesCmd from './commands/refreshprices.js';
 import * as newskinsCmd from './commands/newskins.js';
 import * as pricelogCmd from './commands/pricelog.js';
+import * as textureCmd from './commands/texture.js';
 import { startStoreNotifier } from './utils/storeNotifier.js';
 import { startPriceNotifier } from './utils/priceNotifier.js';
 
@@ -102,6 +103,7 @@ client.commands.set(flipCmd.data.name, flipCmd);
 client.commands.set(refreshpricesCmd.data.name, refreshpricesCmd);
 client.commands.set(newskinsCmd.data.name, newskinsCmd);
 client.commands.set(pricelogCmd.data.name, pricelogCmd);
+client.commands.set(textureCmd.data.name, textureCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -418,6 +420,12 @@ client.on('messageCreate', async (message) => {
       console.error('Error in prefix skin command:', err);
       await message.reply(`⚠️ Failed to retrieve skin details.`);
     }
+  }
+
+  // .texture <skin name> — flat texture sheet
+  else if (lowerContent === '.texture' || lowerContent.startsWith('.texture ')) {
+    const args = content.substring(8).trim().split(/ +/).filter(Boolean);
+    await textureCmd.executePrefix(message, args);
   }
 
   // 2. .profile [username/id/@mention]
