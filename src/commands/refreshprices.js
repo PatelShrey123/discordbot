@@ -4,7 +4,7 @@ import { checkPriceChanges } from '../utils/priceNotifier.js';
 
 export const data = new SlashCommandBuilder()
   .setName('refreshprices')
-  .setDescription('Reload Hub Valuation prices from the live market feed and post anything that changed to the changelog')
+  .setDescription('Reload Hub Valuation prices from the live market feed and post changes to the changelog')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2);
 
