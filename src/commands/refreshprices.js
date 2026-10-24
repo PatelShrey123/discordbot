@@ -4,7 +4,7 @@ import { checkPriceChanges } from '../utils/priceNotifier.js';
 
 export const data = new SlashCommandBuilder()
   .setName('refreshprices')
-  .setDescription('Reload Hub Valuation prices from the sheet and post anything that changed to the changelog')
+  .setDescription('Reload Hub Valuation prices from the live market feed and post anything that changed to the changelog')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2);
 
@@ -15,7 +15,7 @@ export async function execute(interaction) {
     clearPriceCache();
     const map = await getBoltPriceMap();
     const source = getLastPriceSource();
-    const where = source === 'sheet' ? 'your private Google Sheet' : 'the local fallback database';
+    const where = (source === 'live' || source === 'sheet') ? 'live market feed' : 'the local fallback database';
 
     // Reloading and then checking for changes is what people expect this command to do, so it does
     // both rather than quietly leaving the changelog untouched.
@@ -23,7 +23,7 @@ export async function execute(interaction) {
 
     let note;
     if (r.noSheet) {
-      note = '\n⚠️ Prices came from the local fallback, so no changelog check ran. Set `HUB_PRICES_SHEET_URL` in the environment.';
+      note = '\n⚠️ Prices came from the local fallback, so no changelog check ran.';
     } else if (r.skipped) {
       note = `\n⚠️ The sheet returned only ${r.rowCount} rows, too few to trust, so no changelog check ran.`;
     } else if (r.baseline) {

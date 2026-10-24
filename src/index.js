@@ -363,7 +363,7 @@ client.on('messageCreate', async (message) => {
         );
       }
 
-      // Fallback to Bolt price sheet for newly unlisted/live skins
+      // Fallback to Hub Valuation feed for newly unlisted/live skins
       if (!matchedItem) {
         for (const [key, value] of priceMap.entries()) {
           const pSkinName = value.skinName ? value.skinName.trim().toLowerCase() : '';

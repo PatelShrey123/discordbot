@@ -4,9 +4,19 @@ let cachedPriceMap = null;
 let lastFetchTime = 0;
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes cache
 
-// 'sheet' | 'local' | null — which source last populated the map
+// 'live' | 'local' | null — which source last populated the map
 let lastSource = null;
 export function getLastPriceSource() { return lastSource; }
+
+const UPSTREAM_PRICE_URL = 'https://kirka.lukeskywalk.com/priceList.json';
+
+const rarityMap = {
+  'M': 'Mythical',
+  'L': 'Legendary',
+  'E': 'Epic',
+  'R': 'Rare',
+  'C': 'Common'
+};
 
 const FALLBACK_PRICES = {
   "grayscale_character": 50000000,
@@ -79,81 +89,37 @@ export async function getBoltPriceMap() {
   const map = new Map();
   let loaded = false;
 
-  // 0. Website API feed (if HUB_PRICES_API_URL is configured, loads merged prices directly)
-  const apiUrl = process.env.HUB_PRICES_API_URL || (process.env.WEBSITE_URL ? `${process.env.WEBSITE_URL}/api/prices` : null);
-  if (apiUrl) {
-    try {
-      const res = await fetch(apiUrl, { headers: { 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' } });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 500) {
-          data.forEach(row => {
-            const skinName = (row['Skin Name'] || '').trim();
-            const rarity = (row['Skin Rarity'] || '').trim();
-            const baseValueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
-            const baseValue = parseInt(baseValueStr, 10) || 0;
-            const type = (row['Type'] || '').trim();
-            const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
-            const itemObj = { skinName, rarity, baseValue, type, obtainableBy };
-            map.set(`${skinName.toLowerCase()}_${type.toLowerCase()}`, itemObj);
-            if (!map.has(skinName.toLowerCase())) map.set(skinName.toLowerCase(), itemObj);
-          });
-          console.log(`[HubPrices] Successfully loaded ${map.size} items from KirkaHub Website API.`);
-          loaded = true;
-        }
-      }
-    } catch (e) {
-      console.warn('[HubPrices] Website API fetch failed, falling back to sheet:', e.message);
-    }
-  }
+  // 1. Direct fetch from upstream live market price feed (Bolt & Community Valuation)
+  try {
+    const res = await fetch(UPSTREAM_PRICE_URL, {
+      headers: { 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' }
+    });
+    if (res.ok) {
+      const boltList = await res.json();
+      if (Array.isArray(boltList) && boltList.length > 500) {
+        for (const item of boltList) {
+          const rawRarity = item.rarity || 'C';
+          const rarity = rarityMap[rawRarity] || rawRarity;
+          const val = (item.bolt && item.bolt > 0) ? item.bolt : (item.average && item.average > 0 ? item.average : (item.fate || 0));
+          const skinName = (item.itemName || '').trim();
+          const type = (item.type || '').trim();
+          const obtainableBy = 'All chests';
+          const itemObj = { skinName, rarity, baseValue: val, type, obtainableBy };
 
-  // 1. Google Sheet feed (if HUB_PRICES_SHEET_URL is configured in .env)
-  const sheetUrl = process.env.HUB_PRICES_SHEET_URL;
-  if (!loaded && sheetUrl) {
-    try {
-      const res = await fetch(sheetUrl, { headers: { 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' } });
-      if (res.ok) {
-        const csvText = await res.text();
-        const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
-        if (lines.length > 500) {
-          const parseRow = (r) => {
-            const result = [];
-            let inQuotes = false;
-            let entry = '';
-            for (let i = 0; i < r.length; i++) {
-              const c = r[i];
-              if (c === '"') inQuotes = !inQuotes;
-              else if (c === ',' && !inQuotes) { result.push(entry.trim()); entry = ''; }
-              else entry += c;
-            }
-            result.push(entry.trim());
-            return result;
-          };
-          const headers = parseRow(lines[0]);
-          for (let i = 1; i < lines.length; i++) {
-            const vals = parseRow(lines[i]);
-            const row = {};
-            headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
-            const skinName = (row['Skin Name'] || '').trim();
-            const rarity = (row['Skin Rarity'] || '').trim();
-            // Hub Value is the column the list is maintained in; Base Value is the older header.
-            // The website reads them in this order, and the bot must agree or the two quote different prices.
-            const baseValueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
-            const baseValue = parseInt(baseValueStr, 10) || 0;
-            const type = (row['Type'] || '').trim();
-            const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
-            const itemObj = { skinName, rarity, baseValue, type, obtainableBy };
-            map.set(`${skinName.toLowerCase()}_${type.toLowerCase()}`, itemObj);
-            if (!map.has(skinName.toLowerCase())) map.set(skinName.toLowerCase(), itemObj);
+          const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
+          const keyNameOnly = skinName.toLowerCase();
+          map.set(keyWithType, itemObj);
+          if (!map.has(keyNameOnly)) {
+            map.set(keyNameOnly, itemObj);
           }
-          console.log(`[HubPrices] Successfully loaded ${map.size} items from base Google Sheet.`);
-          loaded = true;
-          lastSource = 'sheet';
         }
+        console.log(`[HubPrices] Successfully loaded ${map.size} items from live market feed.`);
+        loaded = true;
+        lastSource = 'live';
       }
-    } catch (e) {
-      console.warn('[HubPrices] Sheet fetch failed, falling back to local json:', e.message);
     }
+  } catch (e) {
+    console.warn('[HubPrices] Live market feed fetch failed, falling back to local database:', e.message);
   }
 
   // 2. Offline / Local fallback database
@@ -165,7 +131,7 @@ export async function getBoltPriceMap() {
         rows.forEach((row) => {
           const skinName = (row['Skin Name'] || '').trim();
           const rarity = (row['Skin Rarity'] || '').trim();
-          const baseValueStr = (row['Base Value'] || row['Hub Value'] || '').toString().replace(/,/g, '');
+          const baseValueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
           const baseValue = parseInt(baseValueStr, 10) || 0;
           const type = (row['Type'] || '').trim();
           const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
@@ -188,16 +154,12 @@ export async function getBoltPriceMap() {
         });
         console.log(`[HubPrices] Successfully loaded ${map.size} items from local Hub Pricing database.`);
         lastSource = 'local';
+        loaded = true;
       }
     } catch (err) {
       console.error('[HubPrices] Failed to read local hub_prices.json:', err.message);
     }
   }
-
-  // 3. Our own edits, applied on top of whichever source loaded above.
-  //    The website applies the same overrides the same way, from the same sheet, so the bot and
-  //    the site can never quote different numbers for the same skin.
-  await applyOverrides(map);
 
   // Populate fallback defaults if missing
   Object.entries(FALLBACK_PRICES).forEach(([key, val]) => {
@@ -209,83 +171,6 @@ export async function getBoltPriceMap() {
   cachedPriceMap = map;
   lastFetchTime = now;
   return map;
-}
-
-/**
- * Price overrides.
- *
- * The base list may not be ours to edit, so corrections live in a small separate sheet that we
- * own and can share edit access to. Only two columns are required - "Skin Name" and "Hub Value" -
- * though including "Type" is strongly advised, since without it an override applies to every
- * skin sharing that name.
- *
- * A skin not present in the base list is added, so this can introduce skins as well as reprice
- * them. A broken or unreachable override sheet is ignored rather than allowed to take prices
- * down with it.
- */
-async function applyOverrides(map) {
-  const url = process.env.PRICE_OVERRIDES_SHEET_URL;
-  if (!url) return;
-
-  try {
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 KirkaHub-Bot/1.0' } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const lines = (await res.text()).split(/\r?\n/).filter((l) => l.trim() !== '');
-    if (lines.length < 2) return;
-
-    const parseRow = (r) => {
-      const out = [];
-      let inQuotes = false;
-      let entry = '';
-      for (let i = 0; i < r.length; i++) {
-        const c = r[i];
-        if (c === '"') inQuotes = !inQuotes;
-        else if (c === ',' && !inQuotes) { out.push(entry.trim()); entry = ''; }
-        else entry += c;
-      }
-      out.push(entry.trim());
-      return out;
-    };
-
-    const headers = parseRow(lines[0]);
-    let applied = 0;
-
-    for (let i = 1; i < lines.length; i++) {
-      const vals = parseRow(lines[i]);
-      const row = {};
-      headers.forEach((h, idx) => { row[h] = vals[idx] || ''; });
-
-      const skinName = (row['Skin Name'] || '').trim();
-      if (!skinName) continue;
-
-      const valueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
-      const baseValue = parseInt(valueStr, 10);
-      if (!Number.isFinite(baseValue)) continue;
-
-      const type = (row['Type'] || '').trim();
-      const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
-      const keyNameOnly = skinName.toLowerCase();
-
-      // keep whatever the base row already knew, and change only what the override states
-      const existing = map.get(keyWithType) || map.get(keyNameOnly) || {};
-      const itemObj = {
-        skinName,
-        rarity: (row['Skin Rarity'] || '').trim() || existing.rarity || '',
-        baseValue,
-        type: type || existing.type || '',
-        obtainableBy: (row['Obtainable By'] || '').trim() || existing.obtainableBy || 'N/A',
-      };
-
-      map.set(keyWithType, itemObj);
-      map.set(keyNameOnly, itemObj);
-      applied++;
-    }
-
-    if (applied) console.log(`[HubPrices] ${applied} price override(s) applied.`);
-  } catch (e) {
-    console.warn('[HubPrices] override sheet unavailable, using base prices only:', e.message);
-  }
 }
 
 export function getItemPrice(priceMap, item) {

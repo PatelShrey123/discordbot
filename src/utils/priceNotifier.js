@@ -1,4 +1,4 @@
-// Watches the Hub Valuation sheet and posts every change to a Discord channel.
+// Watches the Hub Valuation live feed and posts every change to a Discord channel.
 //
 // It keeps its own snapshot on disk and diffs each poll against it, so a change is announced once
 // and only once. On a cold boot with no snapshot it records the current sheet silently rather than
@@ -179,8 +179,8 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
 
   // Reading the bundled file means the sheet was unreachable. It never changes, so the check would
   // silently never fire; say so rather than reporting "no changes".
-  if (source !== 'sheet') {
-    console.warn('[PriceNotifier] Prices came from the local fallback, not the sheet — skipping.');
+  if (source !== 'live' && source !== 'sheet') {
+    console.warn('[PriceNotifier] Prices came from the local fallback, not the live feed — skipping.');
     return { noSheet: true, source, rowCount, changed: 0, added: 0, removed: 0 };
   }
 
@@ -232,7 +232,7 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
 }
 
 export function startPriceNotifier(client) {
-  console.log(`🏷️  [PriceNotifier] Watching the Hub Valuation sheet (every ${POLL_MS / 60000} minutes) → channel ${CHANNEL_ID}`);
+  console.log(`🏷️  [PriceNotifier] Watching the Hub Valuation live feed (every ${POLL_MS / 60000} minutes) → channel ${CHANNEL_ID}`);
   setTimeout(() => checkPriceChanges(client).catch((e) => console.error('[PriceNotifier]', e.message)), 20000);
   setInterval(() => checkPriceChanges(client).catch((e) => console.error('[PriceNotifier]', e.message)), POLL_MS);
 }
