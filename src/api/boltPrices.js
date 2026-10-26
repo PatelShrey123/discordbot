@@ -46,6 +46,18 @@ const FALLBACK_PRICES = {
   "terminator_lar": 10000
 };
 
+let obtainableMap = null;
+function getObtainableMap() {
+  if (obtainableMap) return obtainableMap;
+  try {
+    const raw = fs.readFileSync(new URL('../data/obtainable_methods.json', import.meta.url), 'utf8');
+    obtainableMap = JSON.parse(raw);
+    return obtainableMap;
+  } catch {}
+  obtainableMap = {};
+  return obtainableMap;
+}
+
 export function formatValueShort(val) {
   if (!val || isNaN(val) || val <= 0) return '0';
   if (val >= 1_000_000_000) {
@@ -88,6 +100,7 @@ export async function getBoltPriceMap() {
 
   const map = new Map();
   let loaded = false;
+  const obtMap = getObtainableMap();
 
   // 1. Direct fetch from upstream live market price feed (Bolt & Community Valuation)
   try {
@@ -103,11 +116,12 @@ export async function getBoltPriceMap() {
           const val = (item.bolt && item.bolt > 0) ? item.bolt : (item.average && item.average > 0 ? item.average : (item.fate || 0));
           const skinName = (item.itemName || '').trim();
           const type = (item.type || '').trim();
-          const obtainableBy = 'All chests';
-          const itemObj = { skinName, rarity, baseValue: val, type, obtainableBy };
-
           const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
           const keyNameOnly = skinName.toLowerCase();
+          const obtainableBy = obtMap[keyWithType] || obtMap[keyNameOnly] || 'Chest Drop / Trading';
+
+          const itemObj = { skinName, rarity, baseValue: val, type, obtainableBy };
+
           map.set(keyWithType, itemObj);
           if (!map.has(keyNameOnly)) {
             map.set(keyNameOnly, itemObj);
@@ -134,7 +148,9 @@ export async function getBoltPriceMap() {
           const baseValueStr = (row['Hub Value'] || row['Base Value'] || '').toString().replace(/,/g, '');
           const baseValue = parseInt(baseValueStr, 10) || 0;
           const type = (row['Type'] || '').trim();
-          const obtainableBy = (row['Obtainable By'] || 'N/A').trim();
+          const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
+          const keyNameOnly = skinName.toLowerCase();
+          const obtainableBy = (row['Obtainable By'] || obtMap[keyWithType] || obtMap[keyNameOnly] || 'Chest Drop / Trading').trim();
 
           const itemObj = {
             skinName,
@@ -143,9 +159,6 @@ export async function getBoltPriceMap() {
             type,
             obtainableBy
           };
-
-          const keyWithType = `${skinName.toLowerCase()}_${type.toLowerCase()}`;
-          const keyNameOnly = skinName.toLowerCase();
 
           map.set(keyWithType, itemObj);
           if (!map.has(keyNameOnly)) {
@@ -164,7 +177,7 @@ export async function getBoltPriceMap() {
   // Populate fallback defaults if missing
   Object.entries(FALLBACK_PRICES).forEach(([key, val]) => {
     if (!map.has(key)) {
-      map.set(key, { skinName: key, rarity: 'Mythical', baseValue: val, type: '' });
+      map.set(key, { skinName: key, rarity: 'Mythical', baseValue: val, type: '', obtainableBy: 'Special Event' });
     }
   });
 
