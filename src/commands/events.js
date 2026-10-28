@@ -70,7 +70,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
         const typeStr = it.type ? ` (${it.type})` : '';
         const ownersCount = it.owners !== null && it.owners !== undefined ? Number(it.owners) : null;
         const ownersStr = ownersCount !== null ? ` • ${ownersCount.toLocaleString()} Owner${ownersCount === 1 ? '' : 's'}` : '';
-        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Hub Value` : '';
+        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Bliss Value` : '';
         const reqStr = it.req ? ` • ${it.req}` : '';
         return `• **${it.name}${typeStr}**${reqStr}${ownersStr}${valStr}`;
       });
@@ -102,7 +102,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
         const typeStr = it.type ? ` (${it.type})` : '';
         const ownersCount = it.owners !== null && it.owners !== undefined ? Number(it.owners) : null;
         const ownersStr = ownersCount !== null ? ` • ${ownersCount.toLocaleString()} Owner${ownersCount === 1 ? '' : 's'}` : '';
-        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Hub Value` : '';
+        const valStr = it.value && it.value !== '—' ? ` • ${it.value} Bliss Value` : '';
         const reqStr = it.req ? ` • ${it.req}` : '';
         return `• **${it.name}${typeStr}**${reqStr}${ownersStr}${valStr}`;
       });
@@ -135,7 +135,7 @@ export function buildEventsEmbed(category = 'events', query = '') {
       const ownersCount = it.owners !== null && it.owners !== undefined ? Number(it.owners) : null;
       const ownersStr = ownersCount !== null ? ` • ${ownersCount.toLocaleString()} Owner${ownersCount === 1 ? '' : 's'}` : '';
       const reqStr = it.req ? ` • ${it.req}` : '';
-      const valStr = it.value && it.value !== '—' && it.value !== 'TBD' ? ` • ${it.value} Hub Value` : (it.value === 'TBD' ? ' • TBD' : '');
+      const valStr = it.value && it.value !== '—' && it.value !== 'TBD' ? ` • ${it.value} Bliss Value` : (it.value === 'TBD' ? ' • TBD' : '');
       return `• **${it.name}${typeStr}**${reqStr}${ownersStr}${valStr}`;
     });
 

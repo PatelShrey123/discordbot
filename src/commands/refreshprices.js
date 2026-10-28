@@ -4,7 +4,7 @@ import { checkPriceChanges } from '../utils/priceNotifier.js';
 
 export const data = new SlashCommandBuilder()
   .setName('refreshprices')
-  .setDescription('Reload Hub Valuation prices from the live market feed and post changes to the changelog')
+  .setDescription('Reload Bliss Price List prices from the live market feed and post changes to the changelog')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2);
 
@@ -37,7 +37,7 @@ export async function execute(interaction) {
     }
 
     await interaction.editReply({
-      content: `⚡ **Hub Valuation Synchronized!** Reloaded \`${map.size}\` items from ${where}.${note}`,
+      content: `⚡ **Bliss Price List Synchronized!** Reloaded \`${map.size}\` items from ${where}.${note}`,
     });
   } catch (err) {
     console.error('[RefreshPrices] Error:', err);

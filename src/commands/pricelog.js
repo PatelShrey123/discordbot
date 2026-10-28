@@ -3,7 +3,7 @@ import { checkPriceChanges } from '../utils/priceNotifier.js';
 
 export const data = new SlashCommandBuilder()
   .setName('pricelog')
-  .setDescription('Check the Hub Valuation feed for changes right now and post any to the changelog channel')
+  .setDescription('Check the Bliss Price List feed for changes right now and post any to the changelog channel')
   .setIntegrationTypes(0, 1)
   .setContexts(0, 1, 2);
 

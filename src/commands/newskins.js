@@ -89,7 +89,7 @@ export async function execute(interaction) {
         `In circulation but unpriced. Paste these at the bottom of the sheet — or leave it, the sheet script adds them itself every 6 hours.\n\n${rows}` +
         (unlisted.length > shown.length ? `\n\n…and ${unlisted.length - shown.length} more.` : '') +
         (!includeUnowned && hiddenCount ? `\n\n${hiddenCount} more exist that nobody owns yet.` : ''))
-      .setFooter({ text: 'Columns: Skin Name, Type, Rarity, Hub Value, Obtainable By' })
+      .setFooter({ text: 'Columns: Skin Name, Type, Rarity, Bliss Value, Obtainable By' })
       .setTimestamp(new Date());
 
     await interaction.editReply({ embeds: [reply] });
@@ -112,7 +112,7 @@ export async function execute(interaction) {
         .setColor(RARITY_COLOUR[String(item.rarity || '').toLowerCase()] ?? 0x5865f2)
         .setTitle(`New Skin Detected (ID: ${item.name})`)
         .setDescription(`Kirka has this skin but the list does not: **${item.name}**`)
-        .addFields({ name: 'Hub Value', value: 'Hub Value: "TBD"' })
+        .addFields({ name: 'Bliss Value', value: 'Bliss Value: "TBD"' })
         .setFooter({ text: `${typeOf(item)} · ${titleCase(item.rarity)} · ${(item.totalOwned ?? 0).toLocaleString()} owned` })
         .setTimestamp(new Date(item.createdAt || Date.now())));
 

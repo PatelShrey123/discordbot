@@ -148,7 +148,7 @@ export async function renderTradeCard(trade, options = {}) {
     ctx.textAlign = 'right';
     ctx.fillStyle = '#fbbf24';
     ctx.font = 'bold 13px RobotoMono-Bold, monospace';
-    const valText = totalVal > 0 ? `⚡ ${formatValueShort(totalVal)} Hub Value` : '⚡ Unpriced';
+    const valText = totalVal > 0 ? `⚡ ${formatValueShort(totalVal)} Bliss Value` : '⚡ Unpriced';
     ctx.fillText(valText, x + panelW - 18, panelY + 30);
     ctx.textAlign = 'left';
 
@@ -218,7 +218,7 @@ export async function renderTradeCard(trade, options = {}) {
       const price = it.price || 0;
       ctx.fillStyle = price > 0 ? '#fde047' : '#64748b';
       ctx.font = 'bold 11px RobotoMono-Bold, monospace';
-      ctx.fillText(price > 0 ? `⚡ ${formatValueShort(price * (parseInt(qty, 10) || 1))} Hub Value` : '⚡ Special / No Price', textX, rowY + 66);
+      ctx.fillText(price > 0 ? `⚡ ${formatValueShort(price * (parseInt(qty, 10) || 1))} Bliss Value` : '⚡ Special / No Price', textX, rowY + 66);
     }
 
     if (items.length > 3) {

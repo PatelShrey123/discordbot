@@ -1,4 +1,4 @@
-// Watches the Hub Valuation live feed and posts every change to a Discord channel.
+// Watches the Bliss Price List live feed and posts every change to a Discord channel.
 //
 // It keeps its own snapshot on disk and diffs each poll against it, so a change is announced once
 // and only once. On a cold boot with no snapshot it records the current sheet silently rather than
@@ -14,7 +14,7 @@ const DATA_DIR = path.join(__dirname, '..', 'data');
 const SNAPSHOT_FILE = path.join(DATA_DIR, 'priceSnapshot.json');
 
 // The changelog channel. Overridable so a test server can point somewhere else.
-const CHANNEL_ID = process.env.PRICE_LOG_CHANNEL_ID || '1552982849433641051';
+const CHANNEL_ID = process.env.PRICE_LOG_CHANNEL_ID || '1563832183238434919';
 const POLL_MS = 5 * 60 * 1000;
 // A sane sheet has ~1000 rows. Anything far below that is a failed export, and diffing against it
 // would report the whole list as deleted, so it is ignored.
@@ -133,8 +133,8 @@ function buildEmbeds({ changed, added, removed }) {
       .setTitle(`New Skin Change Detected (ID: ${c.n})`)
       .setDescription(`A change has been detected for skin: **${c.n}**`)
       .addFields({
-        name: 'Hub Value',
-        value: `Hub Value: "${fmt(c.from)}" → "${fmt(c.to)}"${c.pct !== null ? `\n${up ? '📈' : '📉'} ${up ? '+' : ''}${c.pct}%` : ''}`,
+        name: 'Bliss Value',
+        value: `Bliss Value: "${fmt(c.from)}" → "${fmt(c.to)}"${c.pct !== null ? `\n${up ? '📈' : '📉'} ${up ? '+' : ''}${c.pct}%` : ''}`,
       })
       .setFooter({ text: `${c.t || 'Unknown'} · ${c.r || 'Unknown'}` })
       .setTimestamp(new Date()));
@@ -145,7 +145,7 @@ function buildEmbeds({ changed, added, removed }) {
       .setColor(0x2ecc71)
       .setTitle(`New Skin Added (ID: ${a.n})`)
       .setDescription(`A new skin has been added to the list: **${a.n}**`)
-      .addFields({ name: 'Hub Value', value: `Hub Value: "${a.v ? fmt(a.v) : 'TBD'}"` })
+      .addFields({ name: 'Bliss Value', value: `Bliss Value: "${a.v ? fmt(a.v) : 'TBD'}"` })
       .setFooter({ text: `${a.t || 'Unknown'} · ${a.r || 'Unknown'}` })
       .setTimestamp(new Date()));
   }
@@ -155,7 +155,7 @@ function buildEmbeds({ changed, added, removed }) {
       .setColor(0xe74c3c)
       .setTitle(`Skin Removed (ID: ${r.n})`)
       .setDescription(`This skin is no longer on the list: **${r.n}**`)
-      .addFields({ name: 'Hub Value', value: `Hub Value: "${fmt(r.v)}" → "—"` })
+      .addFields({ name: 'Bliss Value', value: `Bliss Value: "${fmt(r.v)}" → "—"` })
       .setFooter({ text: `${r.t || 'Unknown'} · ${r.r || 'Unknown'}` })
       .setTimestamp(new Date()));
   }
@@ -232,7 +232,7 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
 }
 
 export function startPriceNotifier(client) {
-  console.log(`🏷️  [PriceNotifier] Watching the Hub Valuation live feed (every ${POLL_MS / 60000} minutes) → channel ${CHANNEL_ID}`);
+  console.log(`🏷️  [PriceNotifier] Watching the Bliss Price List live feed (every ${POLL_MS / 60000} minutes) → channel ${CHANNEL_ID}`);
   setTimeout(() => checkPriceChanges(client).catch((e) => console.error('[PriceNotifier]', e.message)), 20000);
   setInterval(() => checkPriceChanges(client).catch((e) => console.error('[PriceNotifier]', e.message)), POLL_MS);
 }

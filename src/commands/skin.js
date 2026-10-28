@@ -178,9 +178,9 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades
       })
     : 'May 16, 2025';
 
-  // Hub Value
+  // Bliss Value
   const hubValue = boltPriceData?.baseValue ?? 0;
-  const hubValueStr = hubValue > 0 ? `${formatValueLong(hubValue)} Hub Value` : '— (Pending Valuation)';
+  const hubValueStr = hubValue > 0 ? `${formatValueLong(hubValue)} Bliss Value` : '— (Pending Valuation)';
 
   // Build Last 3 Verified Trades text (ignoring wood/junk)
   let tradeHistoryText = '';
@@ -221,7 +221,7 @@ export function createSkinEmbed(matchedItem, priceMap, allItemData, recentTrades
       { name: 'OBTAINABLE BY', value: `\`${obtainableMethod}\``, inline: true },
       { name: 'TOTAL OWNED', value: `\`${formatNumber(totalOwned)}\``, inline: true },
       { name: 'RELEASED', value: releasedText, inline: false },
-      { name: 'HUB VALUE', value: `\`${hubValueStr}\``, inline: false },
+      { name: 'BLISS VALUE', value: `\`${hubValueStr}\``, inline: false },
       { name: '📜 LAST 3 VERIFIED TRADES (NON-WOOD)', value: tradeHistoryText, inline: false },
       { name: 'SHARE LINK', value: shareLink, inline: false }
     )
