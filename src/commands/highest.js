@@ -173,7 +173,7 @@ export async function buildWeaponHighestEmbed(weaponQuery) {
     const rEmoji = RARITY_EMOJIS[r] || '⚪';
     const isTop = idx === 0;
     topList += `${medals[idx]} **#${idx + 1}** ${rEmoji} **${skin.skinName}** — ⚡ **${formatValueLong(skin.baseValue)}** (` +
-      `${skin.baseValue.toLocaleString()} Bliss Value` +
+      `${skin.baseValue.toLocaleString()} Hub Value` +
       `)${isTop ? ' 👑' : ''}\n`;
   });
 
@@ -183,15 +183,15 @@ export async function buildWeaponHighestEmbed(weaponQuery) {
     .setDescription(
       `### 👑 #1 Most Valuable ${weaponInfo.name} Skin\n` +
       `• **Skin Name:** **${topSkin.skinName}**\n` +
-      `• **Market Value:** ⚡ **${formatValueLong(topSkin.baseValue)} Bliss Value** (` +
-      `${topSkin.baseValue.toLocaleString()} Bliss Value` +
+      `• **Market Value:** ⚡ **${formatValueLong(topSkin.baseValue)} Hub Value** (` +
+      `${topSkin.baseValue.toLocaleString()} Hub Value` +
       `)\n` +
       `• **Rarity:** ${rarityEmoji} **${rarity}**\n` +
       `• **Source:** ${topSkin.obtainableBy || 'Tradable Market'}\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `### 🏆 Top 5 Most Expensive ${weaponInfo.name} Skins:\n` +
       topList +
-      `\n> 💡 *Prices sourced from the official Kirka Bliss Price List index.*`
+      `\n> 💡 *Prices sourced from the official Kirka Hub Valuation index.*`
     )
     .setImage(renderUrl)
     .setFooter({ text: `KirkaHub Market • ${skins.length} ${weaponInfo.name} skins tracked • .donate for 24/7 hosting` })
@@ -247,7 +247,7 @@ export async function buildOverviewEmbed() {
     .setColor(0xf59e0b)
     .setDescription(desc)
     .setThumbnail('https://cdn-icons-png.flaticon.com/512/2589/2589175.png')
-    .setFooter({ text: 'KirkaHub Price Leaderboard • Official Bliss Price List Index' })
+    .setFooter({ text: 'KirkaHub Price Leaderboard • Official Hub Valuation Index' })
     .setTimestamp();
 
   if (overallPriciest) {

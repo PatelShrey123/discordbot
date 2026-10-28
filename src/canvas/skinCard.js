@@ -118,7 +118,7 @@ export async function renderSkinCard(item, priceMap) {
   ctx.font = 'bold 12px Roboto';
   ctx.fillStyle = '#fbbf24'; // Golden Hub text
   ctx.textAlign = 'left';
-  ctx.fillText('BLISS VALUE', 28, 250);
+  ctx.fillText('HUB VALUE', 28, 250);
 
   // Value box
   ctx.fillStyle = '#0a0b0e';

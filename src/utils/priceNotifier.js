@@ -1,4 +1,4 @@
-// Watches the Bliss Price List live feed and posts every change to a Discord channel.
+// Watches the Bliss Price List live workbook and posts every change to the Discord changelog channel.
 //
 // It keeps its own snapshot on disk and diffs each poll against it, so a change is announced once
 // and only once. On a cold boot with no snapshot it records the current sheet silently rather than
@@ -7,13 +7,13 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { EmbedBuilder } from 'discord.js';
-import { getBoltPriceMap, clearPriceCache, getLastPriceSource } from '../api/boltPrices.js';
+import { getBlissPriceMap, getLastBlissSource } from '../api/blissSheet.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const SNAPSHOT_FILE = path.join(DATA_DIR, 'priceSnapshot.json');
 
-// The changelog channel. Overridable so a test server can point somewhere else.
+// The changelog channel (Bliss Price List #changelogs: 1563832183238434919)
 const CHANNEL_ID = process.env.PRICE_LOG_CHANNEL_ID || '1563832183238434919';
 const POLL_MS = 5 * 60 * 1000;
 // A sane sheet has ~1000 rows. Anything far below that is a failed export, and diffing against it
@@ -53,8 +53,7 @@ function writeSnapshot(snapshot) {
 }
 
 /**
- * getBoltPriceMap stores each item twice — once under "name_type" and once under the bare name —
- * so only the composite keys are kept here, otherwise every change is counted twice.
+ * Stores composite keys ("name_type") so each skin is tracked once.
  */
 function toSnapshot(priceMap) {
   const out = {};
@@ -84,12 +83,6 @@ function diff(before, after) {
   return { changed, added, removed };
 }
 
-/**
- * Identifies one announcement. The snapshot lives on Render's disk, which is wiped on every deploy
- * and is not shared if more than one instance is briefly alive during one - either of which lets
- * the same change be detected twice. The channel is the one piece of state every instance can see,
- * so what has already been posted is read back from it and skipped.
- */
 const signatureOf = (kind, name, from, to) => `${kind}|${name}|${from}|${to}`;
 
 /** Signatures of the price changes already announced in the channel's recent history. */
@@ -117,7 +110,7 @@ async function alreadyAnnounced(channel) {
       }
     }
   } catch (err) {
-    console.warn('[PriceNotifier] Could not read channel history, posting without the duplicate check:', err.message);
+    console.warn('[PriceNotifier] Could not read recent channel history:', err.message);
   }
   return seen;
 }
@@ -131,7 +124,7 @@ function buildEmbeds({ changed, added, removed }) {
     embeds.push(new EmbedBuilder()
       .setColor(colour(c.r))
       .setTitle(`New Skin Change Detected (ID: ${c.n})`)
-      .setDescription(`A change has been detected for skin: **${c.n}**`)
+      .setDescription(`A change has been detected on the Bliss Price List for: **${c.n}**`)
       .addFields({
         name: 'Bliss Value',
         value: `Bliss Value: "${fmt(c.from)}" → "${fmt(c.to)}"${c.pct !== null ? `\n${up ? '📈' : '📉'} ${up ? '+' : ''}${c.pct}%` : ''}`,
@@ -144,7 +137,7 @@ function buildEmbeds({ changed, added, removed }) {
     embeds.push(new EmbedBuilder()
       .setColor(0x2ecc71)
       .setTitle(`New Skin Added (ID: ${a.n})`)
-      .setDescription(`A new skin has been added to the list: **${a.n}**`)
+      .setDescription(`A new skin has been added to the Bliss Price List: **${a.n}**`)
       .addFields({ name: 'Bliss Value', value: `Bliss Value: "${a.v ? fmt(a.v) : 'TBD'}"` })
       .setFooter({ text: `${a.t || 'Unknown'} · ${a.r || 'Unknown'}` })
       .setTimestamp(new Date()));
@@ -154,7 +147,7 @@ function buildEmbeds({ changed, added, removed }) {
     embeds.push(new EmbedBuilder()
       .setColor(0xe74c3c)
       .setTitle(`Skin Removed (ID: ${r.n})`)
-      .setDescription(`This skin is no longer on the list: **${r.n}**`)
+      .setDescription(`This skin is no longer on the Bliss Price List: **${r.n}**`)
       .addFields({ name: 'Bliss Value', value: `Bliss Value: "${fmt(r.v)}" → "—"` })
       .setFooter({ text: `${r.t || 'Unknown'} · ${r.r || 'Unknown'}` })
       .setTimestamp(new Date()));
@@ -165,12 +158,11 @@ function buildEmbeds({ changed, added, removed }) {
 
 /** One poll: compare the sheet with the stored snapshot and announce whatever moved. */
 export async function checkPriceChanges(client, { announce = true } = {}) {
-  clearPriceCache(); // the sheet is the point of the check, so never serve it from cache
-  const priceMap = await getBoltPriceMap();
+  const priceMap = await getBlissPriceMap();
   const after = toSnapshot(priceMap);
   const rowCount = Object.keys(after).length;
 
-  const source = getLastPriceSource();
+  const source = getLastBlissSource();
 
   if (rowCount < MIN_ROWS) {
     console.warn(`[PriceNotifier] Only ${rowCount} rows — skipping this check.`);
@@ -198,11 +190,9 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
   if (announce) {
     const channel = await client.channels.fetch(CHANNEL_ID).catch(() => null);
     if (!channel) {
-      // the snapshot is deliberately not saved, so the change is retried on the next poll
       console.warn(`[PriceNotifier] Channel ${CHANNEL_ID} unreachable — keeping the change for next time.`);
       return { error: 'channel', source, rowCount, changed: 0, added: 0, removed: 0 };
     }
-    // drop anything the channel already shows, so a lost snapshot cannot repost it
     const posted = await alreadyAnnounced(channel);
     const fresh = {
       changed: result.changed.filter((c) => !posted.has(signatureOf('changed', c.n, fmt(c.from), fmt(c.to)))),
@@ -232,7 +222,7 @@ export async function checkPriceChanges(client, { announce = true } = {}) {
 }
 
 export function startPriceNotifier(client) {
-  console.log(`🏷️  [PriceNotifier] Watching the Bliss Price List live feed (every ${POLL_MS / 60000} minutes) → channel ${CHANNEL_ID}`);
+  console.log(`📡 [PriceNotifier] Watching the Bliss Price List workbook (every ${POLL_MS / 60000} minutes) ➔ channel ${CHANNEL_ID}`);
   setTimeout(() => checkPriceChanges(client).catch((e) => console.error('[PriceNotifier]', e.message)), 20000);
   setInterval(() => checkPriceChanges(client).catch((e) => console.error('[PriceNotifier]', e.message)), POLL_MS);
 }
