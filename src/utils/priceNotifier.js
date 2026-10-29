@@ -24,14 +24,11 @@ const MAX_EMBEDS = 10;
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const RARITY_COLOUR = {
-  mythical: 0xe74c3c,
-  legendary: 0xf1c40f,
-  epic: 0x9b59b6,
-  rare: 0x3498db,
-  uncommon: 0x2ecc71,
-  common: 0x95a5a6,
-};
+// Embed sidebar colours by change type
+const COLOR_INCREASE = 0x2ecc71; // Green
+const COLOR_DECREASE = 0xe74c3c; // Red
+const COLOR_NEW_SKIN = 0x00b4d8; // Bright Cyan (New skin detected)
+const COLOR_REMOVED  = 0xe74c3c; // Red
 
 const fmt = (n) => (n === null || n === undefined ? '—' : Number(n).toLocaleString('en-US'));
 
@@ -116,13 +113,14 @@ async function alreadyAnnounced(channel) {
 }
 
 function buildEmbeds({ changed, added, removed }) {
-  const colour = (r) => RARITY_COLOUR[String(r || '').toLowerCase()] ?? 0x5865f2;
   const embeds = [];
 
   for (const c of changed) {
-    const up = (c.pct ?? 0) > 0;
+    const isIncrease = (c.to || 0) > (c.from || 0);
+    const color = isIncrease ? COLOR_INCREASE : COLOR_DECREASE;
+    const up = isIncrease;
     embeds.push(new EmbedBuilder()
-      .setColor(colour(c.r))
+      .setColor(color)
       .setTitle(`New Skin Change Detected (ID: ${c.n})`)
       .setDescription(`A change has been detected on the Bliss Price List for: **${c.n}**`)
       .addFields({
@@ -135,7 +133,7 @@ function buildEmbeds({ changed, added, removed }) {
 
   for (const a of added) {
     embeds.push(new EmbedBuilder()
-      .setColor(0x2ecc71)
+      .setColor(COLOR_NEW_SKIN)
       .setTitle(`New Skin Added (ID: ${a.n})`)
       .setDescription(`A new skin has been added to the Bliss Price List: **${a.n}**`)
       .addFields({ name: 'Bliss Value', value: `Bliss Value: "${a.v ? fmt(a.v) : 'TBD'}"` })
@@ -145,7 +143,7 @@ function buildEmbeds({ changed, added, removed }) {
 
   for (const r of removed) {
     embeds.push(new EmbedBuilder()
-      .setColor(0xe74c3c)
+      .setColor(COLOR_REMOVED)
       .setTitle(`Skin Removed (ID: ${r.n})`)
       .setDescription(`This skin is no longer on the Bliss Price List: **${r.n}**`)
       .addFields({ name: 'Bliss Value', value: `Bliss Value: "${fmt(r.v)}" → "—"` })
