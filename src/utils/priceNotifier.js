@@ -86,10 +86,8 @@ const signatureOf = (kind, name, from, to) => `${kind}|${name}|${from}|${to}`;
 async function alreadyAnnounced(channel) {
   const seen = new Set();
   try {
-    const messages = await channel.messages.fetch({ limit: 50 });
-    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    const messages = await channel.messages.fetch({ limit: 100 });
     for (const msg of messages.values()) {
-      if (msg.createdTimestamp < cutoff) continue;
       for (const e of msg.embeds) {
         const title = e.title || '';
         const m = title.match(/\(ID: (.+)\)$/);
