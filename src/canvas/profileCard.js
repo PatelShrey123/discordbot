@@ -449,14 +449,14 @@ async function renderAnimatedProfileCard(profile, gifBuffer, discordUsername = n
   const offsetX = (width - drawW) / 2;
   const offsetY = (height - drawH) / 2;
 
-  const rgbaBuffer = new Uint8Array(srcWidth * srcHeight * 4);
   const tempSrcCanvas = createCanvas(srcWidth, srcHeight);
   const tempSrcCtx = tempSrcCanvas.getContext('2d');
+  // One frame buffer for the whole GIF, decoded into directly (a new one per frame was ~8 MB of
+  // garbage each for a 1080p GIF). Frames blit over the previous one, so it must be reused anyway.
+  const imgData = tempSrcCtx.createImageData(srcWidth, srcHeight);
 
   for (const fIdx of sampledIndices) {
-    reader.decodeAndBlitFrameRGBA(fIdx, rgbaBuffer);
-    const imgData = tempSrcCtx.createImageData(srcWidth, srcHeight);
-    imgData.data.set(rgbaBuffer);
+    reader.decodeAndBlitFrameRGBA(fIdx, imgData.data);
     tempSrcCtx.putImageData(imgData, 0, 0);
 
     // Draw scaled GIF background frame

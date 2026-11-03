@@ -13,3 +13,7 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
+      # glibc otherwise keeps a malloc arena per thread and never hands canvas memory back,
+      # so the free instance's 512 MB fills up even after renders finish
+      - key: MALLOC_ARENA_MAX
+        value: "2"

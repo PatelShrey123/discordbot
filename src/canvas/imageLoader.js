@@ -1,19 +1,50 @@
 import { loadImage } from '@napi-rs/canvas';
 
-const imageCache = new Map();
+// Decoded images cost width x height x 4 bytes each (a 1024px weapon texture is 4 MB) and used to
+// be kept forever, so a day of /inventory paging filled the free host's 512 MB and crashed it.
+// The cache is now capped by size and drops the least recently used images first.
+const CACHE_BUDGET_BYTES = 48 * 1024 * 1024;
+const imageCache = new Map(); // url -> { img, bytes }, oldest use first
+let cacheBytes = 0;
+
+function recall(url) {
+  const entry = imageCache.get(url);
+  if (!entry) return null;
+  imageCache.delete(url); // re-insert so it counts as the newest use
+  imageCache.set(url, entry);
+  return entry.img;
+}
+
+function remember(url, img, cache) {
+  if (!cache) return img;
+  const bytes = (img.width || 0) * (img.height || 0) * 4;
+  if (bytes > CACHE_BUDGET_BYTES / 4) return img; // one huge image would evict everything else
+  const previous = imageCache.get(url); // two commands can fetch the same image at once
+  if (previous) {
+    imageCache.delete(url);
+    cacheBytes -= previous.bytes;
+  }
+  imageCache.set(url, { img, bytes });
+  cacheBytes += bytes;
+  for (const [key, entry] of imageCache) {
+    if (cacheBytes <= CACHE_BUDGET_BYTES) break;
+    imageCache.delete(key);
+    cacheBytes -= entry.bytes;
+  }
+  return img;
+}
 
 /**
   * Fetch and cache loaded image objects in memory.
   * Direct downloads without proxy to bypass weserv.nl blocks/rate-limits on hosting environments.
+  * Pass { cache: false } for big one-off images (texture sheets) so they don't push out the renders.
   */
-export async function getCachedImage(url) {
+export async function getCachedImage(url, { cache = true } = {}) {
   if (!url) return null;
   const cleanUrl = url.trim();
 
-  if (imageCache.has(cleanUrl)) {
-    const cached = imageCache.get(cleanUrl);
-    if (cached) return cached;
-  }
+  const cached = recall(cleanUrl);
+  if (cached) return cached;
 
   // Handle local files or data URIs directly
   const isLocal = cleanUrl.startsWith('.') || 
@@ -24,8 +55,7 @@ export async function getCachedImage(url) {
   if (isLocal) {
     try {
       const img = await loadImage(cleanUrl);
-      if (img) imageCache.set(cleanUrl, img);
-      return img;
+      return img ? remember(cleanUrl, img, cache) : img;
     } catch (err) {
       console.warn(`[ImageLoader] Failed to load local image: ${cleanUrl} (${err.message})`);
       return null;
@@ -64,10 +94,7 @@ export async function getCachedImage(url) {
         const arrayBuffer = await res.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         const img = await loadImage(buffer);
-        if (img) {
-          imageCache.set(cleanUrl, img);
-          return img;
-        }
+        if (img) return remember(cleanUrl, img, cache);
       }
     } catch {
       clearTimeout(timeoutId);

@@ -28,7 +28,7 @@ export async function renderSkinTexture(item) {
 
   let img = null;
   for (const url of [...new Set(candidates)]) {
-    img = await getCachedImage(url);
+    img = await getCachedImage(url, { cache: false });
     if (img) break;
   }
   if (!img || !img.width || !img.height) return null;

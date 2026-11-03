@@ -61,13 +61,14 @@ async function loadGltf(file) {
   return gltfCache.get(file);
 }
 
-// Decoded texture pixels, bounded so big 2048px weapon textures don't pile up in memory
+// Decoded texture pixels, bounded so big weapon textures don't pile up in memory. The image itself
+// skips the shared cache: only these texels are needed, and keeping both doubled the cost.
 const texelCache = new Map();
-const TEXEL_CACHE_LIMIT = 12;
+const TEXEL_CACHE_LIMIT = 4;
 async function loadTexels(url) {
   if (!url) return null;
   if (texelCache.has(url)) return texelCache.get(url);
-  const img = await getCachedImage(url);
+  const img = await getCachedImage(url, { cache: false });
   if (!img) return null;
   const c = createCanvas(img.width, img.height);
   const ctx = c.getContext('2d');
@@ -327,8 +328,11 @@ async function renderScene({ bodyTextureUrl, weaponFile, weaponTextureUrl, pose 
     await raster.drawMesh(obj, isWeapon ? weaponTexels : bodyTexels, isWeapon ? [0x4b, 0x54, 0x68] : [0x2a, 0x31, 0x48]);
   }
 
+  // Drop the z-buffer before the canvas copy so both full-size buffers aren't alive at once
+  raster.depth = null;
   const canvas = createCanvas(width, height);
   canvas.getContext('2d').putImageData(new ImageData(raster.color, width, height), 0, 0);
+  raster.color = null;
   return canvas;
 }
 
