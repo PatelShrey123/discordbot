@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getParsedStore } from '../api/store.js';
+import { isGuildVip, isUserVip, listVip } from './access.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -147,6 +148,8 @@ async function broadcastAlert(client, title, description, imageUrl, fields = [])
   );
 
   for (const sub of subs) {
+    // store alerts are a VIP feature: the server needs VIP, or the subscriber personal VIP
+    if (listVip().ready && !isGuildVip(sub.guildId) && !isUserVip(sub.userId)) continue;
     try {
       const channel = await client.channels.fetch(sub.channelId).catch(() => null);
       if (channel) {

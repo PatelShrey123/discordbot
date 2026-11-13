@@ -4,7 +4,8 @@ import http from 'http';
 import dotenv from 'dotenv';
 import dns from 'dns';
 
-import { registerCommands } from './register-commands.js';
+import { registerCommands, syncAllGuilds, syncGuildCommands } from './register-commands.js';
+import { initAccess, canUse, buyMessage, isUserVip, isGuildVip, isOwner, listVip, SUPPORT_GUILD_ID } from './utils/access.js';
 import { getPublicCatalog, fetchClanLeaderboard, getAllItemData, fetchUserProfile, fetchUserInventory, fetchClan } from './api/kirka.js';
 import { getBoltPriceMap, getItemPrice, formatValueLong, clearPriceCache } from './api/boltPrices.js';
 import { initDb, getUserBackground, getLinkedAccount, getDiscordLinkedToKirka, setUserBackground, resolveKirkaTarget } from './api/db.js';
@@ -15,6 +16,8 @@ import { renderInventoryGridPage } from './canvas/inventoryGrid.js';
 import { renderClanRosterPage } from './canvas/clanRoster.js';
 
 import * as profileCmd from './commands/profile.js';
+import * as buyCmd from './commands/buy.js';
+import * as vipadminCmd from './commands/vipadmin.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
 import * as skinCmd from './commands/skin.js';
@@ -104,6 +107,8 @@ client.commands.set(refreshpricesCmd.data.name, refreshpricesCmd);
 client.commands.set(newskinsCmd.data.name, newskinsCmd);
 client.commands.set(pricelogCmd.data.name, pricelogCmd);
 client.commands.set(textureCmd.data.name, textureCmd);
+client.commands.set(buyCmd.data.name, buyCmd);
+client.commands.set(vipadminCmd.data.name, vipadminCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -117,6 +122,13 @@ client.once('ready', async () => {
     console.log('✅ [Startup] Step 4: Supabase Database connected.');
   } catch (err) {
     console.error('❌ [Startup] Step 4: Supabase connection failed:', err);
+  }
+
+  console.log('🔑 [Startup] Step 4.5: Loading the VIP lists...');
+  try {
+    await initAccess(client);
+  } catch (err) {
+    console.error('❌ [Startup] Step 4.5: VIP lists failed to load:', err);
   }
 
   console.log('🔊 [Startup] Step 5: Connecting Chat WebSocket Listener...');
@@ -151,12 +163,25 @@ client.once('ready', async () => {
   console.log('🤖 [Startup] Step 7: Deploying global slash commands...');
   try {
     await registerCommands();
+    // per-server commands; skipped if the VIP list couldn't be read, so paying servers never lose them by accident
+    if (listVip().ready) await syncAllGuilds(client);
+    else console.error('⚠️ [Startup] Step 7: VIP list not loaded, so server commands were left as they were.');
     console.log('✅ [Startup] Step 7: Slash commands deployed successfully.');
   } catch (err) {
     console.error('❌ [Startup] Step 7: Failed to deploy slash commands:', err);
   }
 
   console.log('🎉 [Startup] KirkaHub Bot is fully ready and online!');
+});
+
+// A server that adds the bot gets its commands straight away (everything if VIP, otherwise only /buy)
+client.on('guildCreate', async (guild) => {
+  try {
+    if (listVip().ready) await syncGuildCommands(client, guild.id);
+    console.log(`[Guilds] Joined ${guild.name} (${guild.id}), VIP: ${isGuildVip(guild.id)}`);
+  } catch (err) {
+    console.warn(`[Guilds] Could not set commands for ${guild.name}:`, err.message);
+  }
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -263,6 +288,12 @@ client.on('interactionCreate', async (interaction) => {
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
 
+  // VIP check. A command used through "Add to my apps" (not through a server install) needs personal VIP.
+  if (!canUse(interaction.commandName, interaction.user.id, interaction.guildId)) {
+    const throughServer = !!interaction.authorizingIntegrationOwners?.[0];
+    return interaction.reply({ content: buyMessage({ forUser: !throughServer }), flags: 64, allowedMentions: { parse: [] } });
+  }
+
   try {
     await command.execute(interaction);
   } catch (error) {
@@ -277,11 +308,30 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // Support prefix triggers for every command
+const DOT_COMMANDS = 'botavatar botname bundles chest clan clanwar clanwars community compare cw dbstatus discord donate event eventquests events eventseasons feedback fit flip games guide gun h help info inv inventory leaderboard link lobbies missing newskins notifystore profile quests ranked refreshprices reloadprices rooms seasons server servers shop skin store storesub storeupdate suggest suggestion support syncprices texture tip trade ttk unbox unlink unlisted vip vs weapon weapons'.split(' ');
+const lockedNoticeAt = new Map(); // channel id -> last time the VIP notice was posted there
+
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
   const content = message.content.trim();
   const lowerContent = content.toLowerCase();
+
+  // VIP check for dot commands, same rules as the slash commands
+  const dot = /^\.([a-z0-9]+)/.exec(lowerContent);
+  if (dot && DOT_COMMANDS.some((name) => dot[1].startsWith(name))) {
+    const guildId = message.guildId;
+    const free = guildId === SUPPORT_GUILD_ID && ['profile', 'inv', 'link', 'unlink'].some((n) => dot[1].startsWith(n));
+    const allowed = !listVip().ready || isOwner(message.author.id) || isUserVip(message.author.id) || isGuildVip(guildId) || free;
+    if (!allowed) {
+      const last = lockedNoticeAt.get(message.channelId) || 0;
+      if (Date.now() - last > 10 * 60 * 1000) {
+        lockedNoticeAt.set(message.channelId, Date.now());
+        await message.reply({ content: buyMessage({ forUser: !guildId }), allowedMentions: { parse: [] } }).catch(() => {});
+      }
+      return;
+    }
+  }
 
   // 0. .refreshprices / .reloadprices / .syncprices
   if (lowerContent === '.refreshprices' || lowerContent === '.reloadprices' || lowerContent === '.syncprices') {

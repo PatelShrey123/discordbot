@@ -32,70 +32,110 @@ import * as refreshpricesCmd from './commands/refreshprices.js';
 import * as newskinsCmd from './commands/newskins.js';
 import * as pricelogCmd from './commands/pricelog.js';
 import * as textureCmd from './commands/texture.js';
+import * as buyCmd from './commands/buy.js';
+import * as vipadminCmd from './commands/vipadmin.js';
+import { isGuildVip, SUPPORT_GUILD_ID, FREE_IN_SUPPORT } from './utils/access.js';
 
 dotenv.config();
 
-const commands = [
-  helpCmd.data.toJSON(),
-  profileCmd.data.toJSON(),
-  inventoryCmd.data.toJSON(),
-  clanCmd.data.toJSON(),
-  skinCmd.data.toJSON(),
-  leaderboardCmd.data.toJSON(),
-  hCmd.data.toJSON(),
-  linkCmd.data.toJSON(),
-  dbstatusCmd.data.toJSON(),
-  unlinkCmd.data.toJSON(),
-  botnameCmd.data.toJSON(),
-  botavatarCmd.data.toJSON(),
-  questsCmd.data.toJSON(),
-  rankedCmd.data.toJSON(),
-  tradeCmd.data.toJSON(),
-  unboxCmd.data.toJSON(),
-  weaponCmd.data.toJSON(),
-  serversCmd.data.toJSON(),
-  storeCmd.data.toJSON(),
-  storeupdateCmd.data.toJSON(),
-  eventsCmd.data.toJSON(),
-  supportCmd.data.toJSON(),
-  suggestCmd.data.toJSON(),
-  donateCmd.data.toJSON(),
-  fitCmd.data.toJSON(),
-  vipCmd.data.toJSON(),
-  flipCmd.data.toJSON(),
-  chatCmd.data.toJSON(),
-  refreshpricesCmd.data.toJSON(),
-  newskinsCmd.data.toJSON(),
-  pricelogCmd.data.toJSON(),
-  textureCmd.data.toJSON()
+// Every regular command (not /buy or /vipadmin). Built lazily: vipadmin imports this file back.
+const regular = () => [
+  helpCmd,
+  profileCmd,
+  inventoryCmd,
+  clanCmd,
+  skinCmd,
+  leaderboardCmd,
+  hCmd,
+  linkCmd,
+  dbstatusCmd,
+  unlinkCmd,
+  botnameCmd,
+  botavatarCmd,
+  questsCmd,
+  rankedCmd,
+  tradeCmd,
+  unboxCmd,
+  weaponCmd,
+  serversCmd,
+  storeCmd,
+  storeupdateCmd,
+  eventsCmd,
+  supportCmd,
+  suggestCmd,
+  donateCmd,
+  fitCmd,
+  vipCmd,
+  flipCmd,
+  chatCmd,
+  refreshpricesCmd,
+  newskinsCmd,
+  pricelogCmd,
+  textureCmd
 ];
 
-export async function registerCommands() {
+// Server installs: a copy of a command for one server (per-server commands carry no install settings)
+const forGuild = (json) => {
+  const { integration_types, contexts, ...rest } = json;
+  return rest;
+};
+// "Add to my apps": a copy that only exists for people who added the app to their account
+const forUser = (json) => ({ ...json, integration_types: [1], contexts: [0, 1, 2] });
+
+let restClient = null;
+let appId = null;
+async function rest() {
+  if (restClient) return { rest: restClient, appId };
   const token = process.env.DISCORD_TOKEN;
-  if (!token) {
-    console.error('❌ DISCORD_TOKEN is missing in environment variables!');
-    return;
-  }
+  if (!token) throw new Error('DISCORD_TOKEN is missing in environment variables!');
+  restClient = new REST({ version: '10' }).setToken(token);
+  appId = (await restClient.get(Routes.user())).id;
+  return { rest: restClient, appId };
+}
 
-  const rest = new REST({ version: '10' }).setToken(token);
-
+/**
+ * Global commands: /buy everywhere, plus every command as a personal-app ("Add to my apps") command.
+ * Servers get their commands separately, per server, from syncGuildCommands.
+ */
+export async function registerCommands() {
   try {
-    console.log('🔄 Registering global Discord slash commands...');
-    // Fetch current user bot ID
-    const botUser = await rest.get(Routes.user());
-    const clientId = botUser.id;
-
-    await rest.put(
-      Routes.applicationCommands(clientId),
-      { body: commands }
-    );
-    console.log(`✅ Successfully registered ${commands.length} global slash commands for Client ID: ${clientId}`);
+    const { rest: r, appId: id } = await rest();
+    const body = [buyCmd.data.toJSON(), ...regular().map((c) => forUser(c.data.toJSON()))];
+    await r.put(Routes.applicationCommands(id), { body });
+    console.log(`✅ Registered ${body.length} global commands (/buy + personal-app commands) for ${id}`);
   } catch (error) {
-    console.error('❌ Failed to register slash commands:', error);
+    console.error('❌ Failed to register global slash commands:', error);
   }
 }
 
-// Allow direct script execution: `node src/register-commands.js`
+/** What one server gets: everything if VIP, the free commands in the support server, otherwise nothing. */
+export async function syncGuildCommands(client, guildId) {
+  const { rest: r, appId: id } = await rest();
+  let body = [];
+  if (isGuildVip(guildId)) body = regular().map((c) => forGuild(c.data.toJSON()));
+  else if (guildId === SUPPORT_GUILD_ID) body = regular().filter((c) => FREE_IN_SUPPORT.has(c.data.name)).map((c) => forGuild(c.data.toJSON()));
+  if (guildId === SUPPORT_GUILD_ID) body.push(vipadminCmd.data.toJSON());
+  await r.put(Routes.applicationGuildCommands(id, guildId), { body });
+  return body.length;
+}
+
+/** Every server the bot is in, one after another. */
+export async function syncAllGuilds(client) {
+  let vip = 0;
+  for (const guild of client.guilds.cache.values()) {
+    try {
+      const n = await syncGuildCommands(client, guild.id);
+      if (isGuildVip(guild.id)) vip++;
+      if (n) console.log(`[Commands] ${guild.name}: ${n} command(s)`);
+    } catch (err) {
+      console.warn(`[Commands] Could not set commands for ${guild.name} (${guild.id}):`, err.message);
+    }
+    await new Promise((res) => setTimeout(res, 300));
+  }
+  console.log(`✅ Server commands synced: ${vip} VIP server(s) of ${client.guilds.cache.size}`);
+}
+
+// Allow direct script execution: `node src/register-commands.js` (global commands only; servers sync when the bot starts)
 if (process.argv[1] && process.argv[1].endsWith('register-commands.js')) {
   registerCommands();
 }
