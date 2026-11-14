@@ -188,6 +188,11 @@ client.on('guildCreate', async (guild) => {
 });
 
 client.on('interactionCreate', async (interaction) => {
+  // "Join and paint" under a /skineditor message: open the same live Skin Editor (free, like /skineditor)
+  if (interaction.isButton() && interaction.customId === skineditorCmd.JOIN_BUTTON_ID) {
+    return skineditorCmd.join(interaction);
+  }
+
   // Handle server browser regional switch buttons
   if (interaction.isButton() && interaction.customId.startsWith('server_reg_')) {
     const regId = interaction.customId.replace('server_reg_', '');
