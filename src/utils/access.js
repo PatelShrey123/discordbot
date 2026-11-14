@@ -2,7 +2,7 @@
 //
 // - VIP servers get every command, registered just for that server.
 // - The support server gets only the free commands below (plus /buy).
-// - Every other server only sees /buy.
+// - Every other server only sees /buy and /skineditor, which is free everywhere.
 // - "Add to my apps" (user install) is sold separately: Discord can't hide those commands per person,
 //   so they stay listed and the bot answers with the /buy message unless the user is a VIP user.
 //
@@ -15,8 +15,8 @@ import { ChannelType, PermissionFlagsBits } from 'discord.js';
 export const SUPPORT_GUILD_ID = process.env.SUPPORT_GUILD_ID || '1545037736543653919';
 export const SUPPORT_INVITE = 'https://discord.gg/3zStCadBtP';
 export const FREE_IN_SUPPORT = new Set(['profile', 'inventory', 'link', 'unlink']);
-/** Commands that run for anyone, anywhere. */
-export const ALWAYS_ALLOWED = new Set(['buy']);
+/** Commands that run for anyone, anywhere. /skineditor (the live Skin Editor Activity) is free for every server. */
+export const ALWAYS_ALLOWED = new Set(['buy', 'skineditor']);
 /** Owner-only command, registered in the support server alone. */
 export const ADMIN_COMMAND = 'vipadmin';
 

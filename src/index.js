@@ -286,7 +286,7 @@ client.on('interactionCreate', async (interaction) => {
     return;
   }
 
-  // The app's Activity "Launch" button (Entry Point command): opens the live Skin Editor, VIP only like /skineditor
+  // The app's Activity "Launch" button (Entry Point command): opens the live Skin Editor. Free everywhere, like /skineditor (canUse lets it through)
   if (interaction.isPrimaryEntryPointCommand?.()) {
     if (!canUse('skineditor', interaction.user.id, interaction.guildId)) {
       const throughServer = !!interaction.authorizingIntegrationOwners?.[0];

@@ -35,7 +35,7 @@ import * as textureCmd from './commands/texture.js';
 import * as buyCmd from './commands/buy.js';
 import * as vipadminCmd from './commands/vipadmin.js';
 import * as skineditorCmd from './commands/skineditor.js';
-import { isGuildVip, SUPPORT_GUILD_ID, FREE_IN_SUPPORT } from './utils/access.js';
+import { isGuildVip, SUPPORT_GUILD_ID, FREE_IN_SUPPORT, ALWAYS_ALLOWED } from './utils/access.js';
 
 dotenv.config();
 
@@ -104,7 +104,7 @@ export async function registerCommands() {
     const { rest: r, appId: id } = await rest();
     const body = [buyCmd.data.toJSON(), ...regular().map((c) => forUser(c.data.toJSON()))];
     // Once Activities are on, Discord adds an Entry Point ("Launch") command, and a bulk update that leaves it
-    // out is refused. Keep it, with the bot handling it (APP_HANDLER) so the VIP check applies to it too.
+    // out is refused. Keep it, with the bot handling it (APP_HANDLER) so it goes through the same access check as /skineditor.
     const existing = await r.get(Routes.applicationCommands(id)).catch(() => []);
     const entry = existing.find((c) => c.type === 4);
     if (entry) {
@@ -127,9 +127,13 @@ export async function registerCommands() {
 /** What one server gets: everything if VIP, the free commands in the support server, otherwise nothing. */
 export async function syncGuildCommands(client, guildId) {
   const { rest: r, appId: id } = await rest();
-  let body = [];
+  let body;
   if (isGuildVip(guildId)) body = regular().map((c) => forGuild(c.data.toJSON()));
-  else if (guildId === SUPPORT_GUILD_ID) body = regular().filter((c) => FREE_IN_SUPPORT.has(c.data.name)).map((c) => forGuild(c.data.toJSON()));
+  else {
+    // free everywhere (/skineditor), plus the support server's free commands there
+    const free = (name) => ALWAYS_ALLOWED.has(name) || (guildId === SUPPORT_GUILD_ID && FREE_IN_SUPPORT.has(name));
+    body = regular().filter((c) => free(c.data.name)).map((c) => forGuild(c.data.toJSON()));
+  }
   if (guildId === SUPPORT_GUILD_ID) body.push(vipadminCmd.data.toJSON());
   await r.put(Routes.applicationGuildCommands(id, guildId), { body });
   return body.length;

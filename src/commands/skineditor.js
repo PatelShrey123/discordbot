@@ -1,7 +1,8 @@
 import { SlashCommandBuilder } from 'discord.js';
 
 // Opens the KirkaHub Skin Editor as a Discord Activity right here: everyone in the channel can join
-// and watch or paint the same skin live. Needs Activities turned on for the app in the Developer Portal.
+// and watch or paint the same skin live. Free in every server (not VIP). Needs Activities turned on for
+// the app in the Developer Portal.
 export const data = new SlashCommandBuilder()
   .setName('skineditor')
   .setDescription('Open the live Skin Editor here: everyone can join, watch and paint the same skin')

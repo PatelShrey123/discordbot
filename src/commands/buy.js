@@ -21,7 +21,8 @@ export async function execute(interaction) {
     .addFields(
       { name: '🏠 Server VIP', value: 'Every command for everyone in one server.', inline: true },
       { name: '📱 Personal VIP', value: 'KirkaHub as your own app ("Add to my apps"), in any server and in DMs. Sold separately.', inline: true },
-      { name: '🆓 Try it first', value: `\`/profile\`, \`/inventory\` and \`/link\` are free in the support server: ${SUPPORT_INVITE}` }
+      { name: '🆓 Try it first', value: `\`/profile\`, \`/inventory\` and \`/link\` are free in the support server: ${SUPPORT_INVITE}` },
+      { name: '🎨 Free for everyone', value: '`/skineditor` opens the live Skin Editor in any channel: everyone can join, watch and paint the same skin.' }
     );
   await interaction.reply({ embeds: [embed], allowedMentions: { parse: [] } });
 }
