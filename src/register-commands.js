@@ -34,6 +34,7 @@ import * as pricelogCmd from './commands/pricelog.js';
 import * as textureCmd from './commands/texture.js';
 import * as buyCmd from './commands/buy.js';
 import * as vipadminCmd from './commands/vipadmin.js';
+import * as skineditorCmd from './commands/skineditor.js';
 import { isGuildVip, SUPPORT_GUILD_ID, FREE_IN_SUPPORT } from './utils/access.js';
 
 dotenv.config();
@@ -71,7 +72,8 @@ const regular = () => [
   refreshpricesCmd,
   newskinsCmd,
   pricelogCmd,
-  textureCmd
+  textureCmd,
+  skineditorCmd
 ];
 
 // Server installs: a copy of a command for one server (per-server commands carry no install settings)
@@ -101,6 +103,20 @@ export async function registerCommands() {
   try {
     const { rest: r, appId: id } = await rest();
     const body = [buyCmd.data.toJSON(), ...regular().map((c) => forUser(c.data.toJSON()))];
+    // Once Activities are on, Discord adds an Entry Point ("Launch") command, and a bulk update that leaves it
+    // out is refused. Keep it, with the bot handling it (APP_HANDLER) so the VIP check applies to it too.
+    const existing = await r.get(Routes.applicationCommands(id)).catch(() => []);
+    const entry = existing.find((c) => c.type === 4);
+    if (entry) {
+      body.push({
+        name: entry.name,
+        description: 'Open the live Skin Editor: everyone can join, watch and paint the same skin',
+        type: 4,
+        handler: 1,
+        integration_types: [0, 1],
+        contexts: [0, 1, 2],
+      });
+    }
     await r.put(Routes.applicationCommands(id), { body });
     console.log(`✅ Registered ${body.length} global commands (/buy + personal-app commands) for ${id}`);
   } catch (error) {

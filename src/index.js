@@ -18,6 +18,8 @@ import { renderClanRosterPage } from './canvas/clanRoster.js';
 import * as profileCmd from './commands/profile.js';
 import * as buyCmd from './commands/buy.js';
 import * as vipadminCmd from './commands/vipadmin.js';
+import * as skineditorCmd from './commands/skineditor.js';
+import { attachLiveSkin } from './liveSkin.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
 import * as skinCmd from './commands/skin.js';
@@ -109,6 +111,7 @@ client.commands.set(pricelogCmd.data.name, pricelogCmd);
 client.commands.set(textureCmd.data.name, textureCmd);
 client.commands.set(buyCmd.data.name, buyCmd);
 client.commands.set(vipadminCmd.data.name, vipadminCmd);
+client.commands.set(skineditorCmd.data.name, skineditorCmd);
 console.log(`🔊 [Startup] Step 1: Registered ${client.commands.size} command handlers.`);
 
 console.log('🔊 [Startup] Step 2: Setting up ready listener...');
@@ -281,6 +284,15 @@ client.on('interactionCreate', async (interaction) => {
       console.error('[ChatButton] Error:', err);
     }
     return;
+  }
+
+  // The app's Activity "Launch" button (Entry Point command): opens the live Skin Editor, VIP only like /skineditor
+  if (interaction.isPrimaryEntryPointCommand?.()) {
+    if (!canUse('skineditor', interaction.user.id, interaction.guildId)) {
+      const throughServer = !!interaction.authorizingIntegrationOwners?.[0];
+      return interaction.reply({ content: buyMessage({ forUser: !throughServer }), flags: 64, allowedMentions: { parse: [] } });
+    }
+    return skineditorCmd.execute(interaction);
   }
 
   if (!interaction.isChatInputCommand()) return;
@@ -1073,7 +1085,7 @@ async function getDiscordApiStatus(client) {
   }
 }
 
-http.createServer(async (req, res) => {
+const webServer = http.createServer(async (req, res) => {
   // Cheap liveness route for uptime pingers. It makes no outbound calls, so keeping the service
   // awake costs nothing and cannot get the IP blocked. Point your pinger here, not at /status.
   if (req.url === '/healthz') {
@@ -1486,6 +1498,7 @@ http.createServer(async (req, res) => {
 }).listen(PORT, '0.0.0.0', () => {
   console.log(`📡 Health-check server listening on port ${PORT} (0.0.0.0)`);
 });
+attachLiveSkin(webServer);
 
 client.on('warn', (info) => console.warn(`⚠️ [Discord Warn] ${info}`));
 client.on('error', (err) => console.error(`❌ [Discord Error]`, err));
