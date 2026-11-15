@@ -11,7 +11,7 @@ const PATH = '/live-skin';
 const TOKEN_PATH = '/live-skin/token';
 const MAX_ROOMS = 200;
 const MAX_PER_ROOM = 25;
-const LIMITS = [0, 5, 10, 25, 50, 100, 250];
+const MAX_LIMIT = 10000;
 const ALLOWED_ORIGIN = /^https?:\/\/(localhost(:\d+)?|127\.0\.0\.1(:\d+)?|([a-z0-9-]+\.)?kirkahub\.online|\d+\.discordsays\.com)$/i;
 const CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1532695214634831872';
 
@@ -138,8 +138,9 @@ export function attachLiveSkin(server) {
         // the host's settings: may others paint, and how many pixels each
         if (ws !== room.host) return;
         room.open = !!msg.open;
-        if (LIMITS.includes(msg.limit) && msg.limit !== room.limit) {
-          room.limit = msg.limit;
+        const limit = Number(msg.limit);
+        if (Number.isInteger(limit) && limit >= 0 && limit <= MAX_LIMIT && limit !== room.limit) {
+          room.limit = limit;
           room.used.clear(); // a new limit starts everyone from zero
           room.round++;
         }
