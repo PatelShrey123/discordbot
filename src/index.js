@@ -19,7 +19,7 @@ import * as profileCmd from './commands/profile.js';
 import * as buyCmd from './commands/buy.js';
 import * as vipadminCmd from './commands/vipadmin.js';
 import * as skineditorCmd from './commands/skineditor.js';
-import { attachLiveSkin } from './liveSkin.js';
+import { attachLiveSkin, handleLiveSkinToken } from './liveSkin.js';
 import * as inventoryCmd from './commands/inventory.js';
 import * as clanCmd from './commands/clan.js';
 import * as skinCmd from './commands/skin.js';
@@ -1091,6 +1091,9 @@ async function getDiscordApiStatus(client) {
 }
 
 const webServer = http.createServer(async (req, res) => {
+  // the live Skin Editor's Discord sign-in (shows people's Discord names in the Activity)
+  if (handleLiveSkinToken(req, res)) return;
+
   // Cheap liveness route for uptime pingers. It makes no outbound calls, so keeping the service
   // awake costs nothing and cannot get the IP blocked. Point your pinger here, not at /status.
   if (req.url === '/healthz') {
