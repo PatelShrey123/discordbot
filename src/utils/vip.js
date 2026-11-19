@@ -20,6 +20,15 @@ export const VIP_SOULESS_UUIDS = new Set([
   'e45990f7-cb60-48c6-b664-41a0d09d25a1'
 ]);
 
+// RITE VIP tier (lifetime, paid by the RITE league, rite.lat): gold badge in RITE's colours.
+// Put the player's Kirka short ID (no #) and/or account UUID here.
+export const VIP_RITE_SHORTS = new Set([
+  // 'XXXXXX'
+]);
+export const VIP_RITE_UUIDS = new Set([
+  // 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+]);
+
 /**
  * Returns VIP badge & styling configuration for profile cards
  */
@@ -41,6 +50,23 @@ export function getVipProfileInfo(profile) {
       gradientStart: 'rgba(82, 126, 255, 0.35)',
       gradientMiddle: 'rgba(6, 18, 38, 0.95)',
       gradientEnd: 'rgba(192, 245, 255, 0.3)'
+    };
+  }
+
+  // RITE VIP Tier
+  if (VIP_RITE_SHORTS.has(shortId) || VIP_RITE_UUIDS.has(id)) {
+    return {
+      type: 'rite',
+      tag: '⚡ RITE',
+      badge: 'RITE',
+      label: 'VIP MEMBER',
+      primaryColor: '#E0B34A',
+      secondaryColor: '#F3D48A',
+      borderColor: '#E0B34A',
+      glowColor: 'rgba(224, 179, 74, 0.6)',
+      gradientStart: 'rgba(224, 179, 74, 0.32)',
+      gradientMiddle: 'rgba(7, 6, 11, 0.95)',
+      gradientEnd: 'rgba(243, 212, 138, 0.28)'
     };
   }
 

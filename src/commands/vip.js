@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { fetchUserProfile } from '../api/kirka.js';
-import { getVipProfileInfo } from '../utils/vip.js';
+import { getVipProfileInfo, VIP_RITE_SHORTS } from '../utils/vip.js';
 
-// Members shown by /vip (tier styling still comes from utils/vip.js)
-const SHOWCASED_VIPS = ['CARSON', 'FUYR7K', 'TTTVBJ'];
+// Members shown by /vip (tier styling still comes from utils/vip.js). RITE VIPs are added automatically.
+const SHOWCASED_VIPS = ['CARSON', 'FUYR7K', 'TTTVBJ', ...VIP_RITE_SHORTS];
 
 export const data = new SlashCommandBuilder()
   .setName('vip')

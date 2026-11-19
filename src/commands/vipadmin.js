@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
-import { isOwner, isGuildVip, addGuild, removeGuild, addUser, removeUser, listVip } from '../utils/access.js';
+import { isOwner, isGuildVip, isPermanentGuild, addGuild, removeGuild, addUser, removeUser, listVip } from '../utils/access.js';
 import { syncGuildCommands } from '../register-commands.js';
 
 // Owner only. Registered in the support server alone, hidden from everyone but admins there.
@@ -64,6 +64,7 @@ export async function execute(interaction) {
         if (guild) await syncGuildCommands(client, id);
         return interaction.editReply(added ? `✅ **${name}** is now VIP.${guild ? ' Its commands are live.' : ' Its commands appear as soon as the bot joins.'}` : `**${name}** was already VIP.`);
       }
+      if (isPermanentGuild(id)) return interaction.editReply(`**${name}** has lifetime VIP, set in the bot's code (PERMANENT_GUILDS in src/utils/access.js). Remove it there.`);
       const removed = await removeGuild(id);
       if (guild) await syncGuildCommands(client, id);
       return interaction.editReply(removed ? `🔒 **${name}** is no longer VIP. Only \`/buy\` is left there.` : `**${name}** wasn't VIP.`);

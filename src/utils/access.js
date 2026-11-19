@@ -22,6 +22,14 @@ export const ADMIN_COMMAND = 'vipadmin';
 
 const CHANNEL_NAME = 'kirkahub-vip-access';
 
+/**
+ * Lifetime VIP servers, kept in code so they can never be lost or removed from the channel by accident.
+ * id -> note
+ */
+export const PERMANENT_GUILDS = new Map([
+  ['1489447628516360254', 'RITE (rite.lat), lifetime VIP bought by 309177951331680257'],
+]);
+
 const vipGuilds = new Map(); // id -> { note, messageId }
 const vipUsers = new Map();
 let channel = null;
@@ -30,9 +38,17 @@ let ready = false;
 
 export const isOwner = (userId) => ownerIds.has(userId);
 export const ownerMention = () => (ownerIds.size ? `<@${[...ownerIds][0]}>` : 'the KirkaHub owner');
-export const isGuildVip = (id) => !!id && vipGuilds.has(id);
+export const isGuildVip = (id) => !!id && (vipGuilds.has(id) || PERMANENT_GUILDS.has(id));
+export const isPermanentGuild = (id) => PERMANENT_GUILDS.has(id);
 export const isUserVip = (id) => !!id && (vipUsers.has(id) || ownerIds.has(id));
-export const listVip = () => ({ guilds: [...vipGuilds.entries()], users: [...vipUsers.entries()], ready });
+export const listVip = () => ({
+  guilds: [
+    ...[...PERMANENT_GUILDS].map(([id, note]) => [id, { note: `${note} (lifetime)` }]),
+    ...[...vipGuilds.entries()].filter(([id]) => !PERMANENT_GUILDS.has(id)),
+  ],
+  users: [...vipUsers.entries()],
+  ready,
+});
 
 /** Can this user run this command here? */
 export function canUse(commandName, userId, guildId) {

@@ -269,7 +269,7 @@ export async function drawProfileForeground(ctx, width, height, profile, discord
     ctx.textAlign = 'left';
     ctx.fillText(topText, topStartX + 16, badgeY + 18);
 
-    const bottomText = vip.type === 'yip' ? 'YIP' : 'SOULLESS';
+    const bottomText = vip.badge || (vip.type === 'yip' ? 'YIP' : 'SOULLESS');
     ctx.font = 'bold 16px Roboto';
     const bottomTextWidth = ctx.measureText(bottomText).width;
     const bottomTotalW = bottomTextWidth + 18;
